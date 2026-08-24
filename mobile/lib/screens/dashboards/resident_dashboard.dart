@@ -4,6 +4,7 @@ import '../../services/auth_service.dart';
 import '../login_screen.dart';
 import '../recycling/waste_segregation_guide_screen.dart';
 import '../collection_schedule_screen.dart';
+import '../waste_pickup_request_screen.dart';
 
 class ResidentDashboard extends StatefulWidget {
   const ResidentDashboard({super.key});
@@ -644,11 +645,18 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
         ),
 
         _quickAction(
-          icon:
-              Icons.local_shipping_rounded,
+          icon: Icons.local_shipping_rounded,
           title: 'Request\nPickup',
           color: const Color(0xFF19A86A),
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    const WastePickupRequestScreen(),
+              ),
+            );
+          },
         ),
 
         _quickAction(
