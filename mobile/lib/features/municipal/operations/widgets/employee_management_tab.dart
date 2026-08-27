@@ -203,7 +203,7 @@ class _EmployeeManagementTabState extends State<EmployeeManagementTab> {
                         children: [
                           Expanded(
                             child: DropdownButtonFormField<String>(
-                              value: selectedRole,
+                              initialValue: selectedRole,
                               decoration: InputDecoration(
                                 labelText: 'Role',
                                 border: OutlineInputBorder(
@@ -224,7 +224,7 @@ class _EmployeeManagementTabState extends State<EmployeeManagementTab> {
                           const SizedBox(width: 16),
                           Expanded(
                             child: DropdownButtonFormField<String>(
-                              value: selectedShift,
+                              initialValue: selectedShift,
                               decoration: InputDecoration(
                                 labelText: 'Shift',
                                 border: OutlineInputBorder(
@@ -252,7 +252,7 @@ class _EmployeeManagementTabState extends State<EmployeeManagementTab> {
                         children: [
                           Expanded(
                             child: DropdownButtonFormField<String>(
-                              value: selectedZone,
+                              initialValue: selectedZone,
                               decoration: InputDecoration(
                                 labelText: 'Assigned Zone',
                                 border: OutlineInputBorder(
@@ -274,7 +274,7 @@ class _EmployeeManagementTabState extends State<EmployeeManagementTab> {
                           const SizedBox(width: 16),
                           Expanded(
                             child: DropdownButtonFormField<String>(
-                              value: selectedStatus,
+                              initialValue: selectedStatus,
                               decoration: InputDecoration(
                                 labelText: 'Status',
                                 border: OutlineInputBorder(
@@ -303,7 +303,7 @@ class _EmployeeManagementTabState extends State<EmployeeManagementTab> {
                           title: const Text('Active Account'),
                           subtitle: const Text('Deactivating blocks resource assignments'),
                           value: isActive,
-                          activeColor: MunicipalColors.secondaryGreen,
+                          activeThumbColor: MunicipalColors.secondaryGreen,
                           onChanged: (value) {
                             setModalState(() => isActive = value);
                           },
