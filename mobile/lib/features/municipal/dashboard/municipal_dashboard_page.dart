@@ -312,22 +312,21 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
-                        children: [
-                          Text(
-                            "Good morning, Alex!",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                      const Text.rich(
+                        TextSpan(
+                          text: "Good morning, Alex! ",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: "🖐️",
+                              style: TextStyle(fontSize: 18),
                             ),
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            "🖐️",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 6),
                       Text(
