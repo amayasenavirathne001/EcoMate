@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../services/waste_report_service.dart';
@@ -33,6 +34,8 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
   String? _photoData;
   bool _submitting = false;
   bool _reviewing = false;
+  bool _locating = false;
+  Position? _position;
 
   bool get _isEditing => widget.report != null;
 
@@ -44,6 +47,22 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       _locationController.text = report['location']?.toString() ?? '';
       _descriptionController.text = report['description']?.toString() ?? '';
       _category = report['wasteCategory']?.toString() ?? _category;
+      final latitude = (report['latitude'] as num?)?.toDouble();
+      final longitude = (report['longitude'] as num?)?.toDouble();
+      if (latitude != null && longitude != null) {
+        _position = Position(
+          latitude: latitude,
+          longitude: longitude,
+          timestamp: DateTime.now(),
+          accuracy: 0,
+          altitude: 0,
+          heading: 0,
+          speed: 0,
+          speedAccuracy: 0,
+          altitudeAccuracy: 0,
+          headingAccuracy: 0,
+        );
+      }
     }
   }
 
@@ -69,6 +88,36 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
     });
   }
 
+  Future<void> _useCurrentLocation() async {
+    setState(() => _locating = true);
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        throw Exception('Turn on location services and try again.');
+      }
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        throw Exception('Location permission is required to use GPS.');
+      }
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+      );
+      if (!mounted) return;
+      setState(() {
+        _position = position;
+        if (_locationController.text.trim().isEmpty) {
+          _locationController.text = 'Current location';
+        }
+      });
+    } catch (error) {
+      if (mounted) _showMessage(error.toString().replaceFirst('Exception: ', ''));
+    } finally {
+      if (mounted) setState(() => _locating = false);
+    }
+  }
+
   Future<void> _submit() async {
     if (_locationController.text.trim().isEmpty || _descriptionController.text.trim().isEmpty) {
       _showMessage('Add a location and description before submitting.');
@@ -83,6 +132,8 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               location: _locationController.text.trim(),
               category: _category,
               description: _descriptionController.text.trim(),
+              latitude: _position?.latitude,
+              longitude: _position?.longitude,
               photoData: _photoData,
             )
           : await _service.submitReport(
@@ -90,6 +141,8 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               location: _locationController.text.trim(),
               category: _category,
               description: _descriptionController.text.trim(),
+              latitude: _position?.latitude,
+              longitude: _position?.longitude,
               photoData: _photoData,
             );
       if (!mounted) return;
@@ -161,6 +214,23 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             controller: _locationController,
             decoration: _decoration('Enter address or landmark', Icons.location_on_outlined),
           ),
+          const SizedBox(height: 10),
+          OutlinedButton.icon(
+            onPressed: _locating ? null : _useCurrentLocation,
+            icon: _locating
+                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: green))
+                : const Icon(Icons.my_location_outlined),
+            label: Text(_position == null ? 'Use current GPS location' : 'Update GPS location'),
+            style: OutlinedButton.styleFrom(foregroundColor: darkGreen),
+          ),
+          if (_position != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(
+                'GPS: ${_position!.latitude.toStringAsFixed(5)}, ${_position!.longitude.toStringAsFixed(5)}',
+                style: const TextStyle(color: secondaryText, fontSize: 12),
+              ),
+            ),
           const SizedBox(height: 16),
           _label('Waste category'),
           DropdownButtonFormField<String>(
@@ -213,6 +283,12 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
         _reviewRow('Issue type', widget.issueType),
         _reviewRow('Location', _locationController.text.trim()),
         _reviewRow('Category', _category),
+        _reviewRow(
+          'GPS location',
+          _position == null
+              ? 'Not added'
+              : '${_position!.latitude.toStringAsFixed(5)}, ${_position!.longitude.toStringAsFixed(5)}',
+        ),
         _reviewRow('Description', _descriptionController.text.trim()),
         _reviewRow('Evidence', _photoBytes == null ? 'No photo attached' : 'Photo attached'),
         const SizedBox(height: 24),

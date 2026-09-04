@@ -68,6 +68,8 @@ class WasteReportService {
     required String location,
     required String category,
     required String description,
+    double? latitude,
+    double? longitude,
     String? photoData,
   }) async {
     final token = await _storage.read(key: 'token');
@@ -80,6 +82,8 @@ class WasteReportService {
         'location': location,
         'wasteCategory': category,
         'description': description,
+        'latitude': latitude,
+        'longitude': longitude,
         'photoData': photoData,
       }),
     );

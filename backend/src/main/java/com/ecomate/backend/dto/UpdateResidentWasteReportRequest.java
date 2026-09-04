@@ -8,6 +8,8 @@ public record UpdateResidentWasteReportRequest(
         @NotBlank @Size(max = 120) String location,
         @Size(max = 80) String wasteCategory,
         @NotBlank @Size(max = 1200) String description,
+        Double latitude,
+        Double longitude,
         String photoData
 ) {
 }

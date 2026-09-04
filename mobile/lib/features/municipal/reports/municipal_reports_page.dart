@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../services/waste_report_service.dart';
 import '../theme/municipal_colors.dart';
+import 'report_location_map_page.dart';
 
 class MunicipalReportsPage extends StatefulWidget {
   const MunicipalReportsPage({super.key});
@@ -91,6 +92,12 @@ class _MunicipalReportsPageState extends State<MunicipalReportsPage> {
     }
   }
 
+  void _viewLocation(Map<String, dynamic> report) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => ReportLocationMapPage(report: report)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,7 +159,7 @@ class _MunicipalReportsPageState extends State<MunicipalReportsPage> {
                 )).toList(),
               ),
             ),
-            Expanded(child: reports.isEmpty ? const Center(child: Text('No reports in this filter.')) : ListView.separated(padding: const EdgeInsets.all(16), itemCount: reports.length, separatorBuilder: (_, _) => const SizedBox(height: 10), itemBuilder: (_, index) => _ReportTile(report: reports[index], onEdit: () => _editReport(reports[index])))),
+            Expanded(child: reports.isEmpty ? const Center(child: Text('No reports in this filter.')) : ListView.separated(padding: const EdgeInsets.all(16), itemCount: reports.length, separatorBuilder: (_, _) => const SizedBox(height: 10), itemBuilder: (_, index) => _ReportTile(report: reports[index], onEdit: () => _editReport(reports[index]), onViewLocation: () => _viewLocation(reports[index])))),
           ]);
         },
       ),
@@ -163,9 +170,10 @@ class _MunicipalReportsPageState extends State<MunicipalReportsPage> {
 }
 
 class _ReportTile extends StatelessWidget {
-  const _ReportTile({required this.report, required this.onEdit});
+  const _ReportTile({required this.report, required this.onEdit, required this.onViewLocation});
   final Map<String, dynamic> report;
   final VoidCallback onEdit;
+  final VoidCallback onViewLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +187,33 @@ class _ReportTile extends StatelessWidget {
       title: Text(report['issueType']?.toString() ?? 'Waste report', style: const TextStyle(fontWeight: FontWeight.w700, color: MunicipalColors.primaryText)),
       subtitle: Text('${report['referenceNumber']}\n${report['location']}\nPriority: $priority', maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(color: MunicipalColors.secondaryText, height: 1.4)),
       isThreeLine: true,
-      trailing: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Text(status.replaceAll('_', ' '), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: MunicipalColors.secondaryGreen)), const Icon(Icons.edit_outlined, size: 18, color: MunicipalColors.mutedText)]),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(status.replaceAll('_', ' '), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: MunicipalColors.secondaryGreen)),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: onViewLocation,
+                tooltip: 'View location on map',
+                visualDensity: VisualDensity.compact,
+                icon: Icon(
+                  Icons.location_on_outlined,
+                  size: 19,
+                  color: report['latitude'] != null && report['longitude'] != null ? MunicipalColors.secondaryGreen : MunicipalColors.mutedText,
+                ),
+              ),
+              IconButton(
+                onPressed: onEdit,
+                tooltip: 'Edit report',
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.edit_outlined, size: 18, color: MunicipalColors.mutedText),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

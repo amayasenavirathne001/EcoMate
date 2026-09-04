@@ -47,6 +47,10 @@ public class WasteReportService {
     public WasteReportResponse updateMine(String reporterEmail, Long id,
                                           UpdateResidentWasteReportRequest request) {
         WasteReport report = repository.findByIdAndReporterEmail(id, reporterEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Report not found for the current user"));
+        report.updateResidentFields(request.issueType(), request.location(),
+            request.wasteCategory(), request.description(), request.latitude(),
+            request.longitude(), request.photoData());
                 .orElseThrow(() -> new IllegalArgumentException("Report not found"));
         report.updateResidentFields(request.issueType(), request.location(),
                 request.wasteCategory(), request.description(), request.photoData());
@@ -55,6 +59,7 @@ public class WasteReportService {
 
     public void deleteMine(String reporterEmail, Long id) {
         WasteReport report = repository.findByIdAndReporterEmail(id, reporterEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Report not found for the current user"));
                 .orElseThrow(() -> new IllegalArgumentException("Report not found"));
         repository.delete(report);
     }
