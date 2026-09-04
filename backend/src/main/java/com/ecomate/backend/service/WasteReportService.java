@@ -51,16 +51,12 @@ public class WasteReportService {
         report.updateResidentFields(request.issueType(), request.location(),
             request.wasteCategory(), request.description(), request.latitude(),
             request.longitude(), request.photoData());
-                .orElseThrow(() -> new IllegalArgumentException("Report not found"));
-        report.updateResidentFields(request.issueType(), request.location(),
-                request.wasteCategory(), request.description(), request.photoData());
         return WasteReportResponse.from(repository.save(report));
     }
 
     public void deleteMine(String reporterEmail, Long id) {
         WasteReport report = repository.findByIdAndReporterEmail(id, reporterEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Report not found for the current user"));
-                .orElseThrow(() -> new IllegalArgumentException("Report not found"));
         repository.delete(report);
     }
 }

@@ -83,7 +83,11 @@ class _MunicipalReportsPageState extends State<MunicipalReportsPage> {
       final updatedReports = currentReports.map((currentReport) {
         return currentReport['id'] == updated['id'] ? updated : currentReport;
       }).toList();
-      if (mounted) setState(() => _reports = Future.value(updatedReports));
+      if (mounted) {
+        setState(() {
+          _reports = Future.value(updatedReports);
+        });
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Report updated successfully')));
       }
