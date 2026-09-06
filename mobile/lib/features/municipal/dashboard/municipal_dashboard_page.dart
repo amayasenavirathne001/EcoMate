@@ -6,6 +6,7 @@ import 'widgets/summary_card.dart';
 import 'widgets/schedule_card.dart';
 import 'widgets/quick_actions.dart';
 import 'widgets/live_map_preview_card.dart';
+import '../operations/screens/smart_alerts_screen.dart';
 
 class MunicipalDashboardPage extends StatefulWidget {
   final Function(int) onTabChange;
@@ -206,34 +207,42 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
         Row(
           children: [
             // Notification Icon with Badge
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                const Icon(
-                  Icons.notifications_none_rounded,
-                  color: MunicipalColors.primaryText,
-                  size: 28,
-                ),
-                Positioned(
-                  top: -2,
-                  right: -2,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF22C55E), // Green notification badge
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Text(
-                      '3',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SmartAlertsScreen()),
+                );
+              },
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  const Icon(
+                    Icons.notifications_none_rounded,
+                    color: MunicipalColors.primaryText,
+                    size: 28,
+                  ),
+                  Positioned(
+                    top: -2,
+                    right: -2,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFE23636), // Red notification badge
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '${_summaryData?.activeAlerts ?? 0}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(width: 16),
             // Profile image
