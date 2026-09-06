@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../services/waste_report_service.dart';
 import '../theme/municipal_colors.dart';
+import 'report_location_map_page.dart';
 
 class MunicipalReportsPage extends StatefulWidget {
   const MunicipalReportsPage({super.key});
@@ -13,6 +14,7 @@ class _MunicipalReportsPageState extends State<MunicipalReportsPage> {
   final _service = WasteReportService();
   late Future<List<Map<String, dynamic>>> _reports;
   String _filter = 'All';
+  bool _isReloading = false;
 
   @override
   void initState() {
@@ -20,7 +22,22 @@ class _MunicipalReportsPageState extends State<MunicipalReportsPage> {
     _reports = _service.getAdminReports();
   }
 
-  void _reload() => setState(() => _reports = _service.getAdminReports());
+  Future<void> _reload() async {
+    if (_isReloading) return; // Prevent multiple simultaneous requests
+    _isReloading = true;
+    try {
+      final reports = _service.getAdminReports();
+      if (!mounted) return;
+      setState(() {
+        _reports = reports;
+      });
+      await reports; // Wait for the reports to complete loading
+    } finally {
+      if (mounted) {
+        _isReloading = false;
+      }
+    }
+  }
 
   Future<void> _editReport(Map<String, dynamic> report) async {
     var status = report['status']?.toString() ?? 'SUBMITTED';
@@ -56,11 +73,33 @@ class _MunicipalReportsPageState extends State<MunicipalReportsPage> {
     );
     if (result == null || !mounted) return;
     try {
-      await _service.updateAdminReport(id: (report['id'] as num).toInt(), status: result['status']!, priority: result['priority']!, assignedTeam: result['assignedTeam']!);
-      _reload();
+      final updated = await _service.updateAdminReport(
+        id: (report['id'] as num).toInt(),
+        status: result['status']!,
+        priority: result['priority']!,
+        assignedTeam: result['assignedTeam']!,
+      );
+      final currentReports = await _reports;
+      final updatedReports = currentReports.map((currentReport) {
+        return currentReport['id'] == updated['id'] ? updated : currentReport;
+      }).toList();
+      if (mounted) {
+        setState(() {
+          _reports = Future.value(updatedReports);
+        });
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Report updated successfully')));
+      }
     } catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Update failed: $error')));
     }
+  }
+
+  void _viewLocation(Map<String, dynamic> report) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => ReportLocationMapPage(report: report)),
+    );
   }
 
   @override
@@ -79,13 +118,26 @@ class _MunicipalReportsPageState extends State<MunicipalReportsPage> {
           ),
         ),
         title: const Text('Reports', style: TextStyle(fontWeight: FontWeight.bold)),
-        actions: [IconButton(onPressed: _reload, icon: const Icon(Icons.refresh_rounded))],
+        actions: [IconButton(onPressed: () { _reload(); }, icon: const Icon(Icons.refresh_rounded))],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _reports,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(color: MunicipalColors.secondaryGreen));
-          if (snapshot.hasError) return Center(child: TextButton(onPressed: _reload, child: const Text('Could not load reports. Retry')));
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator(color: MunicipalColors.secondaryGreen));
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Error: ${snapshot.error}', textAlign: TextAlign.center, style: const TextStyle(color: MunicipalColors.error)),
+                  const SizedBox(height: 16),
+                  TextButton(onPressed: _reload, child: const Text('Retry')),
+                ],
+              ),
+            );
+          }
           final all = snapshot.data ?? [];
           final reports = _filter == 'All' ? all : all.where((item) => item['status'] == _filter).toList();
           return Column(children: [
@@ -111,7 +163,7 @@ class _MunicipalReportsPageState extends State<MunicipalReportsPage> {
                 )).toList(),
               ),
             ),
-            Expanded(child: reports.isEmpty ? const Center(child: Text('No reports in this filter.')) : ListView.separated(padding: const EdgeInsets.all(16), itemCount: reports.length, separatorBuilder: (_, _) => const SizedBox(height: 10), itemBuilder: (_, index) => _ReportTile(report: reports[index], onEdit: () => _editReport(reports[index])))),
+            Expanded(child: reports.isEmpty ? const Center(child: Text('No reports in this filter.')) : ListView.separated(padding: const EdgeInsets.all(16), itemCount: reports.length, separatorBuilder: (_, _) => const SizedBox(height: 10), itemBuilder: (_, index) => _ReportTile(report: reports[index], onEdit: () => _editReport(reports[index]), onViewLocation: () => _viewLocation(reports[index])))),
           ]);
         },
       ),
@@ -122,9 +174,10 @@ class _MunicipalReportsPageState extends State<MunicipalReportsPage> {
 }
 
 class _ReportTile extends StatelessWidget {
-  const _ReportTile({required this.report, required this.onEdit});
+  const _ReportTile({required this.report, required this.onEdit, required this.onViewLocation});
   final Map<String, dynamic> report;
   final VoidCallback onEdit;
+  final VoidCallback onViewLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +191,33 @@ class _ReportTile extends StatelessWidget {
       title: Text(report['issueType']?.toString() ?? 'Waste report', style: const TextStyle(fontWeight: FontWeight.w700, color: MunicipalColors.primaryText)),
       subtitle: Text('${report['referenceNumber']}\n${report['location']}\nPriority: $priority', maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(color: MunicipalColors.secondaryText, height: 1.4)),
       isThreeLine: true,
-      trailing: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Text(status.replaceAll('_', ' '), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: MunicipalColors.secondaryGreen)), const Icon(Icons.edit_outlined, size: 18, color: MunicipalColors.mutedText)]),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(status.replaceAll('_', ' '), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: MunicipalColors.secondaryGreen)),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: onViewLocation,
+                tooltip: 'View location on map',
+                visualDensity: VisualDensity.compact,
+                icon: Icon(
+                  Icons.location_on_outlined,
+                  size: 19,
+                  color: report['latitude'] != null && report['longitude'] != null ? MunicipalColors.secondaryGreen : MunicipalColors.mutedText,
+                ),
+              ),
+              IconButton(
+                onPressed: onEdit,
+                tooltip: 'Edit report',
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.edit_outlined, size: 18, color: MunicipalColors.mutedText),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

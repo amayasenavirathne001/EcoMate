@@ -28,5 +28,6 @@ void main() {
 
     expect(find.text('Report Details'), findsOneWidget);
     expect(find.text('Issue: Overflowing Bin'), findsOneWidget);
+
   });
 }
