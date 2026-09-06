@@ -22,7 +22,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _rememberMe = false;
+
   String? _errorMessage;
+
+  static const Color darkPrimary = Color(0xFF15292E);
+  static const Color primary = Color(0xFF074047);
+  static const Color secondary = Color(0xFF1C8585);
+  static const Color accent = Color(0xFF1DA27E);
+  static const Color background = Color(0xFFF7FAFA);
+  static const Color border = Color(0xFFD5E0E0);
+  static const Color muted = Color(0xFF95A5A6);
 
   Future<void> _login() async {
     final email = _emailController.text.trim();
@@ -101,84 +111,38 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  InputDecoration _inputDecoration({
-    required String label,
-    required IconData icon,
-    required String hint,
-    Widget? suffixIcon,
-  }) {
-    return InputDecoration(
-      labelText: label,
-      hintText: hint,
-      labelStyle: const TextStyle(
-        color: Color(0xFF9CB8B3),
-      ),
-      hintStyle: const TextStyle(
-        color: Color(0xFF607F7A),
-      ),
-      prefixIcon: Icon(
-        icon,
-        color: const Color(0xFF68E1BF),
-      ),
-      suffixIcon: suffixIcon,
-      filled: true,
-      fillColor: const Color(0xFF102D2F),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 18,
-      ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: Color(0xFF1E4849),
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: Color(0xFF1E4849),
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: Color(0xFF68E1BF),
-          width: 1.5,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF071D20),
+      backgroundColor: background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 24,
+            ),
             child: ConstrainedBox(
               constraints: const BoxConstraints(
-                maxWidth: 440,
+                maxWidth: 430,
               ),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 26,
-                  vertical: 34,
+                padding: const EdgeInsets.fromLTRB(
+                  22,
+                  18,
+                  22,
+                  26,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0B2528),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: const Color(0xFF173F40),
-                  ),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(26),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(
-                        alpha: 0.25,
+                        alpha: 0.06,
                       ),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
+                      blurRadius: 24,
+                      offset: const Offset(0, 10),
                     ),
                   ],
                 ),
@@ -186,75 +150,136 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment:
                       CrossAxisAlignment.stretch,
                   children: [
-                    Center(
-                      child: Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF12383A),
-                          borderRadius:
-                              BorderRadius.circular(16),
+                    // =========================
+                    // LANGUAGE
+                    // =========================
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 7,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: border,
+                            ),
+                            borderRadius:
+                                BorderRadius.circular(10),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.language_rounded,
+                                size: 17,
+                                color: primary,
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'EN',
+                                style: TextStyle(
+                                  color: darkPrimary,
+                                  fontWeight:
+                                      FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(width: 3),
+                              Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 17,
+                                color: muted,
+                              ),
+                            ],
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.eco_rounded,
-                          color: Color(0xFF65E0BD),
-                          size: 34,
-                        ),
-                      ),
+                      ],
                     ),
 
                     const SizedBox(height: 22),
 
-                    const Text(
-                      'Welcome Back',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF71E1C1),
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    const Text(
-                      'Sign in to continue to EcoMate',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF93AEAA),
-                        fontSize: 14,
-                      ),
-                    ),
-
-                    const SizedBox(height: 34),
-
-                    TextField(
-                      controller: _emailController,
-                      keyboardType:
-                          TextInputType.emailAddress,
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                      decoration: _inputDecoration(
-                        label: 'Email Address',
-                        hint: 'name@example.com',
-                        icon: Icons.email_outlined,
+                    // =========================
+                    // LOGO
+                    // =========================
+                    Center(
+                      child: Container(
+                        width: 92,
+                        height: 92,
+                        decoration: BoxDecoration(
+                          color: const Color(
+                            0xFFEAF7F2,
+                          ),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: accent.withValues(
+                                alpha: 0.10,
+                              ),
+                              blurRadius: 15,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.eco_rounded,
+                          size: 48,
+                          color: accent,
+                        ),
                       ),
                     ),
 
                     const SizedBox(height: 18),
 
+                    const Text(
+                      'Welcome Back!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: darkPrimary,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    const Text(
+                      'Login to continue with EcoMate',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: muted,
+                        fontSize: 14,
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    // =========================
+                    // EMAIL
+                    // =========================
+                    TextField(
+                      controller: _emailController,
+                      keyboardType:
+                          TextInputType.emailAddress,
+                      decoration: _inputDecoration(
+                        hint: 'Email',
+                        icon: Icons.email_outlined,
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // =========================
+                    // PASSWORD
+                    // =========================
                     TextField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
+                      onSubmitted: (_) => _login(),
                       decoration: _inputDecoration(
-                        label: 'Password',
-                        hint: 'Enter your password',
-                        icon: Icons.lock_outline,
-                        suffixIcon: IconButton(
+                        hint: 'Password',
+                        icon: Icons.lock_outline_rounded,
+                        suffix: IconButton(
                           onPressed: () {
                             setState(() {
                               _obscurePassword =
@@ -263,44 +288,97 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                           icon: Icon(
                             _obscurePassword
-                                ? Icons.visibility_off_outlined
+                                ? Icons
+                                    .visibility_off_outlined
                                 : Icons.visibility_outlined,
-                            color:
-                                const Color(0xFF799B96),
+                            color: muted,
                           ),
                         ),
                       ),
-                      onSubmitted: (_) => _login(),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // =========================
+                    // REMEMBER + FORGOT
+                    // =========================
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: Checkbox(
+                            value: _rememberMe,
+                            activeColor: accent,
+                            side: const BorderSide(
+                              color: border,
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _rememberMe =
+                                    value ?? false;
+                              });
+                            },
+                          ),
+                        ),
+
+                        const SizedBox(width: 7),
+
+                        const Text(
+                          'Remember me',
+                          style: TextStyle(
+                            color: darkPrimary,
+                            fontSize: 12,
+                          ),
+                        ),
+
+                        const Spacer(),
+
+                        TextButton(
+                          onPressed: () {},
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                          ),
+                          child: const Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              color: accent,
+                              fontSize: 12,
+                              fontWeight:
+                                  FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
 
                     if (_errorMessage != null) ...[
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
+
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(11),
                         decoration: BoxDecoration(
-                          color: Colors.red.withValues(
-                            alpha: 0.12,
-                          ),
+                          color: const Color(0xFFFFEEEE),
                           borderRadius:
                               BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.redAccent
-                                .withValues(alpha: 0.35),
-                          ),
                         ),
                         child: Row(
                           children: [
                             const Icon(
                               Icons.error_outline,
-                              color: Colors.redAccent,
-                              size: 20,
+                              color: Color(0xFFE74C3C),
+                              size: 18,
                             ),
-                            const SizedBox(width: 10),
+
+                            const SizedBox(width: 8),
+
                             Expanded(
                               child: Text(
                                 _errorMessage!,
                                 style: const TextStyle(
-                                  color: Colors.redAccent,
+                                  color:
+                                      Color(0xFFE74C3C),
+                                  fontSize: 12,
                                 ),
                               ),
                             ),
@@ -309,21 +387,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
 
-                    const SizedBox(height: 26),
+                    const SizedBox(height: 20),
 
+                    // =========================
+                    // SIGN IN
+                    // =========================
                     SizedBox(
-                      height: 54,
+                      height: 52,
                       child: ElevatedButton(
                         onPressed:
                             _isLoading ? null : _login,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color(0xFF30B6AC),
+                          backgroundColor: primary,
                           foregroundColor: Colors.white,
+                          disabledBackgroundColor:
+                              primary.withValues(
+                            alpha: 0.55,
+                          ),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.circular(12),
+                                BorderRadius.circular(13),
                           ),
                         ),
                         child: _isLoading
@@ -332,114 +416,193 @@ class _LoginScreenState extends State<LoginScreen> {
                                 height: 22,
                                 child:
                                     CircularProgressIndicator(
-                                  strokeWidth: 2.5,
+                                  strokeWidth: 2.4,
                                   color: Colors.white,
                                 ),
                               )
-                            : const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Sign In',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Icon(
-                                    Icons.arrow_forward_rounded,
-                                    size: 20,
-                                  ),
-                                ],
+                            : const Text(
+                                'Sign In',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
                               ),
                       ),
                     ),
 
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 22),
 
-                    Row(
+                    // =========================
+                    // OR
+                    // =========================
+                    const Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Divider(
-                            color: Color(0xFF214446),
+                            color: border,
                           ),
                         ),
                         Padding(
                           padding:
-                              const EdgeInsets.symmetric(
-                            horizontal: 12,
+                              EdgeInsets.symmetric(
+                            horizontal: 13,
                           ),
                           child: Text(
-                            'NEW TO ECOMATE?',
+                            'or',
                             style: TextStyle(
-                              color: const Color(
-                                0xFF718D89,
-                              ),
-                              fontSize: 11,
-                              fontWeight:
-                                  FontWeight.w600,
+                              color: muted,
+                              fontSize: 12,
                             ),
                           ),
                         ),
-                        const Expanded(
+                        Expanded(
                           child: Divider(
-                            color: Color(0xFF214446),
+                            color: border,
                           ),
                         ),
                       ],
                     ),
 
-                    const SizedBox(height: 22),
+                    const SizedBox(height: 20),
 
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                const RegisterScreen(),
+                    // =========================
+                    // GOOGLE
+                    // =========================
+                    SizedBox(
+                      height: 50,
+                      child: OutlinedButton(
+                        onPressed: () {},
+                        style:
+                            OutlinedButton.styleFrom(
+                          foregroundColor: darkPrimary,
+                          side: const BorderSide(
+                            color: secondary,
                           ),
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.person_add_alt_1_rounded,
-                      ),
-                      label: const Text(
-                        'Create an Account',
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor:
-                            const Color(0xFF68E1BF),
-                        side: const BorderSide(
-                          color: Color(0xFF2F605C),
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(13),
+                          ),
                         ),
-                        minimumSize:
-                            const Size.fromHeight(52),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(12),
+                        child: const Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'G',
+                              style: TextStyle(
+                                color:
+                                    Color(0xFF4285F4),
+                                fontSize: 20,
+                                fontWeight:
+                                    FontWeight.bold,
+                              ),
+                            ),
+
+                            SizedBox(width: 12),
+
+                            Text(
+                              'Continue with Google',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight:
+                                    FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 26),
 
-                    const Text(
-                      'EcoMate • Smart Waste & Recycling',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF587672),
-                        fontSize: 11,
-                      ),
+                    // =========================
+                    // SIGN UP
+                    // =========================
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Don\'t have an account? ',
+                          style: TextStyle(
+                            color: muted,
+                            fontSize: 13,
+                          ),
+                        ),
+
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    const RegisterScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'Sign up',
+                            style: TextStyle(
+                              color: accent,
+                              fontSize: 13,
+                              fontWeight:
+                                  FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration({
+    required String hint,
+    required IconData icon,
+    Widget? suffix,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(
+        color: muted,
+        fontSize: 14,
+      ),
+      prefixIcon: Icon(
+        icon,
+        color: primary,
+        size: 21,
+      ),
+      suffixIcon: suffix,
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 14,
+        vertical: 17,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: border,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: secondary,
+          width: 1.5,
+        ),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: Color(0xFFE74C3C),
         ),
       ),
     );

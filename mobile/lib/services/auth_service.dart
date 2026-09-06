@@ -66,6 +66,14 @@ class AuthService {
     return _storage.read(key: 'role');
   }
 
+  Future<String?> getEmail() {
+    return _storage.read(key: 'email');
+  }
+
+  Future<String?> getName() {
+    return _storage.read(key: 'name');
+  }
+
   Future<bool> isLoggedIn() async {
     final token = await getToken();
     return token != null && token.isNotEmpty;

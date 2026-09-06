@@ -36,6 +36,10 @@ dependencies:
   cupertino_icons: ^1.0.8
   http: ^1.6.0
   flutter_secure_storage: ^11.0.0
+  image_picker: ^1.1.2
+  geolocator: ^14.0.2
+  flutter_map: ^8.2.2
+  latlong2: ^0.9.1
 
 dev_dependencies:
   flutter_test:
@@ -89,3 +93,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  assets:
+    - assets/images/onboarding_1.png
+    - assets/images/onboarding_2.png
+    - assets/images/login_background.jpg
+    - assets/images/register_background.jpg
+    - assets/images/resident_profile.png
+    - assets/images/organic_waste_bin.png
