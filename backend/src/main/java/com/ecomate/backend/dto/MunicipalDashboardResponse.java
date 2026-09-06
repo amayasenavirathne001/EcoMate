@@ -13,5 +13,8 @@ public record MunicipalDashboardResponse(
     List<ComplaintSummaryDto> recentComplaints,
     OperationsOverviewDto operationsOverview,
     List<HotspotDto> hotspots,
-    List<AnnouncementDto> announcements
+    List<AnnouncementDto> announcements,
+    int activeAlerts,
+    int criticalAlerts,
+    int unassignedJobs
 ) {}

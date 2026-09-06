@@ -105,6 +105,9 @@ class MunicipalDashboardService {
           isNew: true,
         ),
       ],
+      activeAlerts: 4,
+      criticalAlerts: 2,
+      unassignedJobs: 1,
     );
   }
 }

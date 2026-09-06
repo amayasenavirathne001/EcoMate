@@ -9,6 +9,12 @@ import java.util.List;
 @Service
 public class MunicipalDashboardService {
 
+    private final com.ecomate.backend.repository.SmartAlertRepository alertRepository;
+
+    public MunicipalDashboardService(com.ecomate.backend.repository.SmartAlertRepository alertRepository) {
+        this.alertRepository = alertRepository;
+    }
+
     public MunicipalDashboardResponse getDashboardData() {
         // Today's Schedules
         List<ScheduleItemDto> schedules = new ArrayList<>();
@@ -45,6 +51,11 @@ public class MunicipalDashboardService {
             true
         ));
 
+        List<com.ecomate.backend.entity.SmartAlert> activeAlertList = alertRepository.findByStatusNot(com.ecomate.backend.entity.AlertStatus.RESOLVED);
+        int activeAlertsCount = activeAlertList.size();
+        int criticalAlertsCount = (int) activeAlertList.stream().filter(a -> a.getSeverity() == com.ecomate.backend.entity.AlertSeverity.CRITICAL).count();
+        int unassignedJobsCount = (int) activeAlertList.stream().filter(a -> a.getType() == com.ecomate.backend.entity.AlertType.UNASSIGNED_COLLECTION).count();
+
         return new MunicipalDashboardResponse(
             128,
             34,
@@ -56,7 +67,10 @@ public class MunicipalDashboardService {
             complaints,
             overview,
             hotspots,
-            announcements
+            announcements,
+            activeAlertsCount,
+            criticalAlertsCount,
+            unassignedJobsCount
         );
     }
 }
