@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme/municipal_colors.dart';
 import '../../../../screens/recycling/waste_segregation_guide_screen.dart';
+import '../screens/collection_performance_page.dart';
+import '../../reports/complaints_requests_page.dart';
 
 class QuickActionsWidget extends StatelessWidget {
   final VoidCallback onManageSchedules;
@@ -16,7 +18,7 @@ class QuickActionsWidget extends StatelessWidget {
     required this.onSendAlerts,
   });
 
-    @override
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,60 +32,71 @@ class QuickActionsWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        Row(
-          children: [
-            Expanded(
-              child: _buildActionButton(
-                icon: Icons.calendar_today_rounded,
-                iconColor: const Color(0xFF22C55E), // Green
-                label: "Schedule",
-                onTap: onManageSchedules,
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 85,
+                child: _buildActionButton(
+                  icon: Icons.calendar_today_rounded,
+                  iconColor: const Color(0xFF22C55E), // Green
+                  label: "Schedule",
+                  onTap: onManageSchedules,
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildActionButton(
-                icon: Icons.forum_rounded,
-                iconColor: const Color(0xFF06B6D4), // Teal
-                label: "Complaints",
-                onTap: onViewReports,
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 85,
+                child: _buildActionButton(
+                  icon: Icons.forum_rounded,
+                  iconColor: const Color(0xFF06B6D4), // Teal
+                  label: "Complaints",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ComplaintsRequestsPage(),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildActionButton(
-                icon: Icons.local_shipping_rounded,
-                iconColor: const Color(0xFF3B82F6), // Blue
-                label: "Vehicles",
-                onTap: onAssignCollectors,
+              SizedBox(
+                width: 85,
+                child: _buildActionButton(
+                  icon: Icons.menu_book_rounded,
+                  iconColor: const Color(0xFF16A34A), // Forest Green
+                  label: "Guide",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const WasteSegregationGuideScreen(),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildActionButton(
-                icon: Icons.bar_chart_rounded,
-                iconColor: const Color(0xFF10B981), // Emerald Green
-                label: "Reports",
-                onTap: onViewReports,
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 85,
+                child: _buildActionButton(
+                  icon: Icons.speed_rounded,
+                  iconColor: const Color(0xFF8B5CF6), // Purple
+                  label: "Performance",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CollectionPerformancePage(),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildActionButton(
-                icon: Icons.menu_book_rounded,
-                iconColor: const Color(0xFF16A34A), // Forest Green
-                label: "Guide",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const WasteSegregationGuideScreen(),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
