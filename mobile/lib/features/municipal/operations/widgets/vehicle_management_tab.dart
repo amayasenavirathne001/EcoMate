@@ -822,19 +822,30 @@ class _VehicleManagementTabState extends State<VehicleManagementTab> {
                                             ],
                                           ),
                                           const SizedBox(height: 8),
-                                          Row(
+                                          Wrap(
+                                            spacing: 12,
+                                            runSpacing: 4,
                                             children: [
-                                              const Icon(Icons.line_weight_rounded, size: 14, color: MunicipalColors.secondaryText),
-                                              const SizedBox(width: 4),
-                                              Text('Capacity: ${vehicle.capacity} Tons', style: const TextStyle(fontSize: 13, color: MunicipalColors.secondaryText)),
-                                              const SizedBox(width: 16),
-                                              const Icon(Icons.build_outlined, size: 14, color: MunicipalColors.secondaryText),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                vehicle.lastServiceDate != null
-                                                  ? 'Serviced: ${vehicle.lastServiceDate!.toLocal().toString().split(' ')[0]}'
-                                                  : 'No Service Records',
-                                                style: const TextStyle(fontSize: 13, color: MunicipalColors.secondaryText),
+                                              Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(Icons.line_weight_rounded, size: 14, color: MunicipalColors.secondaryText),
+                                                  const SizedBox(width: 4),
+                                                  Text('Capacity: ${vehicle.capacity} Tons', style: const TextStyle(fontSize: 13, color: MunicipalColors.secondaryText)),
+                                                ],
+                                              ),
+                                              Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(Icons.build_outlined, size: 14, color: MunicipalColors.secondaryText),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    vehicle.lastServiceDate != null
+                                                      ? 'Serviced: ${vehicle.lastServiceDate!.toLocal().toString().split(' ')[0]}'
+                                                      : 'No Service Records',
+                                                    style: const TextStyle(fontSize: 13, color: MunicipalColors.secondaryText),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),

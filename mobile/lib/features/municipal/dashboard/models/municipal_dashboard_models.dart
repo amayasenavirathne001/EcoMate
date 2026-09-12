@@ -134,6 +134,9 @@ class MunicipalDashboardSummary {
   final OperationsOverview operationsOverview;
   final List<HotspotItem> hotspots;
   final List<MunicipalAnnouncement> announcements;
+  final int activeAlerts;
+  final int criticalAlerts;
+  final int unassignedJobs;
 
   MunicipalDashboardSummary({
     required this.totalCollectionsToday,
@@ -147,6 +150,9 @@ class MunicipalDashboardSummary {
     required this.operationsOverview,
     required this.hotspots,
     required this.announcements,
+    required this.activeAlerts,
+    required this.criticalAlerts,
+    required this.unassignedJobs,
   });
 
   factory MunicipalDashboardSummary.fromJson(Map<String, dynamic> json) {
@@ -172,6 +178,9 @@ class MunicipalDashboardSummary {
       announcements: (json['announcements'] as List? ?? [])
           .map((item) => MunicipalAnnouncement.fromJson(item))
           .toList(),
+      activeAlerts: json['activeAlerts'] ?? 0,
+      criticalAlerts: json['criticalAlerts'] ?? 0,
+      unassignedJobs: json['unassignedJobs'] ?? 0,
     );
   }
 }

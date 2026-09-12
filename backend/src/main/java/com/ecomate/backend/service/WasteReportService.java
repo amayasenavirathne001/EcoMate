@@ -3,6 +3,8 @@ package com.ecomate.backend.service;
 import com.ecomate.backend.dto.CreateWasteReportRequest;
 import com.ecomate.backend.dto.WasteReportResponse;
 import com.ecomate.backend.dto.UpdateWasteReportRequest;
+import com.ecomate.backend.dto.WasteReportSummary;
+import com.ecomate.backend.dto.UpdateResidentWasteReportRequest;
 import com.ecomate.backend.entity.WasteReport;
 import com.ecomate.backend.repository.WasteReportRepository;
 import org.springframework.stereotype.Service;
@@ -26,13 +28,13 @@ public class WasteReportService {
     }
 
     public List<WasteReportResponse> findMine(String reporterEmail) {
-        return repository.findByReporterEmailOrderByCreatedAtDesc(reporterEmail)
-                .stream().map(WasteReportResponse::from).toList();
+        return repository.findSummariesByReporterEmailOrderByCreatedAtDesc(reporterEmail)
+            .stream().map(WasteReportSummary::toResponse).toList();
     }
 
     public List<WasteReportResponse> findAll() {
-        return repository.findAllByOrderByCreatedAtDesc()
-                .stream().map(WasteReportResponse::from).toList();
+        return repository.findAllSummariesByOrderByCreatedAtDesc()
+            .stream().map(WasteReportSummary::toResponse).toList();
     }
 
     public WasteReportResponse update(Long id, UpdateWasteReportRequest request) {
@@ -40,5 +42,21 @@ public class WasteReportService {
                 .orElseThrow(() -> new IllegalArgumentException("Report not found"));
         report.updateAdminFields(request.status(), request.priority(), request.assignedTeam());
         return WasteReportResponse.from(repository.save(report));
+    }
+
+    public WasteReportResponse updateMine(String reporterEmail, Long id,
+                                          UpdateResidentWasteReportRequest request) {
+        WasteReport report = repository.findByIdAndReporterEmail(id, reporterEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Report not found for the current user"));
+        report.updateResidentFields(request.issueType(), request.location(),
+            request.wasteCategory(), request.description(), request.latitude(),
+            request.longitude(), request.photoData());
+        return WasteReportResponse.from(repository.save(report));
+    }
+
+    public void deleteMine(String reporterEmail, Long id) {
+        WasteReport report = repository.findByIdAndReporterEmail(id, reporterEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Report not found for the current user"));
+        repository.delete(report);
     }
 }

@@ -52,8 +52,8 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                   Expanded(
                     child: Column(
                       children: [
-                        const _PageHeader(),
-                        const _ProgressSteps(),
+                        _PageHeader(onBack: () => Navigator.of(context).pop()),
+                        const _ProgressSteps(activeStep: 0),
                         Expanded(
                           child: ListView(
                             padding: const EdgeInsets.fromLTRB(18, 20, 18, 16),
@@ -162,7 +162,9 @@ class _WindowBar extends StatelessWidget {
 }
 
 class _PageHeader extends StatelessWidget {
-  const _PageHeader();
+  const _PageHeader({required this.onBack});
+
+  final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +172,12 @@ class _PageHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
       child: Row(
         children: [
-          const Icon(Icons.arrow_back_rounded, color: ReportIssueScreen._darkGreen, size: 22),
+          IconButton(
+            onPressed: onBack,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            icon: const Icon(Icons.arrow_back_rounded, color: ReportIssueScreen._darkGreen, size: 22),
+          ),
           const Expanded(
             child: Text(
               'Report New Issue',
@@ -190,7 +197,9 @@ class _PageHeader extends StatelessWidget {
 }
 
 class _ProgressSteps extends StatelessWidget {
-  const _ProgressSteps();
+  const _ProgressSteps({required this.activeStep});
+
+  final int activeStep;
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +208,8 @@ class _ProgressSteps extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Row(
         children: List.generate(labels.length, (index) {
-          final active = index == 0;
+          final active = index == activeStep;
+          final complete = index < activeStep;
           return Expanded(
             child: Stack(
               alignment: Alignment.topCenter,
@@ -218,13 +228,13 @@ class _ProgressSteps extends StatelessWidget {
                       height: 28,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: active ? ReportIssueScreen._darkGreen : const Color(0xFFE2E4E4),
+                        color: active || complete ? ReportIssueScreen._darkGreen : const Color(0xFFE2E4E4),
                       ),
                       alignment: Alignment.center,
                       child: Text(
                         '${index + 1}',
                         style: TextStyle(
-                          color: active ? Colors.white : ReportIssueScreen._secondaryText,
+                          color: active || complete ? Colors.white : ReportIssueScreen._secondaryText,
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
@@ -234,7 +244,7 @@ class _ProgressSteps extends StatelessWidget {
                     Text(
                       labels[index],
                       style: TextStyle(
-                        color: active ? ReportIssueScreen._darkGreen : ReportIssueScreen._secondaryText,
+                        color: active || complete ? ReportIssueScreen._darkGreen : ReportIssueScreen._secondaryText,
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
                       ),

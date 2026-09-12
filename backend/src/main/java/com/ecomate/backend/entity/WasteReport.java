@@ -31,14 +31,13 @@ public class WasteReport {
     @Column(nullable = false, length = 1200)
     private String description;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String photoData;
 
     @Column(nullable = false, length = 24)
     private String status;
 
-    @Column(nullable = false, length = 16)
+    @Column(length = 16)
     private String priority;
 
     @Column(length = 80)
@@ -86,5 +85,19 @@ public class WasteReport {
         this.status = status;
         this.priority = priority;
         this.assignedTeam = assignedTeam;
+    }
+
+    public void updateResidentFields(String issueType, String location, String wasteCategory,
+                                     String description, Double latitude, Double longitude,
+                                     String photoData) {
+        this.issueType = issueType;
+        this.location = location;
+        this.wasteCategory = wasteCategory;
+        this.description = description;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        if (photoData != null) {
+            this.photoData = photoData;
+        }
     }
 }

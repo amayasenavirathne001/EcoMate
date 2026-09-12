@@ -62,6 +62,45 @@ class WasteReportService {
         .cast<Map<String, dynamic>>();
   }
 
+  Future<Map<String, dynamic>> updateMyReport({
+    required int id,
+    required String issueType,
+    required String location,
+    required String category,
+    required String description,
+    double? latitude,
+    double? longitude,
+    String? photoData,
+  }) async {
+    final token = await _storage.read(key: 'token');
+    if (token == null || token.isEmpty) throw Exception('Please log in first.');
+    final response = await http.put(
+      Uri.parse('$baseUrl/api/resident/reports/$id'),
+      headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'issueType': issueType,
+        'location': location,
+        'wasteCategory': category,
+        'description': description,
+        'latitude': latitude,
+        'longitude': longitude,
+        'photoData': photoData,
+      }),
+    );
+    if (response.statusCode != 200) throw Exception('Could not update report.');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<void> deleteMyReport(int id) async {
+    final token = await _storage.read(key: 'token');
+    if (token == null || token.isEmpty) throw Exception('Please log in first.');
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/resident/reports/$id'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode != 204) throw Exception('Could not delete report.');
+  }
+
   Future<List<Map<String, dynamic>>> getAdminReports() async {
     final token = await _storage.read(key: 'token');
     if (token == null || token.isEmpty) throw Exception('Please log in first.');

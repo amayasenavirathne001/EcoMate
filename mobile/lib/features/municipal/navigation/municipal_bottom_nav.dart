@@ -24,7 +24,7 @@ class _MunicipalBottomNavState extends State<MunicipalBottomNav> {
     _pages = [
       MunicipalDashboardPage(onTabChange: _onTabChange),
       const MunicipalOperationsPage(),
-      const MunicipalSchedulePage(),
+      MunicipalSchedulePage(onTabChange: _onTabChange),
       const MunicipalReportsPage(),
       const MunicipalProfilePage(),
     ];

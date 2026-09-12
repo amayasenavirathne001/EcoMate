@@ -24,10 +24,10 @@ class SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         color: backgroundColor ?? MunicipalColors.primaryBg,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: backgroundColor != null 
               ? iconColor.withValues(alpha: 0.1) 
@@ -37,54 +37,55 @@ class SummaryCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Loose Icon
-          Icon(
-            icon,
-            color: iconColor,
-            size: 28,
-          ),
-          const Spacer(),
-          // Value
-          Text(
-            value,
-            style: const TextStyle(
-              color: MunicipalColors.primaryText,
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              height: 1.1,
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: iconColor.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: iconColor,
+              size: 20,
             ),
           ),
-          const SizedBox(height: 2),
-          // Title
-          Text(
-            title,
-            style: const TextStyle(
-              color: MunicipalColors.secondaryText,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 8),
-          // Trend / Comparison
-          comparisonWidget ??
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  color: MunicipalColors.secondaryText,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: MunicipalColors.primaryText,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    height: 1.1,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 2),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: MunicipalColors.secondaryText,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
