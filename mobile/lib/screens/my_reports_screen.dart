@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../services/report_filters.dart';
+import '../services/waste_report_service.dart';
 import 'report_details_screen.dart';
 import 'report_status_screen.dart';
-import '../services/waste_report_service.dart';
 
 class MyReportsScreen extends StatefulWidget {
   const MyReportsScreen({super.key});
@@ -18,7 +19,9 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
   static const secondaryText = Color(0xFF64748B);
 
   final _service = WasteReportService();
+  final _searchController = TextEditingController();
   late Future<List<Map<String, dynamic>>> _reports;
+  String _filter = 'All';
 
   @override
   void initState() {
@@ -73,6 +76,12 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: background,
@@ -93,27 +102,68 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
           if (snapshot.hasError) {
             return _MessageState(message: 'Could not load your reports.', onRetry: _reload);
           }
-          final reports = snapshot.data ?? [];
-          if (reports.isEmpty) {
+          final reports = filterReports(snapshot.data ?? [], query: _searchController.text, status: _filter);
+          if ((snapshot.data ?? []).isEmpty) {
             return const _MessageState(message: 'You have not submitted any reports yet.');
           }
           return RefreshIndicator(
             color: darkGreen,
             onRefresh: _reload,
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: reports.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 10),
-              itemBuilder: (_, index) => _ReportCard(
-                report: reports[index],
-                onEdit: () => _editReport(reports[index]),
-                onDelete: () => _deleteReport(reports[index]),
-                onViewStatus: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => ReportStatusScreen(report: reports[index]),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (_) => setState(() {}),
+                    decoration: InputDecoration(
+                      hintText: 'Search your reports',
+                      prefixIcon: const Icon(Icons.search_rounded),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: border)),
+                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: border)),
+                    ),
                   ),
                 ),
-              ),
+                SizedBox(
+                  height: 46,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    children: ['All', 'SUBMITTED', 'IN_REVIEW', 'ASSIGNED', 'RESOLVED', 'REJECTED']
+                        .map((item) => Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: ChoiceChip(
+                                label: Text(item.replaceAll('_', ' ')),
+                                selected: _filter == item,
+                                onSelected: (_) => setState(() => _filter = item),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ),
+                Expanded(
+                  child: reports.isEmpty
+                      ? const Center(child: Text('No reports match your current filters.'))
+                      : ListView.separated(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: reports.length,
+                          separatorBuilder: (_, _) => const SizedBox(height: 10),
+                          itemBuilder: (_, index) => _ReportCard(
+                            report: reports[index],
+                            onEdit: () => _editReport(reports[index]),
+                            onDelete: () => _deleteReport(reports[index]),
+                            onViewStatus: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => ReportStatusScreen(report: reports[index]),
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+              ],
             ),
           );
         },
