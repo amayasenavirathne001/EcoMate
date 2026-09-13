@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'auth_service.dart';
 import '../models/schedule_models.dart';
-import '../models/recycling_centre.dart';
+import '../features/recycling/models/recycling_centre.dart';
 
 class ScheduleService {
   final AuthService _authService = AuthService();

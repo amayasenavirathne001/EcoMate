@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../theme/municipal_colors.dart';
-import '../../../../screens/recycling/waste_segregation_guide_screen.dart';
+import '../../../recycling/screens/waste_segregation_guide_screen.dart';
 import '../screens/collection_performance_page.dart';
 import '../../reports/complaints_requests_page.dart';
+import '../../operations/screens/municipal_recycling_centers_page.dart';
 
 class QuickActionsWidget extends StatelessWidget {
   final VoidCallback onManageSchedules;
@@ -73,6 +74,23 @@ class QuickActionsWidget extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => const WasteSegregationGuideScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 85,
+                child: _buildActionButton(
+                  icon: Icons.recycling_rounded,
+                  iconColor: const Color(0xFF0D9488), // Teal/Emerald
+                  label: "Centers",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MunicipalRecyclingCentersPage(),
                       ),
                     );
                   },

@@ -1,6 +1,7 @@
+﻿import '../theme/recycling_colors.dart';
 import 'package:flutter/material.dart';
-import '../../models/recycling_centre.dart';
-import '../../services/recycling_service.dart';
+import '../models/recycling_centre.dart';
+import '../services/recycling_service.dart';
 import 'centre_detail_screen.dart';
 
 class RecyclingCentresScreen extends StatefulWidget {
@@ -16,6 +17,7 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
 
   List<RecyclingCentre> _displayedCentres = [];
   String _selectedMaterial = 'All';
+  bool _isLoading = false;
 
   final List<String> _materialOptions = [
     'All',
@@ -39,30 +41,35 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
     super.dispose();
   }
 
-  void _fetchCentres() {
-    setState(() {
-      _displayedCentres = _recyclingService.getRecyclingCentres(
-        query: _searchController.text,
-        materialFilter: _selectedMaterial,
-      );
-    });
+  Future<void> _fetchCentres() async {
+    setState(() => _isLoading = true);
+    final centres = await _recyclingService.fetchRecyclingCentres(
+      query: _searchController.text,
+      materialFilter: _selectedMaterial,
+    );
+    if (mounted) {
+      setState(() {
+        _displayedCentres = centres;
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAF7),
+      backgroundColor: RecyclingColors.offWhite,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF1F5520), size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: RecyclingColors.deepForestGreen, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Nearby Recycling Centres',
           style: TextStyle(
-            color: Color(0xFF1F5520),
+            color: RecyclingColors.deepForestGreen,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -90,7 +97,7 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                           hintStyle: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 14),
                           prefixIcon: const Icon(
                             Icons.search_rounded,
-                            color: Color(0xFF2E7D32),
+                            color: RecyclingColors.forestGreen,
                           ),
                           suffixIcon: _searchController.text.isNotEmpty
                               ? IconButton(
@@ -105,23 +112,23 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                                 )
                               : null,
                           filled: true,
-                          fillColor: const Color(0xFFF8FAF7),
+                          fillColor: RecyclingColors.offWhite,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 14,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: Color(0xFFD9E3DA)),
+                            borderSide: const BorderSide(color: RecyclingColors.cardBorder),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: Color(0xFFD9E3DA)),
+                            borderSide: const BorderSide(color: RecyclingColors.cardBorder),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                             borderSide: const BorderSide(
-                              color: Color(0xFF2E7D32),
+                              color: RecyclingColors.forestGreen,
                               width: 1.5,
                             ),
                           ),
@@ -147,17 +154,17 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                                   });
                                   _fetchCentres();
                                 },
-                                selectedColor: const Color(0xFF1F5520),
+                                selectedColor: RecyclingColors.deepForestGreen,
                                 backgroundColor: Colors.white,
                                 side: BorderSide(
                                   color: isSelected
-                                      ? const Color(0xFF1F5520)
-                                      : const Color(0xFFD9E3DA),
+                                      ? RecyclingColors.deepForestGreen
+                                      : RecyclingColors.cardBorder,
                                 ),
                                 labelStyle: TextStyle(
                                   color: isSelected
                                       ? Colors.white
-                                      : const Color(0xFF69756D),
+                                      : RecyclingColors.earthyBrown,
                                   fontWeight: isSelected
                                       ? FontWeight.bold
                                       : FontWeight.normal,
@@ -180,35 +187,39 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
 
                 // Centres List
                 Expanded(
-                  child: _displayedCentres.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.location_off_rounded,
-                                size: 56,
-                                color: Colors.grey.withValues(alpha: 0.5),
-                              ),
-                              const SizedBox(height: 12),
-                              const Text(
-                                'No recycling centres found matching your search',
-                                style: TextStyle(
-                                  color: Color(0xFF69756D),
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(color: RecyclingColors.deepForestGreen),
                         )
-                      : ListView.builder(
-                          padding: const EdgeInsets.all(20),
-                          itemCount: _displayedCentres.length,
-                          itemBuilder: (context, index) {
-                            final centre = _displayedCentres[index];
-                            return _buildCentreCard(centre);
-                          },
-                        ),
+                      : _displayedCentres.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.location_off_rounded,
+                                    size: 56,
+                                    color: Colors.grey.withValues(alpha: 0.5),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  const Text(
+                                    'No recycling centres found matching your search',
+                                    style: TextStyle(
+                                      color: RecyclingColors.earthyBrown,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView.builder(
+                              padding: const EdgeInsets.all(20),
+                              itemCount: _displayedCentres.length,
+                              itemBuilder: (context, index) {
+                                final centre = _displayedCentres[index];
+                                return _buildCentreCard(centre);
+                              },
+                            ),
                 ),
               ],
             ),
@@ -224,7 +235,7 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFD9E3DA)),
+        border: Border.all(color: RecyclingColors.cardBorder),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -257,12 +268,12 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE8F5E9),
+                        color: const Color(0xFFE5E9DD),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: const Icon(
                         Icons.store_mall_directory_rounded,
-                        color: Color(0xFF2E7D32),
+                        color: RecyclingColors.forestGreen,
                         size: 26,
                       ),
                     ),
@@ -274,7 +285,7 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                           Text(
                             centre.name,
                             style: const TextStyle(
-                              color: Color(0xFF1F5520),
+                              color: RecyclingColors.deepForestGreen,
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
                             ),
@@ -283,7 +294,7 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                           Text(
                             centre.address,
                             style: const TextStyle(
-                              color: Color(0xFF69756D),
+                              color: RecyclingColors.earthyBrown,
                               fontSize: 13,
                             ),
                           ),
@@ -300,7 +311,7 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: centre.isOpen
-                                ? const Color(0xFFE8F5E9)
+                                ? const Color(0xFFE5E9DD)
                                 : const Color(0xFFFFEBEE),
                             borderRadius: BorderRadius.circular(6),
                           ),
@@ -308,7 +319,7 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                             centre.isOpen ? 'OPEN' : 'CLOSED',
                             style: TextStyle(
                               color: centre.isOpen
-                                  ? const Color(0xFF2E7D32)
+                                  ? RecyclingColors.forestGreen
                                   : const Color(0xFFC62828),
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -347,13 +358,13 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                     const Icon(
                       Icons.access_time_rounded,
                       size: 15,
-                      color: Color(0xFF69756D),
+                      color: RecyclingColors.earthyBrown,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       centre.operatingHours,
                       style: const TextStyle(
-                        color: Color(0xFF69756D),
+                        color: RecyclingColors.earthyBrown,
                         fontSize: 12,
                       ),
                     ),
@@ -366,7 +377,7 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                 const Text(
                   'Accepted Materials:',
                   style: TextStyle(
-                    color: Color(0xFF2E7D32),
+                    color: RecyclingColors.forestGreen,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -382,14 +393,14 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE8F5E9),
+                        color: const Color(0xFFE5E9DD),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFFC8E6C9)),
+                        border: Border.all(color: RecyclingColors.lightSage),
                       ),
                       child: Text(
                         mat,
                         style: const TextStyle(
-                          color: Color(0xFF1B5E20),
+                          color: RecyclingColors.deepForestGreen,
                           fontSize: 11,
                         ),
                       ),

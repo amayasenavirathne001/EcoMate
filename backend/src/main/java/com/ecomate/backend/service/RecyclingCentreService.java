@@ -116,6 +116,62 @@ public class RecyclingCentreService {
     }
 
     @Transactional
+    public RecyclingCentreResponse createCentre(RecyclingCentreRequest request, String createdByEmail) {
+        String assignedOfficerEmail = request.getEmail() != null && !request.getEmail().isBlank()
+                ? request.getEmail().trim()
+                : (createdByEmail != null ? createdByEmail : "council@ecomate.lk");
+
+        Optional<RecyclingCentre> existingOpt = recyclingCentreRepository.findByOfficerEmailIgnoreCase(assignedOfficerEmail);
+        RecyclingCentre centre = existingOpt.orElseGet(RecyclingCentre::new);
+
+        centre.setName(request.getName());
+        centre.setAddress(request.getAddress());
+        centre.setCity(request.getCity());
+        centre.setContactNumber(request.getContactNumber());
+        centre.setEmail(assignedOfficerEmail);
+        centre.setOfficerEmail(assignedOfficerEmail);
+        userRepository.findByEmail(assignedOfficerEmail).ifPresent(centre::setOfficer);
+
+        if (request.getOperatingHours() != null && !request.getOperatingHours().isBlank()) {
+            centre.setOperatingHours(request.getOperatingHours());
+        }
+        if (request.getIsOpen() != null) {
+            centre.setIsOpen(request.getIsOpen());
+        }
+        if (request.getNotes() != null) {
+            centre.setNotes(request.getNotes());
+        }
+
+        RecyclingCentre saved = recyclingCentreRepository.save(centre);
+
+        if (request.getAcceptedMaterials() != null && !request.getAcceptedMaterials().isEmpty()) {
+            List<Material> allMaterials = materialRepository.findAll();
+            for (Material mat : allMaterials) {
+                boolean isAccepted = request.getAcceptedMaterials().stream()
+                        .anyMatch(accepted -> accepted.equalsIgnoreCase(mat.getName()) || accepted.equalsIgnoreCase(mat.getCategory()));
+                Optional<RecyclingCentreMaterial> existingMapping = recyclingCentreMaterialRepository
+                        .findByRecyclingCentreIdAndMaterialId(saved.getId(), mat.getId());
+                if (existingMapping.isPresent()) {
+                    RecyclingCentreMaterial mapping = existingMapping.get();
+                    mapping.setIsActive(isAccepted);
+                    recyclingCentreMaterialRepository.save(mapping);
+                } else {
+                    RecyclingCentreMaterial mapping = new RecyclingCentreMaterial(saved, mat, isAccepted);
+                    recyclingCentreMaterialRepository.save(mapping);
+                }
+            }
+        }
+
+        return getCentreById(saved.getId());
+    }
+
+    @Transactional
+    public void deleteCentre(Long id) {
+        recyclingCentreMaterialRepository.deleteByRecyclingCentreId(id);
+        recyclingCentreRepository.deleteById(id);
+    }
+
+    @Transactional
     public RecyclingCentreResponse toggleStatus(String officerEmail, boolean isOpen) {
         RecyclingCentre centre = recyclingCentreRepository.findByOfficerEmailIgnoreCase(officerEmail)
                 .orElseThrow(() -> new RuntimeException("No recycling centre found for officer: " + officerEmail));

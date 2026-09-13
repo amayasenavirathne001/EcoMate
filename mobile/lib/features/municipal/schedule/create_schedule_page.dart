@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../models/schedule_models.dart';
-import '../../../models/recycling_centre.dart';
+import '../../recycling/models/recycling_centre.dart';
 import '../../../models/waste_category.dart';
 import '../../../services/schedule_service.dart';
-import '../../../services/recycling_service.dart';
+import '../../recycling/services/recycling_service.dart';
 import '../theme/municipal_colors.dart';
 
 class CreateSchedulePage extends StatefulWidget {

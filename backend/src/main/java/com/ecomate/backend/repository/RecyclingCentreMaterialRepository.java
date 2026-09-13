@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface RecyclingCentreMaterialRepository extends JpaRepository<RecyclingCentreMaterial, Long> {
     List<RecyclingCentreMaterial> findByRecyclingCentreId(Long centreId);
     Optional<RecyclingCentreMaterial> findByRecyclingCentreIdAndMaterialId(Long centreId, Long materialId);
+    void deleteByRecyclingCentreId(Long centreId);
 }

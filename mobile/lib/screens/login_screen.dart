@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'dashboards/resident_dashboard.dart';
 import 'dashboards/collector_dashboard.dart';
-import 'dashboards/recycling_dashboard.dart';
+import '../features/recycling/dashboard/recycling_dashboard.dart';
 import 'dashboards/council_dashboard.dart';
 import 'register_screen.dart';
 
