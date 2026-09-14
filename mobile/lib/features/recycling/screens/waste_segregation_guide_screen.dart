@@ -1,7 +1,9 @@
+﻿import '../theme/recycling_colors.dart';
 import 'package:flutter/material.dart';
-import '../../models/waste_category.dart';
-import '../../services/recycling_service.dart';
+import '../../../models/waste_category.dart';
+import '../services/recycling_service.dart';
 import 'category_detail_screen.dart';
+import 'recycling_centres_screen.dart';
 
 class WasteSegregationGuideScreen extends StatefulWidget {
   const WasteSegregationGuideScreen({super.key});
@@ -54,22 +56,36 @@ class _WasteSegregationGuideScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAF7),
+      backgroundColor: RecyclingColors.offWhite,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF1F5520), size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: RecyclingColors.deepForestGreen, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Waste Segregation Guide',
           style: TextStyle(
-            color: Color(0xFF1F5520),
+            color: RecyclingColors.deepForestGreen,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.location_on_outlined, color: RecyclingColors.deepForestGreen),
+            tooltip: 'Nearby Recycling Centres',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const RecyclingCentresScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: Center(
@@ -93,7 +109,7 @@ class _WasteSegregationGuideScreenState
                           hintStyle: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 14),
                           prefixIcon: const Icon(
                             Icons.search_rounded,
-                            color: Color(0xFF2E7D32),
+                            color: RecyclingColors.forestGreen,
                           ),
                           suffixIcon: _searchController.text.isNotEmpty
                               ? IconButton(
@@ -108,23 +124,23 @@ class _WasteSegregationGuideScreenState
                                 )
                               : null,
                           filled: true,
-                          fillColor: const Color(0xFFF8FAF7),
+                          fillColor: RecyclingColors.offWhite,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 14,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: Color(0xFFD9E3DA)),
+                            borderSide: const BorderSide(color: RecyclingColors.cardBorder),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: Color(0xFFD9E3DA)),
+                            borderSide: const BorderSide(color: RecyclingColors.cardBorder),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                             borderSide: const BorderSide(
-                              color: Color(0xFF2E7D32),
+                              color: RecyclingColors.forestGreen,
                               width: 1.5,
                             ),
                           ),
@@ -165,7 +181,7 @@ class _WasteSegregationGuideScreenState
                               const Text(
                                 'No matching waste categories found',
                                 style: TextStyle(
-                                  color: Color(0xFF69756D),
+                                  color: RecyclingColors.earthyBrown,
                                   fontSize: 16,
                                 ),
                               ),
@@ -195,13 +211,13 @@ class _WasteSegregationGuideScreenState
       label: Text(label),
       selected: isSelected,
       onSelected: (_) => _onFilterChanged(label),
-      selectedColor: const Color(0xFF1F5520),
+      selectedColor: RecyclingColors.deepForestGreen,
       backgroundColor: Colors.white,
       side: BorderSide(
-        color: isSelected ? const Color(0xFF1F5520) : const Color(0xFFD9E3DA),
+        color: isSelected ? RecyclingColors.deepForestGreen : RecyclingColors.cardBorder,
       ),
       labelStyle: TextStyle(
-        color: isSelected ? Colors.white : const Color(0xFF69756D),
+        color: isSelected ? Colors.white : RecyclingColors.earthyBrown,
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         fontSize: 13,
       ),
@@ -218,7 +234,7 @@ class _WasteSegregationGuideScreenState
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFD9E3DA)),
+        border: Border.all(color: RecyclingColors.cardBorder),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -267,7 +283,7 @@ class _WasteSegregationGuideScreenState
                           Text(
                             category.name,
                             style: const TextStyle(
-                              color: Color(0xFF1F5520),
+                              color: RecyclingColors.deepForestGreen,
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
                             ),
@@ -287,7 +303,7 @@ class _WasteSegregationGuideScreenState
                               Text(
                                 category.binColorName,
                                 style: const TextStyle(
-                                  color: Color(0xFF69756D),
+                                  color: RecyclingColors.earthyBrown,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -304,7 +320,7 @@ class _WasteSegregationGuideScreenState
                       ),
                       decoration: BoxDecoration(
                         color: category.isRecyclable
-                            ? const Color(0xFFE8F5E9)
+                            ? const Color(0xFFE5E9DD)
                             : const Color(0xFFFFEBEE),
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -312,7 +328,7 @@ class _WasteSegregationGuideScreenState
                         category.isRecyclable ? 'Recyclable' : 'Special Disposal',
                         style: TextStyle(
                           color: category.isRecyclable
-                              ? const Color(0xFF2E7D32)
+                              ? RecyclingColors.forestGreen
                               : const Color(0xFFC62828),
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
@@ -328,7 +344,7 @@ class _WasteSegregationGuideScreenState
                 Text(
                   category.description,
                   style: const TextStyle(
-                    color: Color(0xFF69756D),
+                    color: RecyclingColors.earthyBrown,
                     fontSize: 13,
                     height: 1.4,
                   ),
@@ -347,9 +363,9 @@ class _WasteSegregationGuideScreenState
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF8FAF7),
+                        color: RecyclingColors.offWhite,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFFD9E3DA)),
+                        border: Border.all(color: RecyclingColors.cardBorder),
                       ),
                       child: Text(
                         item,
@@ -371,7 +387,7 @@ class _WasteSegregationGuideScreenState
                     Text(
                       'View Preparation Rules',
                       style: TextStyle(
-                        color: Color(0xFF2E7D32),
+                        color: RecyclingColors.forestGreen,
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                       ),
@@ -379,7 +395,7 @@ class _WasteSegregationGuideScreenState
                     SizedBox(width: 4),
                     Icon(
                       Icons.arrow_forward_ios_rounded,
-                      color: Color(0xFF2E7D32),
+                      color: RecyclingColors.forestGreen,
                       size: 13,
                     ),
                   ],

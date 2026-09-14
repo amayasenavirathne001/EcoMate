@@ -555,7 +555,23 @@ class _EmployeeManagementTabState extends State<EmployeeManagementTab> {
     }).toList();
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: MunicipalColors.pageBg,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: MunicipalColors.darkGreen, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Drivers & Collectors',
+          style: TextStyle(
+            color: MunicipalColors.primaryText,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+      ),
       body: Column(
         children: [
           // Search & Filter Panel

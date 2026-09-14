@@ -14,6 +14,7 @@ class EcoMateApp extends StatelessWidget {
       title: 'EcoMate',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        fontFamily: 'Inter',
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF024B45)),
         useMaterial3: true,
       ),

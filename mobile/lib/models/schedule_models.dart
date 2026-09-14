@@ -1,4 +1,4 @@
-import 'recycling_centre.dart';
+import '../features/recycling/models/recycling_centre.dart';
 
 class RouteModel {
   final int id;

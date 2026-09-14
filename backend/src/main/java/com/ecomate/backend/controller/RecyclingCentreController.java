@@ -93,4 +93,21 @@ public class RecyclingCentreController {
         RecyclingCentreResponse centre = recyclingCentreService.getCentreById(id);
         return ResponseEntity.ok(centre);
     }
+
+    // 9. Register a new recycling centre (e.g. from Municipal Dashboard or Officer)
+    @PostMapping("/centres")
+    public ResponseEntity<RecyclingCentreResponse> createCentre(
+            Authentication authentication,
+            @Valid @RequestBody RecyclingCentreRequest request) {
+        String email = authentication != null ? authentication.getName() : null;
+        RecyclingCentreResponse created = recyclingCentreService.createCentre(request, email);
+        return ResponseEntity.ok(created);
+    }
+
+    // 10. Delete a recycling centre
+    @DeleteMapping("/centres/{id}")
+    public ResponseEntity<Void> deleteCentre(@PathVariable Long id) {
+        recyclingCentreService.deleteCentre(id);
+        return ResponseEntity.noContent().build();
+    }
 }

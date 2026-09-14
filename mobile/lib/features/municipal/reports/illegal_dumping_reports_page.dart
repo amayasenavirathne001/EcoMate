@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../services/report_filters.dart';
+import '../../../services/report_review.dart';
 import '../../../services/waste_report_service.dart';
 import '../theme/municipal_colors.dart';
 import 'report_location_map_page.dart';
@@ -12,6 +14,7 @@ class IllegalDumpingReportsPage extends StatefulWidget {
 
 class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
   final _service = WasteReportService();
+  final _searchController = TextEditingController();
   late Future<List<Map<String, dynamic>>> _reports;
   String _filter = 'All';
   bool _isReloading = false;
@@ -43,14 +46,50 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
     var status = report['status']?.toString() ?? 'SUBMITTED';
     var priority = report['priority']?.toString() ?? 'MEDIUM';
     var team = report['assignedTeam']?.toString() ?? '';
+    var reviewNotes = '';
     final result = await showModalBottomSheet<Map<String, String>>(
       context: context,
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(builder: (context, setSheetState) {
+        final validationMessage = validateReportTransition(
+          currentStatus: report['status']?.toString() ?? 'SUBMITTED',
+          nextStatus: status,
+          assignedTeam: team,
+          reviewNotes: reviewNotes,
+        );
+
         return Padding(
           padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.viewInsetsOf(context).bottom + 20),
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(report['issueType']?.toString() ?? 'Report', style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: MunicipalColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: MunicipalColors.border),
+              ),
+              child: Text(
+                buildReviewSummary(report),
+                style: const TextStyle(color: MunicipalColors.primaryText, height: 1.5, fontSize: 12),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: MunicipalColors.border),
+              ),
+              child: Text(
+                buildVerificationChecklist(report),
+                style: const TextStyle(color: MunicipalColors.primaryText, fontSize: 11, height: 1.6),
+              ),
+            ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               initialValue: status,
@@ -65,8 +104,37 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
               onChanged: (value) => setSheetState(() => priority = value ?? priority),
             ),
             TextFormField(initialValue: team, decoration: const InputDecoration(labelText: 'Assigned team'), onChanged: (value) => team = value),
+            const SizedBox(height: 8),
+            TextFormField(
+              minLines: 2,
+              maxLines: 4,
+              decoration: const InputDecoration(labelText: 'Review notes / comments'),
+              onChanged: (value) => reviewNotes = value,
+            ),
+            if (validationMessage != null) ...[
+              const SizedBox(height: 10),
+              Text(validationMessage, style: const TextStyle(color: MunicipalColors.error, fontSize: 12)),
+            ],
             const SizedBox(height: 18),
-            SizedBox(width: double.infinity, child: FilledButton(onPressed: () => Navigator.pop(context, {'status': status, 'priority': priority, 'assignedTeam': team}), child: const Text('Save update'))),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () {
+                  final error = validateReportTransition(
+                    currentStatus: report['status']?.toString() ?? 'SUBMITTED',
+                    nextStatus: status,
+                    assignedTeam: team,
+                    reviewNotes: reviewNotes,
+                  );
+                  if (error != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error))); 
+                    return;
+                  }
+                  Navigator.pop(context, {'status': status, 'priority': priority, 'assignedTeam': team, 'reviewNotes': reviewNotes});
+                },
+                child: const Text('Save update'),
+              ),
+            ),
           ]),
         );
       }),
@@ -100,6 +168,12 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => ReportLocationMapPage(report: report)),
     );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -139,13 +213,36 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
             );
           }
           final all = snapshot.data ?? [];
-          final reports = _filter == 'All' ? all : all.where((item) => item['status'] == _filter).toList();
+          final reports = sortReportsForReview(
+            filterReports(
+              all,
+              query: _searchController.text,
+              status: _filter,
+            ),
+          );
           return Column(children: [
             Padding(padding: const EdgeInsets.fromLTRB(16, 14, 16, 8), child: Row(children: [
               _summary('Open', all.where((item) => item['status'] != 'RESOLVED').length, MunicipalColors.warning),
               _summary('Review', all.where((item) => item['status'] == 'IN_REVIEW').length, MunicipalColors.info),
               _summary('Resolved', all.where((item) => item['status'] == 'RESOLVED').length, MunicipalColors.success),
             ])),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(
+                  hintText: 'Search by issue, location, or reference',
+                  prefixIcon: const Icon(Icons.search_rounded),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: MunicipalColors.border)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: MunicipalColors.border)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
             SizedBox(
               height: 46,
               child: ListView(
@@ -163,7 +260,7 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
                 )).toList(),
               ),
             ),
-            Expanded(child: reports.isEmpty ? const Center(child: Text('No reports in this filter.')) : ListView.separated(padding: const EdgeInsets.all(16), itemCount: reports.length, separatorBuilder: (_, _) => const SizedBox(height: 10), itemBuilder: (_, index) => _ReportTile(report: reports[index], onEdit: () => _editReport(reports[index]), onViewLocation: () => _viewLocation(reports[index])))),
+            Expanded(child: reports.isEmpty ? const Center(child: Text('No reports match your current filters.')) : ListView.separated(padding: const EdgeInsets.all(16), itemCount: reports.length, separatorBuilder: (_, _) => const SizedBox(height: 10), itemBuilder: (_, index) => _ReportTile(report: reports[index], onEdit: () => _editReport(reports[index]), onViewLocation: () => _viewLocation(reports[index])))),
           ]);
         },
       ),

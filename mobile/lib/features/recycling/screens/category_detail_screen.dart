@@ -1,5 +1,6 @@
+﻿import '../theme/recycling_colors.dart';
 import 'package:flutter/material.dart';
-import '../../models/waste_category.dart';
+import '../../../models/waste_category.dart';
 
 class CategoryDetailScreen extends StatelessWidget {
   final WasteCategory category;
@@ -12,18 +13,18 @@ class CategoryDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAF7),
+      backgroundColor: RecyclingColors.offWhite,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF1F5520), size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: RecyclingColors.deepForestGreen, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           category.name,
           style: const TextStyle(
-            color: Color(0xFF1F5520),
+            color: RecyclingColors.deepForestGreen,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -43,7 +44,7 @@ class CategoryDetailScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFD9E3DA)),
+                    border: Border.all(color: RecyclingColors.cardBorder),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.04),
@@ -74,7 +75,7 @@ class CategoryDetailScreen extends StatelessWidget {
                             Text(
                               category.name,
                               style: const TextStyle(
-                                color: Color(0xFF1F5520),
+                                color: RecyclingColors.deepForestGreen,
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -111,7 +112,7 @@ class CategoryDetailScreen extends StatelessWidget {
                 _buildSectionCard(
                   title: 'Common Items in This Category',
                   icon: Icons.checklist_rounded,
-                  accentColor: const Color(0xFF1F5520),
+                  accentColor: RecyclingColors.deepForestGreen,
                   child: Column(
                     children: category.commonItems.map((item) {
                       return Padding(
@@ -124,7 +125,7 @@ class CategoryDetailScreen extends StatelessWidget {
                               child: Icon(
                                 Icons.circle,
                                 size: 8,
-                                color: Color(0xFF2E7D32),
+                                color: RecyclingColors.forestGreen,
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -202,16 +203,16 @@ class CategoryDetailScreen extends StatelessWidget {
                 _buildSectionCard(
                   title: 'Do\'s and Don\'ts',
                   icon: Icons.rule_rounded,
-                  accentColor: const Color(0xFF2E7D32),
+                  accentColor: RecyclingColors.forestGreen,
                   child: Column(
                     children: [
                       // Do's
                       Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE8F5E9),
+                          color: const Color(0xFFE5E9DD),
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xFFC8E6C9)),
+                          border: Border.all(color: RecyclingColors.lightSage),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,14 +221,14 @@ class CategoryDetailScreen extends StatelessWidget {
                               children: [
                                 Icon(
                                   Icons.check_circle_rounded,
-                                  color: Color(0xFF2E7D32),
+                                  color: RecyclingColors.forestGreen,
                                   size: 20,
                                 ),
                                 SizedBox(width: 8),
                                 Text(
                                   'DO',
                                   style: TextStyle(
-                                    color: Color(0xFF2E7D32),
+                                    color: RecyclingColors.forestGreen,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15,
                                   ),
@@ -243,14 +244,14 @@ class CategoryDetailScreen extends StatelessWidget {
                                       const Icon(
                                         Icons.check,
                                         size: 16,
-                                        color: Color(0xFF2E7D32),
+                                        color: RecyclingColors.forestGreen,
                                       ),
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
                                           item,
                                           style: const TextStyle(
-                                            color: Color(0xFF1B5E20),
+                                            color: RecyclingColors.deepForestGreen,
                                             fontSize: 13,
                                           ),
                                         ),
@@ -342,7 +343,7 @@ class CategoryDetailScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFD9E3DA)),
+        border: Border.all(color: RecyclingColors.cardBorder),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),

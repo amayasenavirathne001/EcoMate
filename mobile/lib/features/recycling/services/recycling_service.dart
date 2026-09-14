@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/material_item.dart';
 import '../models/recycling_centre.dart';
-import '../models/waste_category.dart';
-import 'auth_service.dart';
+import '../models/waste_delivery_record.dart';
+import '../../../models/waste_category.dart';
+import '../../../services/auth_service.dart';
 
 class RecyclingService {
   static const String baseUrl = 'http://localhost:8080';
@@ -647,6 +648,149 @@ class RecyclingService {
     }
 
     return list;
+  }
+
+  Future<List<RecyclingCentre>> fetchRecyclingCentres({
+    String? query,
+    String? materialFilter,
+  }) async {
+    final queryParams = <String, String>{};
+    if (query != null && query.trim().isNotEmpty) {
+      queryParams['query'] = query.trim();
+    }
+    if (materialFilter != null && materialFilter.isNotEmpty && materialFilter != 'All') {
+      queryParams['material'] = materialFilter;
+    }
+
+    final uri = Uri.parse('$baseUrl/api/recycling/public/centres').replace(
+      queryParameters: queryParams.isNotEmpty ? queryParams : null,
+    );
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200 && response.body.isNotEmpty) {
+        final list = jsonDecode(response.body) as List<dynamic>;
+        final fetchedCentres = list
+            .map((item) => RecyclingCentre.fromJson(item as Map<String, dynamic>))
+            .toList();
+        if (fetchedCentres.isNotEmpty) {
+          for (final c in fetchedCentres) {
+            final idx = _centres.indexWhere((existing) => existing.id == c.id);
+            if (idx >= 0) {
+              _centres[idx] = c;
+            } else {
+              _centres.add(c);
+            }
+          }
+          return fetchedCentres;
+        }
+      }
+    } catch (_) {
+      // Fallback to local list on error
+    }
+
+    return getRecyclingCentres(query: query, materialFilter: materialFilter);
+  }
+
+  Future<RecyclingCentre?> createCentre(RecyclingCentre centre) async {
+    final token = await _authService.getToken();
+    if (token != null && token.isNotEmpty) {
+      try {
+        final response = await http.post(
+          Uri.parse('$baseUrl/api/recycling/centres'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode(centre.toJson()),
+        );
+
+        if (response.statusCode == 200 && response.body.isNotEmpty) {
+          final data = jsonDecode(response.body) as Map<String, dynamic>;
+          final created = RecyclingCentre.fromJson(data);
+          _centres.add(created);
+          return created;
+        }
+      } catch (_) {
+        // Fallback
+      }
+    }
+    _centres.add(centre);
+    return centre;
+  }
+
+  Future<bool> deleteCentre(String id) async {
+    final token = await _authService.getToken();
+    if (token != null && token.isNotEmpty) {
+      try {
+        final response = await http.delete(
+          Uri.parse('$baseUrl/api/recycling/centres/$id'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        );
+        if (response.statusCode == 200 || response.statusCode == 204) {
+          _centres.removeWhere((c) => c.id == id);
+          return true;
+        }
+      } catch (_) {}
+    }
+    _centres.removeWhere((c) => c.id == id);
+    return true;
+  }
+
+  Future<List<WasteDeliveryRecord>> fetchDeliveries({String? centreId}) async {
+    final token = await _authService.getToken();
+    final url = centreId != null
+        ? '$baseUrl/api/recycling/deliveries?centreId=$centreId'
+        : '$baseUrl/api/recycling/deliveries';
+
+    if (token != null && token.isNotEmpty) {
+      try {
+        final response = await http.get(
+          Uri.parse(url),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (response.statusCode == 200 && response.body.isNotEmpty) {
+          final list = jsonDecode(response.body) as List<dynamic>;
+          return list
+              .map((item) => WasteDeliveryRecord.fromJson(item as Map<String, dynamic>))
+              .toList();
+        }
+      } catch (_) {
+        // Backend offline fallback
+      }
+    }
+    return [];
+  }
+
+  Future<WasteDeliveryRecord?> recordDelivery(WasteDeliveryRecord delivery) async {
+    final token = await _authService.getToken();
+    if (token != null && token.isNotEmpty) {
+      try {
+        final response = await http.post(
+          Uri.parse('$baseUrl/api/recycling/deliveries'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode(delivery.toJson()),
+        );
+
+        if (response.statusCode == 200 && response.body.isNotEmpty) {
+          final data = jsonDecode(response.body) as Map<String, dynamic>;
+          return WasteDeliveryRecord.fromJson(data);
+        }
+      } catch (_) {
+        // Offline fallback
+      }
+    }
+    return delivery;
   }
 
   RecyclingCentre? getCentreById(String id) {

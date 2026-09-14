@@ -1,5 +1,6 @@
+﻿import '../theme/recycling_colors.dart';
 import 'package:flutter/material.dart';
-import '../../models/recycling_centre.dart';
+import '../models/recycling_centre.dart';
 
 class CentreDetailScreen extends StatelessWidget {
   final RecyclingCentre centre;
@@ -12,18 +13,18 @@ class CentreDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAF7),
+      backgroundColor: RecyclingColors.offWhite,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF1F5520), size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: RecyclingColors.deepForestGreen, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           centre.name,
           style: const TextStyle(
-            color: Color(0xFF1F5520),
+            color: RecyclingColors.deepForestGreen,
             fontWeight: FontWeight.bold,
             fontSize: 19,
           ),
@@ -43,7 +44,7 @@ class CentreDetailScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFD9E3DA)),
+                    border: Border.all(color: RecyclingColors.cardBorder),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.04),
@@ -61,12 +62,12 @@ class CentreDetailScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFE8F5E9),
+                              color: const Color(0xFFE5E9DD),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: const Icon(
                               Icons.storefront_rounded,
-                              color: Color(0xFF2E7D32),
+                              color: RecyclingColors.forestGreen,
                               size: 32,
                             ),
                           ),
@@ -78,7 +79,7 @@ class CentreDetailScreen extends StatelessWidget {
                                 Text(
                                   centre.name,
                                   style: const TextStyle(
-                                    color: Color(0xFF1F5520),
+                                    color: RecyclingColors.deepForestGreen,
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -93,7 +94,7 @@ class CentreDetailScreen extends StatelessWidget {
                                       ),
                                       decoration: BoxDecoration(
                                         color: centre.isOpen
-                                            ? const Color(0xFFE8F5E9)
+                                            ? const Color(0xFFE5E9DD)
                                             : const Color(0xFFFFEBEE),
                                         borderRadius: BorderRadius.circular(6),
                                       ),
@@ -101,7 +102,7 @@ class CentreDetailScreen extends StatelessWidget {
                                         centre.isOpen ? 'OPEN FOR DROP-OFFS' : 'CLOSED',
                                         style: TextStyle(
                                           color: centre.isOpen
-                                              ? const Color(0xFF2E7D32)
+                                              ? RecyclingColors.forestGreen
                                               : const Color(0xFFC62828),
                                           fontSize: 11,
                                           fontWeight: FontWeight.bold,
@@ -161,16 +162,16 @@ class CentreDetailScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF8FAF7),
+                            color: RecyclingColors.offWhite,
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: const Color(0xFFD9E3DA)),
+                            border: Border.all(color: RecyclingColors.cardBorder),
                           ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Icon(
                                 Icons.info_outline_rounded,
-                                color: Color(0xFF2E7D32),
+                                color: RecyclingColors.forestGreen,
                                 size: 18,
                               ),
                               const SizedBox(width: 8),
@@ -178,7 +179,7 @@ class CentreDetailScreen extends StatelessWidget {
                                 child: Text(
                                   centre.notes,
                                   style: const TextStyle(
-                                    color: Color(0xFF69756D),
+                                    color: RecyclingColors.earthyBrown,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -199,7 +200,7 @@ class CentreDetailScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: const Color(0xFFD9E3DA)),
+                    border: Border.all(color: RecyclingColors.cardBorder),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.03),
@@ -215,14 +216,14 @@ class CentreDetailScreen extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.check_circle_outline_rounded,
-                            color: Color(0xFF2E7D32),
+                            color: RecyclingColors.forestGreen,
                             size: 22,
                           ),
                           SizedBox(width: 10),
                           Text(
                             'Accepted Recyclable Materials',
                             style: TextStyle(
-                              color: Color(0xFF1F5520),
+                              color: RecyclingColors.deepForestGreen,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -240,9 +241,9 @@ class CentreDetailScreen extends StatelessWidget {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFE8F5E9),
+                              color: const Color(0xFFE5E9DD),
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: const Color(0xFFC8E6C9)),
+                              border: Border.all(color: RecyclingColors.lightSage),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -250,13 +251,13 @@ class CentreDetailScreen extends StatelessWidget {
                                 const Icon(
                                   Icons.check,
                                   size: 14,
-                                  color: Color(0xFF2E7D32),
+                                  color: RecyclingColors.forestGreen,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
                                   mat,
                                   style: const TextStyle(
-                                    color: Color(0xFF1B5E20),
+                                    color: RecyclingColors.deepForestGreen,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -340,13 +341,13 @@ class CentreDetailScreen extends StatelessWidget {
   Widget _buildContactRow(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: const Color(0xFF2E7D32)),
+        Icon(icon, size: 16, color: RecyclingColors.forestGreen),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
             text,
             style: const TextStyle(
-              color: Color(0xFF69756D),
+              color: RecyclingColors.earthyBrown,
               fontSize: 13,
             ),
           ),
