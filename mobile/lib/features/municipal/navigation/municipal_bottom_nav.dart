@@ -79,8 +79,8 @@ class _MunicipalBottomNavState extends State<MunicipalBottomNav> {
               label: 'Dashboard',
             ),
             const BottomNavigationBarItem(
-              icon: Icon(Icons.local_shipping_outlined),
-              activeIcon: Icon(Icons.local_shipping_rounded),
+              icon: Icon(Icons.hub_outlined),
+              activeIcon: Icon(Icons.hub_rounded),
               label: 'Operations',
             ),
             const BottomNavigationBarItem(
