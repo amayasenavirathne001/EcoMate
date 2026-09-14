@@ -79,23 +79,7 @@ class QuickActionsWidget extends StatelessWidget {
                   },
                 ),
               ),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 85,
-                child: _buildActionButton(
-                  icon: Icons.recycling_rounded,
-                  iconColor: const Color(0xFF0D9488), // Teal/Emerald
-                  label: "Centers",
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MunicipalRecyclingCentersPage(),
-                      ),
-                    );
-                  },
-                ),
-              ),
+
               const SizedBox(width: 8),
               SizedBox(
                 width: 85,
