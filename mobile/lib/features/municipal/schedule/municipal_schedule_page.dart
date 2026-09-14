@@ -7,6 +7,7 @@ import '../../recycling/services/recycling_service.dart';
 import '../theme/municipal_colors.dart';
 import 'create_schedule_page.dart';
 import 'route_management_page.dart';
+import '../operations/widgets/assignments_tab.dart';
 
 class MunicipalSchedulePage extends StatefulWidget {
   final Function(int)? onTabChange;
@@ -198,34 +199,56 @@ class _MunicipalSchedulePageState extends State<MunicipalSchedulePage> {
   Widget build(BuildContext context) {
     final filteredSchedules = _getFilteredSchedules();
 
-    return Scaffold(
-      backgroundColor: MunicipalColors.pageBg,
-      appBar: AppBar(
-        backgroundColor: MunicipalColors.primaryBg,
-        foregroundColor: MunicipalColors.primaryText,
-        elevation: 0,
-        title: const Text(
-          "Collection Schedules",
-          style: TextStyle(fontWeight: FontWeight.bold),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: MunicipalColors.pageBg,
+        appBar: AppBar(
+          backgroundColor: MunicipalColors.primaryBg,
+          foregroundColor: MunicipalColors.primaryText,
+          elevation: 0,
+          title: const Text(
+            "Collection Schedules",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          bottom: const TabBar(
+            labelColor: MunicipalColors.secondaryGreen,
+            unselectedLabelColor: MunicipalColors.secondaryText,
+            indicatorColor: MunicipalColors.secondaryGreen,
+            indicatorWeight: 3,
+            labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+            tabs: [
+              Tab(
+                text: "Schedules",
+                icon: Icon(Icons.calendar_month_outlined),
+              ),
+              Tab(
+                text: "Assignments",
+                icon: Icon(Icons.assignment_ind_outlined),
+              ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.route_outlined, color: MunicipalColors.secondaryGreen),
+              tooltip: 'Route Management',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RouteManagementPage()),
+                ).then((_) => _loadData());
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: _loadData,
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.route_outlined, color: MunicipalColors.secondaryGreen),
-            tooltip: 'Route Management',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const RouteManagementPage()),
-              ).then((_) => _loadData());
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadData,
-          ),
-        ],
-      ),
-      body: _isLoading
+        body: TabBarView(
+          children: [
+            _isLoading
           ? const Center(child: CircularProgressIndicator(color: MunicipalColors.secondaryGreen))
           : _errorMessage != null
               ? Center(
@@ -535,10 +558,8 @@ class _MunicipalSchedulePageState extends State<MunicipalSchedulePage> {
                                             if (isNotAssigned)
                                               ElevatedButton(
                                                 onPressed: () {
-                                                  // Navigate to the existing Operations Coordination page
-                                                  if (widget.onTabChange != null) {
-                                                    widget.onTabChange!(1); // index 1 corresponds to OperationsPage in MunicipalBottomNav
-                                                  }
+                                                  // Switch to the Assignments tab
+                                                  DefaultTabController.of(context).animateTo(1);
                                                 },
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: MunicipalColors.secondaryGreen,
@@ -561,6 +582,10 @@ class _MunicipalSchedulePageState extends State<MunicipalSchedulePage> {
                     ),
                   ],
                 ),
+            const AssignmentsTab(),
+          ],
+        ),
+      ),
     );
   }
 
