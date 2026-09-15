@@ -34,6 +34,7 @@ public class AuthService {
         }
 
         User user = new User();
+        user.setPhoneNumber(request.phoneNumber());
 
         user.setName(request.name());
         user.setEmail(request.email());
