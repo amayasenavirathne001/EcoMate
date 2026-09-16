@@ -8,6 +8,7 @@ class WasteDeliveryRecord {
   final String contactNumber;
   final DateTime dateTime;
   final String notes;
+  final String processingStatus;
 
   const WasteDeliveryRecord({
     required this.id,
@@ -19,6 +20,7 @@ class WasteDeliveryRecord {
     required this.contactNumber,
     required this.dateTime,
     required this.notes,
+    this.processingStatus = 'RECEIVED',
   });
 
   factory WasteDeliveryRecord.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class WasteDeliveryRecord {
       contactNumber: json['contactNumber']?.toString() ?? '',
       dateTime: parsedDate,
       notes: json['notes']?.toString() ?? '',
+      processingStatus: json['processingStatus']?.toString() ?? 'RECEIVED',
     );
   }
 
@@ -52,6 +55,7 @@ class WasteDeliveryRecord {
       'deliveredBy': deliveredBy,
       'contactNumber': contactNumber,
       'notes': notes,
+      'processingStatus': processingStatus,
     };
   }
 
