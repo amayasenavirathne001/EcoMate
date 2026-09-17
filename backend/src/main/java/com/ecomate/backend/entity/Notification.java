@@ -11,7 +11,7 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "employee_id", nullable = false)
+    @Column(name = "employee_id")
     private String employeeId;
 
     @Column(nullable = false)
@@ -25,6 +25,12 @@ public class Notification {
 
     @Column(name = "is_read", nullable = false)
     private boolean read = false;
+
+    @Column(name = "user_email")
+    private String userEmail;
+
+    public String getUserEmail() { return userEmail; }
+    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
 
     public Notification() {
     }
@@ -92,3 +98,4 @@ public class Notification {
         this.read = read;
     }
 }
+

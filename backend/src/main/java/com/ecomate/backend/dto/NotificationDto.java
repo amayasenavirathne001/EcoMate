@@ -10,3 +10,4 @@ public record NotificationDto(
     LocalDateTime dateTime,
     boolean read
 ) {}
+

@@ -31,6 +31,22 @@ public class NotificationService {
         return toDto(repository.save(notification));
     }
 
+        public List<NotificationDto> getNotificationsForUser(String userEmail) {
+        return repository.findByUserEmailOrderByDateTimeDesc(userEmail).stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public NotificationDto createUserNotification(String userEmail, String title, String message) {
+        Notification notification = new Notification();
+        notification.setUserEmail(userEmail);
+        notification.setTitle(title);
+        notification.setMessage(message);
+        notification.setDateTime(LocalDateTime.now());
+        notification.setRead(false);
+        return toDto(repository.save(notification));
+    }
+
     public void markAsRead(Long id) {
         Notification entity = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Notification not found with id " + id));
@@ -45,7 +61,9 @@ public class NotificationService {
             entity.getTitle(),
             entity.getMessage(),
             entity.getDateTime(),
-            entity.isRead()
+            entity.isRead(),
+            entity.getUserEmail()
         );
     }
 }
+
