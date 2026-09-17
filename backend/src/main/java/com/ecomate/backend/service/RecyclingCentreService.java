@@ -44,8 +44,11 @@ public class RecyclingCentreService {
 
     @Transactional(readOnly = true)
     public List<MaterialDto> getCentreMaterials(String officerEmail) {
-        RecyclingCentre centre = recyclingCentreRepository.findByOfficerEmailIgnoreCase(officerEmail)
-                .orElseThrow(() -> new RuntimeException("Centre not found for officer: " + officerEmail));
+                Optional<RecyclingCentre> centreOpt = recyclingCentreRepository.findByOfficerEmailIgnoreCase(officerEmail);
+        if (centreOpt.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+        RecyclingCentre centre = centreOpt.get();
 
         List<Material> allMaterials = materialRepository.findAll();
         List<RecyclingCentreMaterial> mappings = recyclingCentreMaterialRepository.findByRecyclingCentreId(centre.getId());
@@ -61,8 +64,11 @@ public class RecyclingCentreService {
 
     @Transactional
     public RecyclingCentreResponse toggleMaterialStatus(String officerEmail, Long materialId, Boolean isActive) {
-        RecyclingCentre centre = recyclingCentreRepository.findByOfficerEmailIgnoreCase(officerEmail)
-                .orElseThrow(() -> new RuntimeException("Centre not found for officer: " + officerEmail));
+                Optional<RecyclingCentre> centreOpt = recyclingCentreRepository.findByOfficerEmailIgnoreCase(officerEmail);
+        if (centreOpt.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+        RecyclingCentre centre = centreOpt.get();
 
         Material material = materialRepository.findById(materialId)
                 .orElseThrow(() -> new RuntimeException("Material not found with id: " + materialId));

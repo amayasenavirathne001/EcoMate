@@ -59,9 +59,9 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
         ? storedName
         : 'Officer';
 
-    final centre = await _recyclingService.getCentreForOfficer(activeEmail);
+        final centre = await _recyclingService.getCentreForOfficer(activeEmail);
     final materials = await _recyclingService.getCentreMaterialsForOfficer(activeEmail);
-    final deliveries = await _recyclingService.fetchDeliveries(centreId: centre?.id);
+    final deliveries = centre != null ? await _recyclingService.fetchDeliveries(centreId: centre.id) : <WasteDeliveryRecord>[];
 
     if (mounted) {
       setState(() {
@@ -2758,54 +2758,59 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: RecyclingColors.cardBorder),
                 ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: RecyclingColors.softGreen,
-                          borderRadius: BorderRadius.circular(10),
+                                                    child: Column(
+                    children: [
+                      Material(
+                        color: Colors.transparent,
+                        child: ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: RecyclingColors.softGreen,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(Icons.lock_outline_rounded, color: RecyclingColors.primaryGreen, size: 20),
+                          ),
+                          title: const Text(
+                            'Change Password',
+                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: RecyclingColors.darkText),
+                          ),
+                          subtitle: const Text(
+                            'Update your account password',
+                            style: TextStyle(fontSize: 11.5, color: RecyclingColors.secondaryText),
+                          ),
+                          trailing: const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+                          onTap: _openChangePasswordDialog,
                         ),
-                        child: const Icon(Icons.lock_outline_rounded, color: RecyclingColors.primaryGreen, size: 20),
                       ),
-                      title: const Text(
-                        'Change Password',
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: RecyclingColors.darkText),
-                      ),
-                      subtitle: const Text(
-                        'Update your account password',
-                        style: TextStyle(fontSize: 11.5, color: RecyclingColors.secondaryText),
-                      ),
-                      trailing: const Icon(Icons.chevron_right_rounded, color: Colors.grey),
-                      onTap: _openChangePasswordDialog,
-                    ),
-                    const Divider(height: 1, indent: 55, color: RecyclingColors.cardBorder),
-                    ListTile(
-                      leading: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: RecyclingColors.softGreen,
-                          borderRadius: BorderRadius.circular(10),
+                      const Divider(height: 1, indent: 55, color: RecyclingColors.cardBorder),
+                      Material(
+                        color: Colors.transparent,
+                        child: ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: RecyclingColors.softGreen,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(Icons.notifications_none_rounded, color: RecyclingColors.primaryGreen, size: 20),
+                          ),
+                          title: const Text(
+                            'Drop-off Notifications',
+                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: RecyclingColors.darkText),
+                          ),
+                          subtitle: const Text(
+                            'Receive alerts when deliveries arrive',
+                            style: TextStyle(fontSize: 11.5, color: RecyclingColors.secondaryText),
+                          ),
+                          trailing: Switch(
+                            value: true,
+                            onChanged: (val) {},
+                            activeColor: RecyclingColors.primaryGreen,
+                          ),
                         ),
-                        child: const Icon(Icons.notifications_none_rounded, color: RecyclingColors.primaryGreen, size: 20),
                       ),
-                      title: const Text(
-                        'Drop-off Notifications',
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: RecyclingColors.darkText),
-                      ),
-                      subtitle: const Text(
-                        'Receive alerts when deliveries arrive',
-                        style: TextStyle(fontSize: 11.5, color: RecyclingColors.secondaryText),
-                      ),
-                      trailing: Switch(
-                        value: true,
-                        activeThumbColor: RecyclingColors.primaryGreen,
-                        activeTrackColor: RecyclingColors.softGreen,
-                        onChanged: (val) {},
-                      ),
-                    ),
-                  ],
+                    ],
                 ),
               ),
 
@@ -2906,6 +2911,8 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 }
+
+
 
 
 
