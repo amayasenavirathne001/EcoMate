@@ -407,6 +407,12 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   }
 
   void _openManageMaterialsModal() {
+    if (_myCentre == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please wait until an admin assigns a Recycling Centre to you.')),
+      );
+      return;
+    }
     if (_myCentre == null) return;
 
     List<MaterialItem> tempMaterials = List.from(_centreMaterials);
@@ -536,6 +542,12 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   }
 
   void _openRecordDeliveryModal() {
+    if (_myCentre == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please wait until an admin assigns a Recycling Centre to you.')),
+      );
+      return;
+    }
     final materialOptions = [
       'Plastic Bottles (PET)',
       'Cardboard & Paper',
@@ -2911,6 +2923,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 }
+
 
 
 
