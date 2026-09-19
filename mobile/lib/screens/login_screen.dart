@@ -301,39 +301,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     // =========================
                                         // =========================
+                                        // =========================
                     // REMEMBER + FORGOT
                     // =========================
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Flexible(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: Checkbox(
-                                  value: _rememberMe,
-                                  activeColor: accent,
-                                  side: const BorderSide(color: border),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _rememberMe = value ?? false;
-                                    });
-                                  },
-                                ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Checkbox(
+                                value: _rememberMe,
+                                activeColor: accent,
+                                side: const BorderSide(color: border),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _rememberMe = value ?? false;
+                                  });
+                                },
                               ),
-                              const SizedBox(width: 7),
-                              const Flexible(
-                                child: Text(
-                                  'Remember me',
-                                  style: TextStyle(color: darkPrimary, fontSize: 12),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(width: 7),
+                            const Text(
+                              'Remember me',
+                              style: TextStyle(color: darkPrimary, fontSize: 12),
+                            ),
+                          ],
                         ),
                         TextButton(
                           onPressed: () {},
@@ -602,3 +599,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
