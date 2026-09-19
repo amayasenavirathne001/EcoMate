@@ -861,4 +861,11 @@ class RecyclingService {
       return null;
     }
   }
+
+  // Update Processing Status (SCRUM-58)
+  Future<bool> updateProcessingStatus(String deliveryId, String newStatus) async {
+    // In a real app, this would be an API call to PUT /api/deliveries/$deliveryId/status
+    await Future.delayed(const Duration(milliseconds: 600));
+    return true;
+  }
 }
