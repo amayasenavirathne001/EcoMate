@@ -42,7 +42,7 @@ public class CollectionSchedule {
 
     @ManyToOne
     @JoinColumn(name = "recycling_center_id", nullable = true)
-    private RecyclingCenter recyclingCenter;
+    private RecyclingCentre recyclingCenter;
 
     @Column(nullable = false)
     private String status = "ACTIVE"; // ACTIVE, INACTIVE
@@ -147,11 +147,11 @@ public class CollectionSchedule {
         this.destinationType = destinationType;
     }
 
-    public RecyclingCenter getRecyclingCenter() {
+    public RecyclingCentre getRecyclingCenter() {
         return recyclingCenter;
     }
 
-    public void setRecyclingCenter(RecyclingCenter recyclingCenter) {
+    public void setRecyclingCenter(RecyclingCentre recyclingCenter) {
         this.recyclingCenter = recyclingCenter;
     }
 
@@ -187,3 +187,5 @@ public class CollectionSchedule {
         this.updatedAt = updatedAt;
     }
 }
+
+

@@ -128,25 +128,30 @@ class ScheduleService {
   // --- Recycling Centers Filtering ---
   Future<List<RecyclingCentre>> getCompatibleCentres(String wasteCategoryId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/api/recycling-centers/by-material/$wasteCategoryId'),
+      Uri.parse('$baseUrl/api/recycling/centres/by-material/$wasteCategoryId'),
       headers: await _getHeaders(),
     );
     if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((rc) => RecyclingCentre(
-        id: rc['id'] as String,
-        name: rc['name'] as String? ?? '',
-        address: rc['address'] as String? ?? '',
-        city: rc['city'] as String? ?? '',
-        distanceKm: (rc['distanceKm'] as num?)?.toDouble() ?? 0.0,
-        contactNumber: rc['contactNumber'] as String? ?? '',
-        email: rc['email'] as String? ?? '',
-        operatingHours: rc['operatingHours'] as String? ?? '',
-        isOpen: rc['open'] as bool? ?? true,
-        acceptedMaterials: List<String>.from(rc['acceptedMaterials'] ?? []),
-        unsupportedMaterials: List<String>.from(rc['unsupportedMaterials'] ?? []),
-        notes: rc['notes'] as String? ?? '',
-      )).toList();
+      try {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((rc) => RecyclingCentre(
+          id: rc['id'].toString(),
+          name: rc['name'] as String? ?? '',
+          address: rc['address'] as String? ?? '',
+          city: rc['city'] as String? ?? '',
+          distanceKm: (rc['distanceKm'] as num?)?.toDouble() ?? 0.0,
+          contactNumber: rc['contactNumber'] as String? ?? '',
+          email: rc['email'] as String? ?? '',
+          operatingHours: rc['operatingHours'] as String? ?? '',
+          isOpen: rc['isOpen'] as bool? ?? true,
+          acceptedMaterials: List<String>.from(rc['acceptedMaterials'] ?? []),
+          unsupportedMaterials: List<String>.from(rc['unsupportedMaterials'] ?? []),
+          notes: rc['notes'] as String? ?? '',
+        )).toList();
+      } catch (e) {
+        print('JSON parsing error in getCompatibleCentres: $e');
+        return [];
+      }
     }
     throw Exception('Failed to load compatible centres: ${response.statusCode}');
   }
