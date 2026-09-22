@@ -919,6 +919,14 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 
+  Color _getStatusColor(String status) {
+    switch (status.toUpperCase()) {
+      case 'PROCESSED': return Colors.green;
+      case 'SORTED': return Colors.blue;
+      default: return Colors.orange;
+    }
+  }
+
   IconData _getMaterialIcon(String material) {
     final m = material.toLowerCase();
     if (m.contains('plastic')) return Icons.local_drink_outlined;
@@ -1781,6 +1789,23 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(record.processingStatus).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: _getStatusColor(record.processingStatus).withValues(alpha: 0.3), width: 0.8),
+                        ),
+                        child: Text(
+                          record.processingStatus,
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                            color: _getStatusColor(record.processingStatus),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -2881,3 +2906,6 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 }
+
+
+
