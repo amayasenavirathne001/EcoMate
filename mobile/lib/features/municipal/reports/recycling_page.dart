@@ -60,9 +60,9 @@ class RecyclingPage extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: MunicipalColors.info.withOpacity(0.1),
+                        color: MunicipalColors.info.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: MunicipalColors.info.withOpacity(0.2)),
+                        border: Border.all(color: MunicipalColors.info.withValues(alpha: 0.2)),
                       ),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,

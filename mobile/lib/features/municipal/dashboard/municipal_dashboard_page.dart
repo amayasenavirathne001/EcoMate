@@ -138,11 +138,13 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
   String _getProfilePic() {
     try {
       final pic = _profilePicUrl as dynamic;
-      if (pic == null)
+      if (pic == null) {
         return 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&q=60';
+      }
       final str = pic.toString();
-      if (str.isEmpty)
+      if (str.isEmpty) {
         return 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&q=60';
+      }
       return str;
     } catch (e) {
       return 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&q=60';
@@ -571,7 +573,7 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 2.7,
+      childAspectRatio: 2.3,
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
       children: [
@@ -686,3 +688,4 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
     );
   }
 }
+

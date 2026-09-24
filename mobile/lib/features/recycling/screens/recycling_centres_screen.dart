@@ -1,4 +1,4 @@
-﻿import '../theme/recycling_colors.dart';
+import '../theme/recycling_colors.dart';
 import 'package:flutter/material.dart';
 import '../models/recycling_centre.dart';
 import '../services/recycling_service.dart';
@@ -67,7 +67,7 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Nearby Recycling Centres',
+          'Nearby Recycling Centers',
           style: TextStyle(
             color: RecyclingColors.deepForestGreen,
             fontWeight: FontWeight.bold,
@@ -93,7 +93,7 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                         onChanged: (_) => _fetchCentres(),
                         style: const TextStyle(color: Color(0xFF2D3748)),
                         decoration: InputDecoration(
-                          hintText: 'Search by centre name, city, or address...',
+                          hintText: 'Search by center name, city, or address...',
                           hintStyle: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 14),
                           prefixIcon: const Icon(
                             Icons.search_rounded,
@@ -203,7 +203,7 @@ class _RecyclingCentresScreenState extends State<RecyclingCentresScreen> {
                                   ),
                                   const SizedBox(height: 12),
                                   const Text(
-                                    'No recycling centres found matching your search',
+                                    'No recycling centers found matching your search',
                                     style: TextStyle(
                                       color: RecyclingColors.earthyBrown,
                                       fontSize: 16,

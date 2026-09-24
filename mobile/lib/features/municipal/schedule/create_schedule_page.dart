@@ -50,7 +50,6 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
   @override
   void initState() {
     super.initState();
-    _categories = _recyclingService.getWasteCategories();
     _loadInitialData();
   }
 
@@ -62,8 +61,11 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 
     try {
       final routes = await _scheduleService.getRoutes();
+      final categories = await _recyclingService.fetchWasteCategories();
+      
       setState(() {
         _routes = routes.where((r) => r.status == 'ACTIVE').toList();
+        _categories = categories;
       });
 
       if (widget.scheduleToEdit != null) {
@@ -394,6 +396,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 
                     // Route Dropdown
                     DropdownButtonFormField<RouteModel>(
+                      isExpanded: true,
                       initialValue: _selectedRoute,
                       hint: const Text('Select Route *'),
                       decoration: InputDecoration(
@@ -435,6 +438,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 
                     // Waste Category
                     DropdownButtonFormField<WasteCategory>(
+                      isExpanded: true,
                       initialValue: _selectedCategory,
                       hint: const Text('Select Waste Category *'),
                       decoration: InputDecoration(

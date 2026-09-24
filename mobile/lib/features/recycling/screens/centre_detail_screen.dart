@@ -1,4 +1,4 @@
-﻿import '../theme/recycling_colors.dart';
+import '../theme/recycling_colors.dart';
 import 'package:flutter/material.dart';
 import '../models/recycling_centre.dart';
 

@@ -46,7 +46,7 @@ public class RecyclingCentreService {
     public List<MaterialDto> getCentreMaterials(String officerEmail) {
                 Optional<RecyclingCentre> centreOpt = recyclingCentreRepository.findByOfficerEmailIgnoreCase(officerEmail);
         if (centreOpt.isEmpty()) {
-            return java.util.Collections.emptyList();
+            throw new RuntimeException("Centre not found");
         }
         RecyclingCentre centre = centreOpt.get();
 
@@ -66,7 +66,7 @@ public class RecyclingCentreService {
     public RecyclingCentreResponse toggleMaterialStatus(String officerEmail, Long materialId, Boolean isActive) {
                 Optional<RecyclingCentre> centreOpt = recyclingCentreRepository.findByOfficerEmailIgnoreCase(officerEmail);
         if (centreOpt.isEmpty()) {
-            return java.util.Collections.emptyList();
+            throw new RuntimeException("Centre not found");
         }
         RecyclingCentre centre = centreOpt.get();
 
@@ -209,4 +209,25 @@ public class RecyclingCentreService {
                 .map(RecyclingCentreResponse::fromEntity)
                 .orElseThrow(() -> new RuntimeException("Recycling centre not found with id: " + id));
     }
+
+    @Transactional(readOnly = true)
+    public List<RecyclingCentreResponse> getCentresByMaterial(String wasteCategoryId) {
+        java.util.List<String> categories = new java.util.ArrayList<>();
+        switch(wasteCategoryId.toLowerCase()) {
+            case "plastics": categories.add("plastics"); break;
+            case "glass": categories.add("glass"); break;
+            case "paper": categories.add("paper & cardboard"); break;
+            case "metals": categories.add("metals"); categories.add("scrap metal"); break;
+            case "organic": categories.add("organic"); break;
+            case "e_waste": categories.add("e-waste"); break;
+            case "hazardous": categories.add("hazardous"); break;
+            default: categories.add(wasteCategoryId.toLowerCase());
+        }
+        return recyclingCentreRepository.findByAcceptedWasteCategory(categories).stream()
+            .map(RecyclingCentreResponse::fromEntity)
+            .collect(Collectors.toList());
+    }
 }
+
+
+

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../theme/municipal_colors.dart';
 import '../../../recycling/models/recycling_centre.dart';
 import '../../../recycling/models/material_item.dart';
-import '../../../recycling/models/material_item.dart';
 import '../../../recycling/services/recycling_service.dart';
 
 class MunicipalRecyclingCentersPage extends StatefulWidget {
@@ -15,7 +14,6 @@ class MunicipalRecyclingCentersPage extends StatefulWidget {
 class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCentersPage> {
   final RecyclingService _recyclingService = RecyclingService();
   final TextEditingController _searchController = TextEditingController();
-  List<MaterialItem> _materialsList = [];
   List<MaterialItem> _materialsList = [];
 
   List<RecyclingCentre> _allCentres = [];
@@ -657,6 +655,8 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
     );
   }
 }
+
+
 
 
 

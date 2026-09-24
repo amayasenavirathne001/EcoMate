@@ -3,7 +3,6 @@ import '../../../../services/waste_report_service.dart';
 import 'package:mobile/features/municipal/operations/services/operations_service.dart';
 import 'package:mobile/features/municipal/operations/models/operations_models.dart';
 import '../theme/municipal_colors.dart';
-import 'package:collection/collection.dart';
 
 class CreateServiceJobDialog extends StatefulWidget {
   final Map<String, dynamic> initialReport;
@@ -24,7 +23,7 @@ class _CreateServiceJobDialogState extends State<CreateServiceJobDialog> {
   final OperationsService _operationsService = OperationsService();
   
   List<Map<String, dynamic>> _allReports = [];
-  List<Map<String, dynamic>> _selectedReports = [];
+  final List<Map<String, dynamic>> _selectedReports = [];
   bool _isLoading = true;
   String _searchQuery = '';
 

@@ -11,7 +11,7 @@ class AnnouncementsManagementTab extends StatefulWidget {
 
 class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab> {
   final AnnouncementsService _service = AnnouncementsService();
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   void initState() {
@@ -145,7 +145,7 @@ class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab>
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        value: selectedType,
+                        initialValue: selectedType,
                         decoration: InputDecoration(
                           labelText: 'Announcement Type',
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -161,7 +161,7 @@ class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab>
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        value: selectedPriority,
+                        initialValue: selectedPriority,
                         decoration: InputDecoration(
                           labelText: 'Priority',
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -175,7 +175,7 @@ class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab>
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        value: selectedAudience,
+                        initialValue: selectedAudience,
                         decoration: InputDecoration(
                           labelText: 'Target Audience',
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -199,7 +199,7 @@ class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab>
                       if (needsArea) ...[
                         const SizedBox(height: 16),
                         DropdownButtonFormField<String>(
-                          value: selectedArea,
+                          initialValue: selectedArea,
                           decoration: InputDecoration(
                             labelText: 'Target Area / Zone *',
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),

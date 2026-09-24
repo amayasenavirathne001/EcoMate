@@ -110,4 +110,9 @@ public class RecyclingCentreController {
         recyclingCentreService.deleteCentre(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/centres/by-material/{wasteCategoryId}")
+    public ResponseEntity<List<RecyclingCentreResponse>> getCentresByMaterial(@PathVariable String wasteCategoryId) {
+        List<RecyclingCentreResponse> centres = recyclingCentreService.getCentresByMaterial(wasteCategoryId);
+        return ResponseEntity.ok(centres);
+    }
 }
