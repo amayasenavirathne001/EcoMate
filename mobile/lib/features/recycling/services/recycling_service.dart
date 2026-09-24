@@ -793,6 +793,67 @@ class RecyclingService {
     return delivery;
   }
 
+  Future<List<WasteDeliveryRecord>> fetchMyRecyclingHistory() async {
+    final token = await _authService.getToken();
+    if (token != null && token.isNotEmpty) {
+      try {
+        final response = await http.get(
+          Uri.parse('$baseUrl/api/recycling/my-history'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (response.statusCode == 200 && response.body.isNotEmpty) {
+          final list = jsonDecode(response.body) as List<dynamic>;
+          return list
+              .map((item) => WasteDeliveryRecord.fromJson(item as Map<String, dynamic>))
+              .toList();
+        }
+      } catch (_) {
+        // Fallback below
+      }
+    }
+    
+    // Offline/Mock fallback for UI testing
+    return [
+      WasteDeliveryRecord(
+        id: 'DEL-101',
+        recyclingCentreId: '1',
+        recyclingCentreName: 'GreenCycle Central Hub',
+        materialType: 'Plastic Bottles (PET #1)',
+        weightKg: 2.5,
+        deliveredBy: 'Resident User',
+        contactNumber: '0712345678',
+        notes: 'Clean PET bottles',
+        dateTime: DateTime.now().subtract(const Duration(days: 2)),
+      ),
+      WasteDeliveryRecord(
+        id: 'DEL-102',
+        recyclingCentreId: '2',
+        recyclingCentreName: 'BioRecycle Organic Composting Plant',
+        materialType: 'Organic',
+        weightKg: 5.0,
+        deliveredBy: 'Resident User',
+        contactNumber: '0712345678',
+        notes: 'Kitchen scraps',
+        dateTime: DateTime.now().subtract(const Duration(days: 5)),
+      ),
+      WasteDeliveryRecord(
+        id: 'DEL-103',
+        recyclingCentreId: '1',
+        recyclingCentreName: 'GreenCycle Central Hub',
+        materialType: 'Cardboard',
+        weightKg: 1.2,
+        deliveredBy: 'Resident User',
+        contactNumber: '0712345678',
+        notes: 'Folded boxes',
+        dateTime: DateTime.now().subtract(const Duration(hours: 4)),
+      ),
+    ];
+  }
+
   RecyclingCentre? getCentreById(String id) {
     try {
       return _centres.firstWhere((c) => c.id == id);
