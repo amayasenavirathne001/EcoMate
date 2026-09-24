@@ -239,7 +239,12 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
               Stack(
                 children: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+                        );
+                      },
                     icon: const Icon(
                       Icons.notifications_none_rounded,
                       size: 33,
