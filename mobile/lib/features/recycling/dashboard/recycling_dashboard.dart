@@ -2787,12 +2787,13 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
               const SizedBox(height: 18),
 
               // Danger Zone: Log Out
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
+              Material(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: const Color(0xFFFFCDD2)),
+                  side: const BorderSide(color: Color(0xFFFFCDD2)),
                 ),
+                clipBehavior: Clip.antiAlias,
                 child: ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(8),
