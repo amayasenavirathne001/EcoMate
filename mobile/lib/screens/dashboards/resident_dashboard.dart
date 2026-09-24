@@ -4,6 +4,7 @@ import '../../services/auth_service.dart';
 import '../login_screen.dart';
 import '../../features/recycling/screens/waste_segregation_guide_screen.dart';
 import '../../features/recycling/screens/recycling_centres_screen.dart';
+import '../../features/recycling/screens/resident_recycling_history_screen.dart';
 import '../collection_schedule_screen.dart';
 import '../report_issue_screen.dart';
 import '../my_reports_screen.dart';
@@ -945,6 +946,12 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
           title: 'Items Recycled',
           subtitle: 'This Month',
           footer: '↑ 12% vs last month',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ResidentRecyclingHistoryScreen()),
+            );
+          },
         ),
 
         _statCard(
@@ -973,24 +980,28 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
     required String title,
     required String subtitle,
     required String footer,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(13),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius:
-            BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(
-              alpha: 0.05,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(13),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius:
+              BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(
+                alpha: 0.05,
+              ),
+              blurRadius: 11,
+              offset: const Offset(0, 4),
             ),
-            blurRadius: 11,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
+          ],
+        ),
+        child: Column(
         crossAxisAlignment:
             CrossAxisAlignment.start,
         children: [
@@ -1054,12 +1065,12 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
             style: const TextStyle(
               color: primaryGreen,
               fontSize: 11,
-              fontWeight:
-                  FontWeight.bold,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -1102,7 +1113,12 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
               const Spacer(),
 
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ResidentRecyclingHistoryScreen()),
+                  );
+                },
                 child: const Text(
                   'View All',
                   style: TextStyle(
