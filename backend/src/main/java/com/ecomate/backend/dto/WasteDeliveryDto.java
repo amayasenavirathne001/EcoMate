@@ -14,6 +14,7 @@ public class WasteDeliveryDto {
     private String contactNumber;
     private String dateTime;
     private String notes;
+    private String processingStatus;
 
     public WasteDeliveryDto() {
     }
@@ -33,6 +34,7 @@ public class WasteDeliveryDto {
             dto.setDateTime(entity.getDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         }
         dto.setNotes(entity.getNotes());
+        dto.setProcessingStatus(entity.getProcessingStatus());
         return dto;
     }
 
@@ -100,6 +102,9 @@ public class WasteDeliveryDto {
         this.dateTime = dateTime;
     }
 
+    public String getProcessingStatus() { return processingStatus; }
+    public void setProcessingStatus(String processingStatus) { this.processingStatus = processingStatus; }
+
     public String getNotes() {
         return notes;
     }
@@ -108,3 +113,4 @@ public class WasteDeliveryDto {
         this.notes = notes;
     }
 }
+

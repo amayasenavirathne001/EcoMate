@@ -81,4 +81,10 @@ public class WasteDeliveryService {
                 .map(WasteDeliveryDto::fromEntity)
                 .collect(Collectors.toList());
     }
+    public void updateProcessingStatus(Long deliveryId, String newStatus) {
+        WasteDelivery delivery = wasteDeliveryRepository.findById(deliveryId)
+                .orElseThrow(() -> new IllegalArgumentException("Delivery not found with id: " + deliveryId));
+        delivery.setProcessingStatus(newStatus);
+        wasteDeliveryRepository.save(delivery);
+    }
 }

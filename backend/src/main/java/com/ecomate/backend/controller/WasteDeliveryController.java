@@ -44,4 +44,14 @@ public class WasteDeliveryController {
     public ResponseEntity<List<WasteDeliveryDto>> getDeliveriesByCentre(@PathVariable Long centreId) {
         return ResponseEntity.ok(wasteDeliveryService.getDeliveriesForCentre(centreId));
     }
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> updateProcessingStatus(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, String> payload) {
+        String newStatus = payload.get("processingStatus");
+        if (newStatus != null) {
+            wasteDeliveryService.updateProcessingStatus(id, newStatus);
+        }
+        return ResponseEntity.ok().build();
+    }
 }

@@ -33,6 +33,9 @@ public class WasteDelivery {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    @Column(name = "processing_status")
+    private String processingStatus = "RECEIVED";
+
     public WasteDelivery() {
         this.dateTime = LocalDateTime.now();
     }
@@ -104,6 +107,9 @@ public class WasteDelivery {
         this.dateTime = dateTime;
     }
 
+    public String getProcessingStatus() { return processingStatus; }
+    public void setProcessingStatus(String processingStatus) { this.processingStatus = processingStatus; }
+
     public String getNotes() {
         return notes;
     }
@@ -112,3 +118,5 @@ public class WasteDelivery {
         this.notes = notes;
     }
 }
+
+
