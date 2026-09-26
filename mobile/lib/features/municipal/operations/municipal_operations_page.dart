@@ -3,7 +3,7 @@ import '../theme/municipal_colors.dart';
 import 'screens/municipal_recycling_centers_page.dart';
 import 'widgets/employee_management_tab.dart';
 import 'widgets/vehicle_management_tab.dart';
-
+import 'widgets/announcements_management_tab.dart';
 class MunicipalOperationsPage extends StatelessWidget {
   const MunicipalOperationsPage({super.key});
 
@@ -45,6 +45,15 @@ class MunicipalOperationsPage extends StatelessWidget {
             color: MunicipalColors.noticeGreen,
             icon: Icons.people_outline_rounded,
             page: const EmployeeManagementTab(),
+          ),
+          const SizedBox(height: 16),
+          _buildMenuCard(
+            context: context,
+            title: 'Announcements',
+            subtitle: 'Send targeted announcements',
+            color: MunicipalColors.info,
+            icon: Icons.campaign_outlined,
+            page: const AnnouncementsManagementTab(),
           ),
         ],
       ),

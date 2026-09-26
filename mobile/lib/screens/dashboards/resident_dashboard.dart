@@ -7,6 +7,8 @@ import '../../features/recycling/screens/recycling_centres_screen.dart';
 import '../collection_schedule_screen.dart';
 import '../report_issue_screen.dart';
 import '../my_reports_screen.dart';
+import '../../services/announcements_service.dart';
+import 'resident_announcements_screen.dart';
 
 class ResidentDashboard extends StatefulWidget {
   const ResidentDashboard({super.key});
@@ -28,10 +30,25 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
   static const Color softGreen = Color(0xFFEDF8EC);
   static const Color background = Color(0xFFFAFCFA);
 
+  final AnnouncementsService _announcementsService = AnnouncementsService();
+
   @override
   void initState() {
     super.initState();
     _loadUserInfo();
+    _announcementsService.addListener(_onAnnouncementsUpdate);
+  }
+
+  @override
+  void dispose() {
+    _announcementsService.removeListener(_onAnnouncementsUpdate);
+    super.dispose();
+  }
+
+  void _onAnnouncementsUpdate() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _loadUserInfo() async {
@@ -134,6 +151,10 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
                   const SizedBox(height: 12),
 
                   _buildGreetingCard(),
+
+                  const SizedBox(height: 18),
+
+                  _buildAnnouncementsPreview(),
 
                   const SizedBox(height: 18),
 
@@ -376,6 +397,134 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
           ),
         ],
       ),
+    );
+  }
+
+  // ==========================================================
+  // ANNOUNCEMENTS PREVIEW
+  // ==========================================================
+
+  Widget _buildAnnouncementsPreview() {
+    final announcements = _announcementsService.getPublishedAnnouncementsForResident();
+    
+    if (announcements.isEmpty) {
+      return const SizedBox.shrink(); // Don't show if there are no announcements
+    }
+    
+    // Get the latest announcement
+    final latestAnnouncement = announcements.last;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Latest Update',
+              style: TextStyle(
+                color: darkText,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ResidentAnnouncementsScreen()),
+                );
+              },
+              child: const Text(
+                'View All',
+                style: TextStyle(
+                  color: primaryGreen,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE5F2EE)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: primaryGreen.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.campaign_rounded,
+                  color: primaryGreen,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            latestAnnouncement.title,
+                            style: const TextStyle(
+                              color: darkText,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (latestAnnouncement.priority == 'Urgent')
+                          Container(
+                            margin: const EdgeInsets.only(left: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Text('Urgent', style: TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold)),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      latestAnnouncement.message,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 13,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -1223,7 +1372,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: 77,
+          height: 82,
           child: Row(
             mainAxisAlignment:
                 MainAxisAlignment.spaceAround,
