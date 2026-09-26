@@ -87,7 +87,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           final notif = _notifications[index];
           final isRead = notif['read'] == true;
           
-          return ListTile(
+          return Material(
+            color: Colors.transparent,
+            child: ListTile(
             onTap: () => _markAsRead(notif['id'], index),
             tileColor: isRead ? Colors.transparent : const Color(0xFFE5F2EE),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -117,6 +119,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 ),
               ],
             ),
+          ),
           );
         },
       ),
@@ -133,4 +136,5 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 }
+
 
