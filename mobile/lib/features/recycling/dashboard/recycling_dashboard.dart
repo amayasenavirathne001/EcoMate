@@ -2752,12 +2752,13 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
               ),
               const SizedBox(height: 8),
 
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
+              Material(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: RecyclingColors.cardBorder),
+                  side: const BorderSide(color: RecyclingColors.cardBorder),
                 ),
+                clipBehavior: Clip.antiAlias,
                 child: Column(
                   children: [
                     ListTile(
