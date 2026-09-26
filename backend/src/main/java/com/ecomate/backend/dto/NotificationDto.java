@@ -8,6 +8,6 @@ public record NotificationDto(
     String title,
     String message,
     LocalDateTime dateTime,
-    boolean read
+    boolean read,
+    String userEmail
 ) {}
-
