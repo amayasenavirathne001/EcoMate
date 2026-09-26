@@ -164,212 +164,19 @@ class RecyclingService {
     ),
   ];
 
-  static const List<WasteCategory> _categories = [
-    WasteCategory(
-      id: 'plastics',
-      name: 'Plastics',
-      binColorName: 'Orange / Yellow Bin',
-      binColor: Color(0xFFF59E0B),
-      icon: Icons.local_drink_rounded,
-      description:
-          'Clean and dry recyclable plastics such as bottles, containers, and rigid packaging.',
-      isRecyclable: true,
-      commonItems: [
-        'PET Water & Soda Bottles (#1)',
-        'HDPE Milk & Detergent Jugs (#2)',
-        'PP Food Containers & Tubs (#5)',
-        'Plastic bottle caps (attached)',
-        'Clean plastic cosmetic bottles',
-      ],
-      preparationSteps: [
-        'Empty all liquids and contents completely.',
-        'Rinse thoroughly with clean water to remove food residue.',
-        'Crush or compress plastic bottles to save bin space.',
-        'Keep caps screwed onto the bottle or place loose inside.',
-      ],
-      dos: [
-        'Rinse items thoroughly before disposal',
-        'Check resin identification codes (#1, #2, #5)',
-        'Flatten plastic bottles to maximize space',
-      ],
-      donts: [
-        'Do not recycle plastic bags, cling film, or grocery poly-bags',
-        'Do not recycle dirty or oil-stained takeout containers',
-        'Do not recycle polystyrene foam (Styrofoam)',
-      ],
-    ),
-    WasteCategory(
-      id: 'paper',
-      name: 'Paper & Cardboard',
-      binColorName: 'Blue Bin',
-      binColor: Color(0xFF3B82F6),
-      icon: Icons.article_rounded,
-      description:
-          'Dry, clean paper, cardboard boxes, newspapers, and non-waxed cartons.',
-      isRecyclable: true,
-      commonItems: [
-        'Corrugated shipping & parcel boxes',
-        'Cereal & dry food packaging boxes',
-        'Newspapers, magazines, and flyers',
-        'Office printer paper and envelopes',
-        'Egg cartons (clean paperboard)',
-      ],
-      preparationSteps: [
-        'Flatten all cardboard boxes completely.',
-        'Remove any plastic packing tape and polystyrene inside.',
-        'Keep dry â€” wet paper cannot be processed at recycling plants.',
-      ],
-      dos: [
-        'Flatten cardboard boxes to save space',
-        'Keep all paper items dry and clean',
-        'Separate plastic windows from mail envelopes if possible',
-      ],
-      donts: [
-        'Do not include greasy pizza boxes or oil-stained paper',
-        'Do not include wax-coated beverage cups or cartons',
-        'Do not include used paper towels, tissues, or napkins',
-      ],
-    ),
-    WasteCategory(
-      id: 'glass',
-      name: 'Glass',
-      binColorName: 'Green Bin',
-      binColor: Color(0xFF10B981),
-      icon: Icons.wine_bar_rounded,
-      description:
-          'Intact glass bottles, beverage containers, and food jars (clear, brown, green).',
-      isRecyclable: true,
-      commonItems: [
-        'Glass beverage & soda bottles',
-        'Glass jam, sauce, and pickle jars',
-        'Glass condiment & oil bottles',
-        'Glass cosmetic jars (rinsed)',
-      ],
-      preparationSteps: [
-        'Rinse thoroughly to remove all food and sauce traces.',
-        'Remove metal or plastic caps and lids (recycle separately).',
-        'Do not break â€” keep glass containers intact for safety.',
-      ],
-      dos: [
-        'Rinse jars and bottles thoroughly',
-        'Recycle metal lids separately with metals',
-        'Place gently into the bin to prevent shattering',
-      ],
-      donts: [
-        'Do not recycle broken window panes or mirrors',
-        'Do not recycle drinking glasses, mugs, or crystalware',
-        'Do not recycle ceramic plates, tiles, or heat-resistant Pyrex',
-      ],
-    ),
-    WasteCategory(
-      id: 'metals',
-      name: 'Metals & Cans',
-      binColorName: 'Silver / Grey Bin',
-      binColor: Color(0xFF64748B),
-      icon: Icons.takeout_dining_rounded,
-      description:
-          'Aluminum cans, steel food tins, clean foil trays, and clean metal jar lids.',
-      isRecyclable: true,
-      commonItems: [
-        'Aluminum beverage & soda cans',
-        'Steel/tin soup, fish, and vegetable cans',
-        'Clean aluminum foil and baking trays',
-        'Metal bottle caps and jar lids',
-        'Empty aerosol spray cans (completely discharged)',
-      ],
-      preparationSteps: [
-        'Rinse clean of all sauces, liquids, and oils.',
-        'Crush beverage cans to save bin volume.',
-        'Push metal lids inside the cans for safety.',
-      ],
-      dos: [
-        'Rinse all food and beverage cans',
-        'Crush aluminum cans to maximize space',
-        'Ensure aerosol cans are 100% empty and depressurized',
-      ],
-      donts: [
-        'Do not include gas cylinders or propane tanks',
-        'Do not include paint cans containing wet paint',
-        'Do not include sharp knives, wires, or automotive scrap',
-      ],
-    ),
-    WasteCategory(
-      id: 'organic',
-      name: 'Organic & Food Waste',
-      binColorName: 'Green Compost Bin',
-      binColor: Color(0xFF22C55E),
-      icon: Icons.eco_rounded,
-      description:
-          'Biodegradable kitchen scraps, fruit peels, leftover cooked food, and yard trimmings.',
-      isRecyclable: true,
-      commonItems: [
-        'Fruit and vegetable peels & scraps',
-        'Coffee grounds and unbleached paper filters',
-        'Eggshells and nut shells',
-        'Leftover cooked rice, bread, and grains',
-        'Garden leaves, cut grass, and small pruned twigs',
-      ],
-      preparationSteps: [
-        'Drain excess liquids and gravy from food scraps.',
-        'Collect in a compostable bag or dedicated organic bin.',
-        'Place in municipal compost bin or home compost unit.',
-      ],
-      dos: [
-        'Collect fruit and vegetable peels daily',
-        'Drain watery liquids before disposing',
-        'Use compostable bags where available',
-      ],
-      donts: [
-        'Do not mix plastic wrappers or polythene with food waste',
-        'Avoid large animal bones in municipal compost bins',
-        'Do not include treated or painted wood in organic waste',
-      ],
-    ),
-    WasteCategory(
-      id: 'ewaste',
-      name: 'Electronic Waste (E-Waste)',
-      binColorName: 'Designated E-Waste Drop-off',
-      binColor: Color(0xFF8B5CF6),
-      icon: Icons.devices_other_rounded,
-      description:
-          'Disused electrical items, computers, mobile phones, batteries, and accessories.',
-      isRecyclable: true,
-      commonItems: [
-        'Mobile Phones & Tablets',
-        'Chargers, USB Cables & Power Banks',
-        'Laptops & Desktop Components',
-        'Keyboards, Mice & Small Appliances',
-        'Printers & Ink Cartridges',
-      ],
-      preparationSteps: [
-        'Perform a factory reset and remove personal data from devices.',
-        'Bundle cords and cables neatly with a rubber band.',
-        'Drop off at an authorized E-Waste recycling center.',
-      ],
-      dos: [
-        'Take items to designated e-waste drop-off kiosks or recycling centers',
-        'Remove rechargeable batteries if removable',
-        'Keep electronics dry and sheltered from rain',
-      ],
-      donts: [
-        'Do not throw electronics into regular municipal garbage bins',
-        'Do not dismantle or break screens and tubes yourself',
-        'Do not burn electronic cables or circuits',
-      ],
-    ),
-  ];
+  List<WasteCategory> _categories = [];
 
   static final List<RecyclingCentre> _centres = [
     const RecyclingCentre(
       id: '1',
       officerId: 14,
       officerEmail: 'stharanga.rog@gmail.com',
-      name: 'GreenCycle Central Hub',
+      name: 'GreenCycle Central Center',
       address: 'No. 45 Baseline Road, Colombo 09',
       city: 'Colombo',
       distanceKm: 1.2,
       contactNumber: '+94 11 268 4590',
-      email: 'contact@greencyclehub.lk',
+      email: 'contact@greencyclecenter.lk',
       operatingHours: 'Mon - Sat: 8:00 AM - 5:30 PM',
       isOpen: true,
       acceptedMaterials: [
@@ -425,7 +232,7 @@ class RecyclingService {
       id: '3',
       officerId: 7,
       officerEmail: 'peterparkerr@gmail.com',
-      name: 'EcoTech E-Waste Recovery Centre',
+      name: 'EcoTech E-Waste Recovery Center',
       address: '120 High Level Road, Maharagama',
       city: 'Maharagama',
       distanceKm: 3.8,
@@ -449,6 +256,74 @@ class RecyclingService {
           'Specialized authorized e-waste facility. Free certified data wiping on computer drives.',
     ),
   ];
+
+    String _iconToStr(IconData icon) {
+    if (icon == Icons.local_drink_rounded) return 'local_drink_rounded';
+    if (icon == Icons.article_rounded) return 'article_rounded';
+    if (icon == Icons.wine_bar_rounded) return 'wine_bar_rounded';
+    if (icon == Icons.takeout_dining_rounded) return 'takeout_dining_rounded';
+    if (icon == Icons.eco_rounded) return 'eco_rounded';
+    if (icon == Icons.devices_other_rounded) return 'devices_other_rounded';
+    if (icon == Icons.warning_rounded) return 'warning_rounded';
+    return 'category_rounded';
+  }
+
+  Future<void> updateWasteCategory(WasteCategory category) async {
+    final token = await _authService.getToken();
+    final response = await http.put(
+      Uri.parse('$baseUrl/api/waste-categories/${category.id}'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'name': category.name,
+        'recyclable': category.isRecyclable,
+        'description': category.description,
+        'binColorName': category.binColorName,
+        'binColor': '0x${category.binColor.value.toRadixString(16).toUpperCase()}',
+        'icon': _iconToStr(category.icon),
+        'commonItems': category.commonItems,
+        'preparationSteps': category.preparationSteps,
+        'dos': category.dos,
+        'donts': category.donts,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update category: ${response.body}');
+    }
+
+    final index = _categories.indexWhere((c) => c.id == category.id);
+    if (index != -1) {
+      _categories[index] = category;
+    }
+  }
+
+  Future<List<WasteCategory>> fetchWasteCategories() async {
+    final token = await _authService.getToken();
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/waste-categories?t=${DateTime.now().millisecondsSinceEpoch}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        _categories = data.map((json) => WasteCategory.fromJson(json)).toList();
+        return _categories;
+      }
+      return _categories;
+    } catch (e) {
+      print('Error fetching categories: $e');
+      return _categories;
+    }
+  }
 
   List<WasteCategory> getWasteCategories() {
     return _categories;
@@ -839,7 +714,7 @@ class RecyclingService {
       WasteDeliveryRecord(
         id: 'DEL-101',
         recyclingCentreId: '1',
-        recyclingCentreName: 'GreenCycle Central Hub',
+        recyclingCentreName: 'GreenCycle Central Center',
         materialType: 'Plastic Bottles (PET #1)',
         weightKg: 2.5,
         deliveredBy: 'Resident User',
@@ -861,7 +736,7 @@ class RecyclingService {
       WasteDeliveryRecord(
         id: 'DEL-103',
         recyclingCentreId: '1',
-        recyclingCentreName: 'GreenCycle Central Hub',
+        recyclingCentreName: 'GreenCycle Central Center',
         materialType: 'Cardboard',
         weightKg: 1.2,
         deliveredBy: 'Resident User',
@@ -906,5 +781,15 @@ class RecyclingService {
     return true;
   }
 }
+
+
+
+
+
+
+
+
+
+
 
 

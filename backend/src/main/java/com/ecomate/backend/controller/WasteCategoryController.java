@@ -7,6 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,8 +28,63 @@ public class WasteCategoryController {
     @GetMapping
     public ResponseEntity<List<WasteCategoryDto>> getAllCategories() {
         List<WasteCategoryDto> categories = wasteCategoryRepository.findAll().stream()
-                .map(cat -> new WasteCategoryDto(cat.getId(), cat.getName(), cat.isRecyclable()))
+                .map(cat -> {
+                    WasteCategoryDto dto = new WasteCategoryDto();
+                    dto.setId(cat.getId());
+                    dto.setName(cat.getName());
+                    dto.setRecyclable(cat.isRecyclable());
+                    dto.setDescription(cat.getDescription());
+                    dto.setBinColor(cat.getBinColor());
+                    dto.setBinColorName(cat.getBinColorName());
+                    dto.setIcon(cat.getIcon());
+                    dto.setCommonItems(cat.getCommonItems());
+                    dto.setPreparationSteps(cat.getPreparationSteps());
+                    dto.setDos(cat.getDos());
+                    dto.setDonts(cat.getDonts());
+                    return dto;
+                })
                 .collect(Collectors.toList());
         return ResponseEntity.ok(categories);
     }
+    @Transactional
+    @PutMapping("/{id}")
+    public ResponseEntity<WasteCategoryDto> updateCategory(@PathVariable String id, @RequestBody WasteCategoryDto dto) {
+        return wasteCategoryRepository.findById(id)
+                .map(cat -> {
+                    // Update main fields
+                    cat.setName(dto.getName());
+                    cat.setRecyclable(dto.isRecyclable() != null ? dto.isRecyclable() : false);
+                    cat.setDescription(dto.getDescription());
+                    cat.setBinColor(dto.getBinColor());
+                    cat.setBinColorName(dto.getBinColorName());
+                    cat.setIcon(dto.getIcon());
+                    
+                    // Update collections
+                    cat.setCommonItems(dto.getCommonItems());
+                    cat.setPreparationSteps(dto.getPreparationSteps());
+                    cat.setDos(dto.getDos());
+                    cat.setDonts(dto.getDonts());
+                    
+                    WasteCategory savedCat = wasteCategoryRepository.save(cat);
+                    
+                    WasteCategoryDto updatedDto = new WasteCategoryDto();
+                    updatedDto.setId(savedCat.getId());
+                    updatedDto.setName(savedCat.getName());
+                    updatedDto.setRecyclable(savedCat.isRecyclable());
+                    updatedDto.setDescription(savedCat.getDescription());
+                    updatedDto.setBinColor(savedCat.getBinColor());
+                    updatedDto.setBinColorName(savedCat.getBinColorName());
+                    updatedDto.setIcon(savedCat.getIcon());
+                    updatedDto.setCommonItems(savedCat.getCommonItems());
+                    updatedDto.setPreparationSteps(savedCat.getPreparationSteps());
+                    updatedDto.setDos(savedCat.getDos());
+                    updatedDto.setDonts(savedCat.getDonts());
+                    return ResponseEntity.ok(updatedDto);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 }
+
+
+
+

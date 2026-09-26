@@ -130,8 +130,8 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
       SnackBar(
         content: Text(
           isOpen
-              ? 'Centre status updated to OPEN'
-              : 'Centre status updated to CLOSED',
+              ? 'Center status updated to OPEN'
+              : 'Center status updated to CLOSED',
         ),
         backgroundColor: isOpen ? RecyclingColors.primaryGreen : RecyclingColors.error,
         duration: const Duration(seconds: 2),
@@ -336,7 +336,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Edit Centre Profile',
+                      'Edit Center Profile',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -350,7 +350,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                _buildTextField(nameController, 'Centre Name', Icons.storefront),
+                _buildTextField(nameController, 'Center Name', Icons.storefront),
                 const SizedBox(height: 12),
                 _buildTextField(addressController, 'Address', Icons.location_on_outlined),
                 const SizedBox(height: 12),
@@ -381,7 +381,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Centre details updated successfully'),
+                        content: Text('Center details updated successfully'),
                         backgroundColor: RecyclingColors.primaryGreen,
                       ),
                     );
@@ -409,7 +409,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   void _openManageMaterialsModal() {
     if (_myCentre == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please wait until an admin assigns a Recycling Centre to you.')),
+        const SnackBar(content: Text('Please wait until an admin assigns a Recycling Center to you.')),
       );
       return;
     }
@@ -544,7 +544,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   void _openRecordDeliveryModal() {
     if (_myCentre == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please wait until an admin assigns a Recycling Centre to you.')),
+        const SnackBar(content: Text('Please wait until an admin assigns a Recycling Center to you.')),
       );
       return;
     }
@@ -2345,7 +2345,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Please ask your municipal administrator to register your centre email.',
+                        'Please ask your municipal administrator to register your center email.',
                         style: TextStyle(color: RecyclingColors.secondaryText, fontSize: 12.5),
                         textAlign: TextAlign.center,
                       ),
@@ -2804,7 +2804,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                           trailing: Switch(
                             value: true,
                             onChanged: (val) {},
-                            activeColor: RecyclingColors.primaryGreen,
+                            activeThumbColor: RecyclingColors.primaryGreen,
                           ),
                         ),
                       ),
@@ -2909,6 +2909,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 }
+
 
 
 

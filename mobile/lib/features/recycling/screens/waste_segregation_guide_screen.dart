@@ -1,4 +1,4 @@
-﻿import '../theme/recycling_colors.dart';
+import '../theme/recycling_colors.dart';
 import 'package:flutter/material.dart';
 import '../../../models/waste_category.dart';
 import '../services/recycling_service.dart';
@@ -21,10 +21,21 @@ class _WasteSegregationGuideScreenState
   List<WasteCategory> _displayedCategories = [];
   String _selectedFilter = 'All'; // 'All', 'Recyclable', 'Non-Recyclable'
 
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    _displayedCategories = _recyclingService.getWasteCategories();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    final categories = await _recyclingService.fetchWasteCategories();
+    if (!mounted) return;
+    setState(() {
+      _displayedCategories = categories;
+      _isLoading = false;
+    });
   }
 
   @override
@@ -75,7 +86,7 @@ class _WasteSegregationGuideScreenState
         actions: [
           IconButton(
             icon: const Icon(Icons.location_on_outlined, color: RecyclingColors.deepForestGreen),
-            tooltip: 'Nearby Recycling Centres',
+            tooltip: 'Nearby Recycling Centers',
             onPressed: () {
               Navigator.push(
                 context,
@@ -247,14 +258,7 @@ class _WasteSegregationGuideScreenState
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => CategoryDetailScreen(category: category),
-              ),
-            );
-          },
+          onTap: () async { await Navigator.push(context, MaterialPageRoute(builder: (_) => CategoryDetailScreen(category: category))); _loadCategories(); },
           child: Padding(
             padding: const EdgeInsets.all(18),
             child: Column(
@@ -300,12 +304,16 @@ class _WasteSegregationGuideScreenState
                                 ),
                               ),
                               const SizedBox(width: 6),
-                              Text(
-                                category.binColorName,
-                                style: const TextStyle(
-                                  color: RecyclingColors.earthyBrown,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                              Expanded(
+                                child: Text(
+                                  category.binColorName,
+                                  style: const TextStyle(
+                                    color: RecyclingColors.earthyBrown,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
                                 ),
                               ),
                             ],
@@ -408,3 +416,13 @@ class _WasteSegregationGuideScreenState
     );
   }
 }
+
+
+
+
+
+
+
+
+
+

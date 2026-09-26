@@ -1,8 +1,10 @@
-﻿import '../theme/recycling_colors.dart';
+import '../theme/recycling_colors.dart';
 import 'package:flutter/material.dart';
 import '../../../models/waste_category.dart';
+import 'edit_category_screen.dart';
+import '../../../services/auth_service.dart';
 
-class CategoryDetailScreen extends StatelessWidget {
+class CategoryDetailScreen extends StatefulWidget {
   final WasteCategory category;
 
   const CategoryDetailScreen({
@@ -11,7 +13,33 @@ class CategoryDetailScreen extends StatelessWidget {
   });
 
   @override
+  State<CategoryDetailScreen> createState() => _CategoryDetailScreenState();
+}
+
+class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
+  late WasteCategory _category;
+  bool _isAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _category = widget.category;
+    _checkRole();
+  }
+
+  Future<void> _checkRole() async {
+    final role = await AuthService().getRole();
+    if (mounted) {
+      setState(() {
+        _isAdmin = role == 'COUNCIL_ADMIN';
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final category = _category;
+
     return Scaffold(
       backgroundColor: RecyclingColors.offWhite,
       appBar: AppBar(
@@ -29,6 +57,25 @@ class CategoryDetailScreen extends StatelessWidget {
             fontSize: 20,
           ),
         ),
+        actions: [
+          if (_isAdmin)
+            IconButton(
+              icon: const Icon(Icons.edit, color: RecyclingColors.deepForestGreen),
+              onPressed: () async {
+                final updatedCategory = await Navigator.push<WasteCategory>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EditCategoryScreen(category: _category),
+                  ),
+                );
+                if (updatedCategory != null) {
+                  setState(() {
+                    _category = updatedCategory;
+                  });
+                }
+              },
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
