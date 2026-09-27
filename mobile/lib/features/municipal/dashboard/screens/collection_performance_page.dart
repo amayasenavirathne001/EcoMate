@@ -311,8 +311,9 @@ class _CollectionPerformancePageState extends State<CollectionPerformancePage> {
 
   Widget _buildJobStatus(String status) {
     Color color;
-    if (status == 'COMPLETED') color = MunicipalColors.success;
-    else if (status == 'DELAYED') color = MunicipalColors.error;
+    if (status == 'COMPLETED') {
+      color = MunicipalColors.success;
+    } else if (status == 'DELAYED') color = MunicipalColors.error;
     else color = MunicipalColors.warning;
 
     return Container(

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mobile/screens/report_issue_screen.dart';
+import 'package:mobile/screens/report_status_screen.dart';
 import 'package:mobile/services/report_filters.dart';
 import 'package:mobile/services/report_review.dart';
 
@@ -32,6 +33,19 @@ void main() {
     expect(find.text('Issue: Overflowing Bin'), findsOneWidget);
   });
 
+  testWidgets('resident report status displays its assigned priority', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: ReportStatusScreen(
+          report: {'status': 'IN_REVIEW', 'priority': 'HIGH'},
+        ),
+      ),
+    );
+
+    await tester.scrollUntilVisible(find.text('HIGH PRIORITY'), 250);
+    expect(find.text('HIGH PRIORITY'), findsOneWidget);
+  });
+
   test('report filters match status and text search', () {
     final reports = [
       {'id': 1, 'issueType': 'Illegal Dumping', 'location': 'Lake Road', 'referenceNumber': 'RPT-1001', 'status': 'SUBMITTED', 'createdAt': '2025-01-03T10:00:00'},
@@ -44,6 +58,22 @@ void main() {
 
     final resolved = filterReports(reports, query: '', status: 'RESOLVED');
     expect(resolved.single['id'], 2);
+  });
+
+  test('report filters match priority and status together', () {
+    final reports = [
+      {'id': 1, 'priority': 'HIGH', 'status': 'SUBMITTED'},
+      {'id': 2, 'priority': 'LOW', 'status': 'SUBMITTED'},
+      {'id': 3, 'priority': 'HIGH', 'status': 'RESOLVED'},
+    ];
+
+    final urgentOpenReports = filterReports(
+      reports,
+      status: 'submitted',
+      priority: 'high',
+    );
+
+    expect(urgentOpenReports.map((report) => report['id']), [1]);
   });
 
   test('review summary includes critical report details for verification', () {

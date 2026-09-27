@@ -27,6 +27,7 @@ public class ResourceAssignmentService {
     private final VehicleRepository vehicleRepository;
     private final CollectorDriverRepository employeeRepository;
     private final UserRepository userRepository;
+    private final WasteReportRepository wasteReportRepository;
     private final NotificationService notificationService;
 
     // We inject services to convert to DTOs cleanly
@@ -40,6 +41,7 @@ public class ResourceAssignmentService {
             VehicleRepository vehicleRepository,
             CollectorDriverRepository employeeRepository,
             UserRepository userRepository,
+            WasteReportRepository wasteReportRepository,
             NotificationService notificationService,
             CollectorDriverService employeeService,
             VehicleService vehicleService,
@@ -49,6 +51,7 @@ public class ResourceAssignmentService {
         this.vehicleRepository = vehicleRepository;
         this.employeeRepository = employeeRepository;
         this.userRepository = userRepository;
+        this.wasteReportRepository = wasteReportRepository;
         this.notificationService = notificationService;
         this.employeeService = employeeService;
         this.vehicleService = vehicleService;
@@ -131,6 +134,7 @@ public class ResourceAssignmentService {
         vehicleRepository.save(vehicle);
         employeeRepository.saveAll(collectors);
         jobRepository.save(job);
+        syncLinkedWasteReports(job, "ASSIGNED");
 
         ResourceAssignment saved = repository.save(assignment);
 
@@ -219,6 +223,9 @@ public class ResourceAssignmentService {
         assignment.setStatus(AssignmentStatus.ASSIGNED);
 
         ResourceAssignment saved = repository.save(assignment);
+        job.setStatus("ASSIGNED");
+        jobRepository.save(job);
+        syncLinkedWasteReports(job, "ASSIGNED");
 
         // Send reassignment notifications
         sendAssignmentNotifications(saved);
@@ -321,6 +328,21 @@ public class ResourceAssignmentService {
         CollectionJob job = assignment.getJob();
         job.setStatus("COMPLETED");
         jobRepository.save(job);
+
+        if (job.getRouteId().startsWith("JOB-")) {
+            syncLinkedWasteReports(job, "RESOLVED");
+        }
+    }
+
+    private void syncLinkedWasteReports(CollectionJob job, String status) {
+        if (!job.getRouteId().startsWith("JOB-")) {
+            return;
+        }
+
+        List<WasteReport> linkedReports = wasteReportRepository.findAllByAssignedTeam(job.getRouteId());
+        linkedReports.forEach(report -> report.updateAdminFields(
+                status, report.getPriority(), report.getAssignedTeam()));
+        wasteReportRepository.saveAll(linkedReports);
     }
 
     public boolean isEmployeeAssigned(Long employeeId) {

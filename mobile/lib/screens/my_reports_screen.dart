@@ -184,6 +184,12 @@ class _ReportCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final status = (report['status'] ?? 'SUBMITTED').toString();
     final statusColor = status == 'RESOLVED' ? const Color(0xFF028B6B) : const Color(0xFFFFC857);
+    final priority = (report['priority'] ?? 'MEDIUM').toString().toUpperCase();
+    final priorityColor = switch (priority) {
+      'HIGH' => const Color(0xFFD64545),
+      'LOW' => const Color(0xFF028B6B),
+      _ => const Color(0xFFB7791F),
+    };
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(color: Colors.white, border: Border.all(color: _MyReportsScreenState.border), borderRadius: BorderRadius.circular(12)),
@@ -204,6 +210,12 @@ class _ReportCard extends StatelessWidget {
           Text((report['referenceNumber'] ?? '').toString(), style: const TextStyle(color: _MyReportsScreenState.secondaryText, fontSize: 12)),
           const SizedBox(height: 5),
           Row(children: [const Icon(Icons.location_on_outlined, size: 16, color: _MyReportsScreenState.secondaryText), const SizedBox(width: 4), Expanded(child: Text((report['location'] ?? '').toString(), style: const TextStyle(color: _MyReportsScreenState.secondaryText, fontSize: 12)))]),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+            decoration: BoxDecoration(color: priorityColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20)),
+            child: Text('$priority PRIORITY', style: TextStyle(color: priorityColor, fontSize: 10, fontWeight: FontWeight.w800)),
+          ),
           const SizedBox(height: 5),
           Text((report['createdAt'] ?? '').toString().replaceFirst('T', ' '), style: const TextStyle(color: _MyReportsScreenState.secondaryText, fontSize: 11)),
           const SizedBox(height: 10),

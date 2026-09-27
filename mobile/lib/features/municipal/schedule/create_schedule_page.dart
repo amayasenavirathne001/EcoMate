@@ -394,7 +394,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 
                     // Route Dropdown
                     DropdownButtonFormField<RouteModel>(
-                      value: _selectedRoute,
+                      initialValue: _selectedRoute,
                       hint: const Text('Select Route *'),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -435,7 +435,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 
                     // Waste Category
                     DropdownButtonFormField<WasteCategory>(
-                      value: _selectedCategory,
+                      initialValue: _selectedCategory,
                       hint: const Text('Select Waste Category *'),
                       decoration: InputDecoration(
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -467,7 +467,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 
                     // Frequency
                     DropdownButtonFormField<String>(
-                      value: _frequency,
+                      initialValue: _frequency,
                       decoration: InputDecoration(
                         labelText: 'Frequency *',
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -493,7 +493,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                     // Collection Date / Day
                     if (_frequency == 'Weekly')
                       DropdownButtonFormField<String>(
-                        value: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+                        initialValue: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
                                 .contains(_collectionDateOrDay)
                             ? _collectionDateOrDay
                             : 'Tuesday',
@@ -577,7 +577,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 
                     // Destination Type
                     DropdownButtonFormField<String>(
-                      value: _destinationType,
+                      initialValue: _destinationType,
                       decoration: InputDecoration(
                         labelText: 'Destination Type *',
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -618,9 +618,9 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                           width: double.infinity,
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: MunicipalColors.error.withOpacity(0.1),
+                            color: MunicipalColors.error.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: MunicipalColors.error.withOpacity(0.3)),
+                            border: Border.all(color: MunicipalColors.error.withValues(alpha: 0.3)),
                           ),
                           child: const Text(
                             'No recycling centre currently accepts this waste category.',
@@ -694,7 +694,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                         ChoiceChip(
                           label: const Text('Active'),
                           selected: _status == 'ACTIVE',
-                          selectedColor: MunicipalColors.secondaryGreen.withOpacity(0.2),
+                          selectedColor: MunicipalColors.secondaryGreen.withValues(alpha: 0.2),
                           labelStyle: TextStyle(
                             color: _status == 'ACTIVE' ? MunicipalColors.secondaryGreen : MunicipalColors.secondaryText,
                             fontWeight: FontWeight.bold,
@@ -707,7 +707,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                         ChoiceChip(
                           label: const Text('Inactive'),
                           selected: _status == 'INACTIVE',
-                          selectedColor: MunicipalColors.error.withOpacity(0.2),
+                          selectedColor: MunicipalColors.error.withValues(alpha: 0.2),
                           labelStyle: TextStyle(
                             color: _status == 'INACTIVE' ? MunicipalColors.error : MunicipalColors.secondaryText,
                             fontWeight: FontWeight.bold,

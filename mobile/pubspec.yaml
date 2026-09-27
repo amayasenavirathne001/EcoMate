@@ -100,3 +100,5 @@ flutter:
     - assets/images/register_background.jpg
     - assets/images/resident_profile.png
     - assets/images/organic_waste_bin.png
+    - assets/images/special_pickup.png
+    - assets/images/collector_truck.png

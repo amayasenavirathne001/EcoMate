@@ -43,6 +43,11 @@ public class SecurityConfig {
                 // Role-based endpoints
                 .requestMatchers("/api/resident/**")
                     .hasRole("RESIDENT")
+                // Special Pickup - Resident endpoints
+                .requestMatchers(
+                    "/api/special-pickups/**",
+                    "/api/special-pickup-join-requests/**"
+                ).hasRole("RESIDENT")
 
                 .requestMatchers("/api/collector/**")
                     .hasRole("COLLECTOR")
@@ -59,6 +64,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/municipal/**")
                     .hasRole("COUNCIL_ADMIN")
 
+                    // Special Pickup - Admin endpoints
+                .requestMatchers("/api/admin/special-pickups/**")
+                .hasRole("COUNCIL_ADMIN")
                 // Everything else requires login
                 .anyRequest().authenticated()
             )

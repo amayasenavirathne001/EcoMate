@@ -483,7 +483,7 @@ class _MunicipalSchedulePageState extends State<MunicipalSchedulePage> {
                                                 ),
                                                 Switch(
                                                   value: schedule.status == 'ACTIVE',
-                                                  activeColor: MunicipalColors.secondaryGreen,
+                                                  activeThumbColor: MunicipalColors.secondaryGreen,
                                                   onChanged: (_) => _toggleScheduleStatus(schedule),
                                                 ),
                                               ],
@@ -533,7 +533,7 @@ class _MunicipalSchedulePageState extends State<MunicipalSchedulePage> {
                                             Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                               decoration: BoxDecoration(
-                                                color: isNotAssigned ? MunicipalColors.warning.withOpacity(0.15) : MunicipalColors.success.withOpacity(0.15),
+                                                color: isNotAssigned ? MunicipalColors.warning.withValues(alpha: 0.15) : MunicipalColors.success.withValues(alpha: 0.15),
                                                 borderRadius: BorderRadius.circular(20),
                                               ),
                                               child: Row(
@@ -604,7 +604,7 @@ class _MunicipalSchedulePageState extends State<MunicipalSchedulePage> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          if (trailing != null) trailing,
+          ?trailing,
         ],
       ),
     );
