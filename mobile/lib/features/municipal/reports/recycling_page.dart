@@ -23,7 +23,7 @@ class RecyclingPage extends StatelessWidget {
               color: MunicipalColors.primaryBg,
               padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
               child: const Text(
-                'Monitor recycling activity, material recovery, and recycling centre performance.',
+                'Monitor recycling activity, material recovery, and recycling center performance.',
                 style: TextStyle(
                   fontSize: 14,
                   color: MunicipalColors.secondaryText,
@@ -96,7 +96,7 @@ class RecyclingPage extends StatelessWidget {
                     
                     // Description
                     const Text(
-                      'Recycling performance data will appear here once recycling centre delivery and processing records are available.',
+                      'Recycling performance data will appear here once recycling center delivery and processing records are available.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,
@@ -125,7 +125,7 @@ class RecyclingPage extends StatelessWidget {
                           SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Reports will provide insights into recycled quantities, material-wise performance, recycling centre performance, and processing trends.',
+                              'Reports will provide insights into recycled quantities, material-wise performance, recycling center performance, and processing trends.',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: MunicipalColors.secondaryText,
@@ -147,3 +147,4 @@ class RecyclingPage extends StatelessWidget {
     );
   }
 }
+

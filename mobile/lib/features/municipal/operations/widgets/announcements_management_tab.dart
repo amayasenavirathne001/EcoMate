@@ -184,7 +184,7 @@ class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab>
                           DropdownMenuItem(value: 'All Residents', child: Text('All Residents')),
                           DropdownMenuItem(value: 'Residents in Selected Area', child: Text('Residents in Selected Area')),
                           DropdownMenuItem(value: 'Waste Collectors', child: Text('Waste Collectors')),
-                          DropdownMenuItem(value: 'Recycling Centre Officers', child: Text('Recycling Centre Officers')),
+                          DropdownMenuItem(value: 'Recycling Center Officers', child: Text('Recycling Center Officers')),
                           DropdownMenuItem(value: 'Municipal Staff', child: Text('Municipal Staff')),
                         ],
                         onChanged: (val) {
@@ -839,3 +839,4 @@ class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab>
     );
   }
 }
+

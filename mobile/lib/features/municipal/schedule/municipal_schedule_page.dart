@@ -513,10 +513,10 @@ class _MunicipalSchedulePageState extends State<MunicipalSchedulePage> {
                                         _cardInfoRow(
                                           Icons.navigation,
                                           'Destination',
-                                          schedule.destinationType == 'Recycling Centre' && schedule.recyclingCenter != null
+                                          schedule.destinationType == 'Recycling Center' && schedule.recyclingCenter != null
                                               ? schedule.recyclingCenter!.name
                                               : 'Municipal Disposal Site',
-                                          trailing: schedule.destinationType == 'Recycling Centre' && schedule.recyclingCenter != null
+                                          trailing: schedule.destinationType == 'Recycling Center' && schedule.recyclingCenter != null
                                               ? GestureDetector(
                                                   onTap: () => _showRecyclingCentreDetails(schedule.recyclingCenter!),
                                                   child: const Icon(Icons.info_outline, size: 16, color: MunicipalColors.secondaryGreen),
@@ -718,3 +718,4 @@ class _MunicipalSchedulePageState extends State<MunicipalSchedulePage> {
     );
   }
 }
+

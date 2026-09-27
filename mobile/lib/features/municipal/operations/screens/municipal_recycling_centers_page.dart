@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/municipal_colors.dart';
 import '../../../recycling/models/recycling_centre.dart';
 import '../../../recycling/models/material_item.dart';
+import '../../../recycling/models/material_item.dart';
 import '../../../recycling/services/recycling_service.dart';
 
 class MunicipalRecyclingCentersPage extends StatefulWidget {
@@ -14,6 +15,7 @@ class MunicipalRecyclingCentersPage extends StatefulWidget {
 class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCentersPage> {
   final RecyclingService _recyclingService = RecyclingService();
   final TextEditingController _searchController = TextEditingController();
+  List<MaterialItem> _materialsList = [];
   List<MaterialItem> _materialsList = [];
 
   List<RecyclingCentre> _allCentres = [];
@@ -105,7 +107,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                             Icon(Icons.add_business_rounded, color: MunicipalColors.darkGreen),
                             SizedBox(width: 10),
                             Text(
-                              'Add Recycling Centre',
+                              'Add Recycling Center',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -122,7 +124,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                     ),
                     const SizedBox(height: 16),
 
-                    _buildFormField(nameController, 'Centre Name *', Icons.storefront),
+                    _buildFormField(nameController, 'Center Name *', Icons.storefront),
                     const SizedBox(height: 12),
                     _buildFormField(cityController, 'City / Municipal Ward *', Icons.location_city_rounded),
                     const SizedBox(height: 12),
@@ -231,7 +233,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                               if (created != null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text('Recycling centre "${created.name}" registered successfully!'),
+                                    content: Text('Recycling center "${created.name}" registered successfully!'),
                                     backgroundColor: MunicipalColors.secondaryGreen,
                                   ),
                                 );
@@ -252,7 +254,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                               child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                             )
                           : const Text(
-                              'Save Recycling Centre',
+                              'Save Recycling Center',
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                     ),
@@ -312,7 +314,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Recycling Centres',
+          'Recycling Centers',
           style: TextStyle(
             color: MunicipalColors.primaryText,
             fontWeight: FontWeight.bold,
@@ -345,7 +347,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                       });
                     },
                     decoration: InputDecoration(
-                      hintText: 'Search by centre name, city, address...',
+                      hintText: 'Search by center name, city, address...',
                       hintStyle: const TextStyle(color: MunicipalColors.mutedText, fontSize: 14),
                       prefixIcon: const Icon(Icons.search_rounded, color: MunicipalColors.secondaryGreen),
                       suffixIcon: _searchController.text.isNotEmpty
@@ -381,7 +383,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Total Centres: ${_filteredCentres.length}',
+                        'Total Centers: ${_filteredCentres.length}',
                         style: const TextStyle(
                           color: MunicipalColors.secondaryText,
                           fontSize: 13,
@@ -392,7 +394,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                         onPressed: _openAddCenterDialog,
                         icon: const Icon(Icons.add_circle_outline, size: 16, color: MunicipalColors.secondaryGreen),
                         label: const Text(
-                          'Add Centre',
+                          'Add Center',
                           style: TextStyle(
                             color: MunicipalColors.secondaryGreen,
                             fontWeight: FontWeight.bold,
@@ -426,7 +428,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                               ),
                               const SizedBox(height: 12),
                               const Text(
-                                'No recycling centres found',
+                                'No recycling centers found',
                                 style: TextStyle(
                                   color: MunicipalColors.secondaryText,
                                   fontSize: 16,
@@ -436,7 +438,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                               ElevatedButton.icon(
                                 onPressed: _openAddCenterDialog,
                                 icon: const Icon(Icons.add_rounded),
-                                label: const Text('Add Your First Centre'),
+                                label: const Text('Add Your First Center'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: MunicipalColors.secondaryGreen,
                                   foregroundColor: Colors.white,
@@ -542,14 +544,14 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete_outline_rounded, color: MunicipalColors.error, size: 20),
-                  tooltip: 'Delete Centre',
+                  tooltip: 'Delete Center',
                   padding: const EdgeInsets.all(4),
                   constraints: const BoxConstraints(),
                   onPressed: () async {
                     final confirm = await showDialog<bool>(
                       context: context,
                       builder: (ctx) => AlertDialog(
-                        title: const Text('Delete Centre'),
+                        title: const Text('Delete Center'),
                         content: Text('Are you sure you want to delete "${centre.name}"?'),
                         actions: [
                           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
@@ -655,6 +657,8 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
     );
   }
 }
+
+
 
 
 

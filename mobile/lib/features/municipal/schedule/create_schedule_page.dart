@@ -37,7 +37,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
   final List<String> _frequencyOptions = ['One Time', 'Daily', 'Weekly', 'Custom'];
 
   String _destinationType = 'Municipal Disposal Site';
-  final List<String> _destinationTypes = ['Municipal Disposal Site', 'Recycling Centre'];
+  final List<String> _destinationTypes = ['Municipal Disposal Site', 'Recycling Center'];
 
   List<RecyclingCentre> _compatibleCentres = [];
   RecyclingCentre? _selectedCentre;
@@ -92,7 +92,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
         } catch (_) {}
 
         // Fetch compatible centers if recycling centre is destination
-        if (_selectedCategory != null && _destinationType == 'Recycling Centre') {
+        if (_selectedCategory != null && _destinationType == 'Recycling Center') {
           await _loadCompatibleCentres(_selectedCategory!.id);
           if (edit.recyclingCenterId != null && _compatibleCentres.any((rc) => rc.id == edit.recyclingCenterId)) {
             _selectedCentre = _compatibleCentres.firstWhere((rc) => rc.id == edit.recyclingCenterId);
@@ -299,8 +299,8 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
       return;
     }
 
-    if (_destinationType == 'Recycling Centre' && _selectedCentre == null) {
-      _showError('Please select a Recycling Centre');
+    if (_destinationType == 'Recycling Center' && _selectedCentre == null) {
+      _showError('Please select a Recycling Center');
       return;
     }
 
@@ -315,7 +315,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
       endTime: _formatTimeOfDay(_endTime!),
       frequency: _frequency,
       destinationType: _destinationType,
-      recyclingCenterId: _destinationType == 'Recycling Centre' ? _selectedCentre!.id : null,
+      recyclingCenterId: _destinationType == 'Recycling Center' ? _selectedCentre!.id : null,
       status: _status,
       resourceStatus: widget.scheduleToEdit?.resourceStatus ?? 'Not Assigned',
     );
@@ -590,7 +590,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                           setState(() {
                             _destinationType = val;
                             _selectedCentre = null;
-                            if (val == 'Recycling Centre' && _selectedCategory != null) {
+                            if (val == 'Recycling Center' && _selectedCategory != null) {
                               _loadCompatibleCentres(_selectedCategory!.id);
                             }
                           });
@@ -600,9 +600,9 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                     const SizedBox(height: 16),
 
                     // Destination Selection
-                    if (_destinationType == 'Recycling Centre') ...[
+                    if (_destinationType == 'Recycling Center') ...[
                       const Text(
-                        'Select Compatible Recycling Centre *',
+                        'Select Compatible Recycling Center *',
                         style: TextStyle(fontWeight: FontWeight.bold, color: MunicipalColors.primaryText),
                       ),
                       const SizedBox(height: 8),
@@ -610,7 +610,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                         const Center(child: CircularProgressIndicator(color: MunicipalColors.secondaryGreen))
                       else if (_selectedCategory == null)
                         const Text(
-                          'Please select a waste category first to load matching centres.',
+                          'Please select a waste category first to load matching centers.',
                           style: TextStyle(color: MunicipalColors.secondaryText),
                         )
                       else if (_compatibleCentres.isEmpty)
@@ -623,7 +623,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                             border: Border.all(color: MunicipalColors.error.withValues(alpha: 0.3)),
                           ),
                           child: const Text(
-                            'No recycling centre currently accepts this waste category.',
+                            'No recycling center currently accepts this waste category.',
                             style: TextStyle(color: MunicipalColors.error, fontWeight: FontWeight.bold),
                           ),
                         )
@@ -750,3 +750,4 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
     );
   }
 }
+
