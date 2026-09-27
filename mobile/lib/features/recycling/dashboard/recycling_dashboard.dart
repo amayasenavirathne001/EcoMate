@@ -1039,7 +1039,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: RecyclingColors.pageBg,
-      
+      appBar: _buildHeader(),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: RecyclingColors.primaryGreen))
           : SafeArea(
@@ -1048,7 +1048,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                 children: [
                   _buildHomeTab(),
                   _buildDeliveriesTab(),
-                  _buildCentreTab(),
+                  _buildFacilityTab(),
                   _buildSettingsTab(),
                 ],
               ),
@@ -1061,36 +1061,67 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   // APPBAR HEADER
   // =========================================================================
 
-      Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-      child: Wrap(
+  PreferredSizeWidget _buildHeader() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      shape: const Border(bottom: BorderSide(color: RecyclingColors.cardBorder, width: 1)),
+      title: Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         spacing: 8,
         runSpacing: 4,
         children: [
           RichText(
             text: const TextSpan(
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+              ),
               children: [
-                TextSpan(text: 'Eco', style: TextStyle(color: RecyclingColors.darkText)),
-                TextSpan(text: 'Mate', style: TextStyle(color: RecyclingColors.primaryGreen)),
+                TextSpan(
+                  text: 'Eco',
+                  style: TextStyle(color: RecyclingColors.darkText),
+                ),
+                TextSpan(
+                  text: 'Mate',
+                  style: TextStyle(color: RecyclingColors.primaryGreen),
+                ),
               ],
             ),
           ),
+          const SizedBox(width: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
             decoration: BoxDecoration(
               color: RecyclingColors.softGreen,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: RecyclingColors.cardBorder),
             ),
             child: const Text(
               'Recycle Hub',
-              style: TextStyle(color: RecyclingColors.primaryGreen, fontSize: 10, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: RecyclingColors.primaryGreen,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
       ),
+      actions: [
+        IconButton(
+          onPressed: _loadOfficerData,
+          icon: const Icon(Icons.refresh_rounded, color: RecyclingColors.primaryGreen),
+          tooltip: 'Refresh Hub',
+        ),
+        IconButton(
+          onPressed: _logout,
+          icon: const Icon(Icons.logout_rounded, color: Colors.grey),
+          tooltip: 'Logout',
+        ),
+        const SizedBox(width: 4),
+      ],
     );
   }
 
@@ -1114,77 +1145,55 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildHeader(),
-                  const SizedBox(height: 16),
-                  // Greeting Card with Officer Avatar Icon
+                // Greeting Card with Officer Avatar Icon
                 _buildGreetingCard(),
 
                 const SizedBox(height: 14),
 
-                // Linked Center Operations Card
+                // Illustration Banner Card
+                _buildIllustrationBannerCard(),
+
+                const SizedBox(height: 14),
+
+                // Linked Facility Operations Card
                 _buildOperationsHeroCard(),
 
                 const SizedBox(height: 16),
 
-                // 3 KPI Metric Stat Cards (Mobile Friendly & Responsive)
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      bool isSmall = constraints.maxWidth < 360;
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: _buildHomeKpiCard(
-                              'Total Inflow',
-                              '${totalWeight.toStringAsFixed(1)} kg',
-                              Icons.scale_rounded,
-                              RecyclingColors.primaryGreen,
-                              RecyclingColors.softGreen,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: _buildHomeKpiCard(
-                              'Batches',
-                              '${_deliveryRecords.length}',
-                              Icons.receipt_long_rounded,
-                              const Color(0xFF0284C7),
-                              const Color(0xFFE0F2FE),
-                            ),
-                          ),
-                          if (!isSmall) const SizedBox(width: 8),
-                          if (!isSmall)
-                            Expanded(
-                              child: _buildHomeKpiCard(
-                                'Materials',
-                                '${acceptedList.length}',
-                                Icons.category_rounded,
-                                const Color(0xFFD97706),
-                                const Color(0xFFFEF3C7),
-                              ),
-                            ),
-                        ],
-                      );
-                    },
-                  ),
-                  // If screen is extremely small, put the 3rd KPI below
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      bool isSmall = constraints.maxWidth < 360;
-                      if (isSmall) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: _buildHomeKpiCard(
-                            'Materials',
-                            '${acceptedList.length} Types',
-                            Icons.category_rounded,
-                            const Color(0xFFD97706),
-                            const Color(0xFFFEF3C7),
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
+                // 3 KPI Metric Stat Cards (Mobile Friendly)
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildHomeKpiCard(
+                        'Total Inflow',
+                        '${totalWeight.toStringAsFixed(1)} kg',
+                        Icons.scale_rounded,
+                        RecyclingColors.primaryGreen,
+                        RecyclingColors.softGreen,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildHomeKpiCard(
+                        'Batches',
+                        '${_deliveryRecords.length}',
+                        Icons.receipt_long_rounded,
+                        const Color(0xFF0284C7),
+                        const Color(0xFFE0F2FE),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildHomeKpiCard(
+                        'Accepted',
+                        '${acceptedList.length}',
+                        Icons.recycling_rounded,
+                        const Color(0xFF8B5CF6),
+                        const Color(0xFFF3E8FF),
+                      ),
+                    ),
+                  ],
+                ),
 
                 const SizedBox(height: 18),
 
@@ -1304,18 +1313,24 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 
-      Widget _buildGreetingCard() {
+  Widget _buildGreetingCard() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFF9FFF7),
+            Color(0xFFF1F9ED),
+          ],
+        ),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: RecyclingColors.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -1334,7 +1349,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: RecyclingColors.primaryGreen.withOpacity(0.25),
+                  color: RecyclingColors.primaryGreen.withValues(alpha: 0.25),
                   blurRadius: 8,
                   offset: const Offset(0, 3),
                 ),
@@ -1348,81 +1363,78 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
               ),
             ),
           ),
-          const SizedBox(width: 14),
+
+          const SizedBox(width: 12),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Hello, $_officerName',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
                     color: RecyclingColors.darkText,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   _officerEmail,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 12.5,
                     color: RecyclingColors.secondaryText,
+                    fontSize: 12.5,
                   ),
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          // Center Status Badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: _myCentre == null
-                  ? Colors.orange.withOpacity(0.1)
-                  : _myCentre!.isOpen
-                      ? RecyclingColors.softGreen
-                      : Colors.red.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: _myCentre == null
-                    ? Colors.orange.withOpacity(0.5)
-                    : _myCentre!.isOpen
-                        ? RecyclingColors.cardBorder
-                        : Colors.red.withOpacity(0.5),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  _myCentre == null
-                      ? Icons.pending_actions_rounded
-                      : _myCentre!.isOpen
-                          ? Icons.check_circle_rounded
-                          : Icons.cancel_rounded,
-                  size: 12,
-                  color: _myCentre == null
-                      ? Colors.orange
-                      : _myCentre!.isOpen
-                          ? RecyclingColors.primaryGreen
-                          : Colors.redAccent,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  _myCentre == null
-                      ? 'UNASSIGNED'
-                      : _myCentre!.isOpen
-                          ? 'OPEN'
-                          : 'CLOSED',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: _myCentre == null
-                        ? Colors.orange
-                        : _myCentre!.isOpen
-                            ? RecyclingColors.primaryGreen
-                            : Colors.redAccent,
-                  ),
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: (_myCentre?.isOpen ?? false)
+                            ? RecyclingColors.softGreen
+                            : const Color(0xFFFFEBEE),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: (_myCentre?.isOpen ?? false)
+                              ? RecyclingColors.cardBorder
+                              : const Color(0xFFFFCDD2),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: (_myCentre?.isOpen ?? false)
+                                  ? RecyclingColors.primaryGreen
+                                  : RecyclingColors.error,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            (_myCentre?.isOpen ?? false) ? 'OPEN FOR DROP-OFFS' : 'CLOSED',
+                            style: TextStyle(
+                              color: (_myCentre?.isOpen ?? false)
+                                  ? RecyclingColors.primaryGreen
+                                  : RecyclingColors.error,
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -1434,54 +1446,78 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
 
   Widget _buildIllustrationBannerCard() {
     return Container(
-      height: 140,
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        image: const DecorationImage(
-          image: NetworkImage('https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=600&q=80'),
-          fit: BoxFit.cover,
-        ),
+        border: Border.all(color: RecyclingColors.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            colors: [
-              Colors.black.withOpacity(0.7),
-              Colors.black.withOpacity(0.2),
-            ],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: RecyclingColors.softGreen,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Text(
+                    'SMART OPERATIONS',
+                    style: TextStyle(
+                      color: RecyclingColors.primaryGreen,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Recycling Inflow Hub',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: RecyclingColors.darkText,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Record drop-offs, sort recyclable materials, and monitor collection weights in real time.',
+                  style: TextStyle(fontSize: 12, color: RecyclingColors.secondaryText),
+                ),
+              ],
+            ),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text(
-              'SMART OPERATIONS',
-              style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: RecyclingColors.softGreen, letterSpacing: 1.2),
+          const SizedBox(width: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: Image.asset(
+              'assets/images/onboarding_2.png',
+              height: 75,
+              width: 75,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => Container(
+                padding: const EdgeInsets.all(14),
+                decoration: const BoxDecoration(
+                  color: RecyclingColors.softGreen,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.recycling_rounded, color: RecyclingColors.primaryGreen, size: 32),
+              ),
             ),
-            SizedBox(height: 6),
-            Text(
-              'Recycling Inflow Hub',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
-            ),
-            SizedBox(height: 6),
-            Text(
-              'Record drop-offs and sort materials instantly.',
-              style: TextStyle(fontSize: 12, height: 1.3, color: Colors.white70),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -1525,7 +1561,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'LINKED Center',
+                      'LINKED FACILITY',
                       style: TextStyle(
                         color: RecyclingColors.primaryGreen,
                         fontSize: 10.5,
@@ -1535,7 +1571,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      _myCentre?.name ?? 'No Center Assigned',
+                      _myCentre?.name ?? 'No Facility Assigned',
                       style: const TextStyle(
                         color: RecyclingColors.darkText,
                         fontSize: 16,
@@ -1607,23 +1643,18 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 
-      Widget _buildHomeKpiCard(
-    String label,
-    String value,
-    IconData icon,
-    Color color,
-    Color bg,
-  ) {
+  Widget _buildHomeKpiCard(String label, String value, IconData icon, Color color, Color bg) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: RecyclingColors.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -1653,12 +1684,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: RecyclingColors.secondaryText,
-            ),
-            maxLines: 2,
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: RecyclingColors.secondaryText), maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
         ],
@@ -1666,7 +1692,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 
-    Widget _buildActionTile({
+  Widget _buildActionTile({
     required IconData icon,
     required String title,
     required String subtitle,
@@ -1677,15 +1703,16 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: RecyclingColors.cardBorder),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -1932,8 +1959,6 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildHeader(),
-                  const SizedBox(height: 16),
                   // Search Bar & Analytics Trigger
                   Row(
                     children: [
@@ -2299,10 +2324,10 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   }
 
   // =========================================================================
-  // TAB 2: Centre & MATERIALS
+  // TAB 2: FACILITY & MATERIALS
   // =========================================================================
 
-  Widget _buildCentreTab() {
+  Widget _buildFacilityTab() {
     final acceptedList = _centreMaterials.where((m) => m.isActive).toList();
     final unsupportedList = _centreMaterials.where((m) => !m.isActive).toList();
 
@@ -2314,9 +2339,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildHeader(),
-                  const SizedBox(height: 16),
-                  if (_myCentre == null) ...[
+              if (_myCentre == null) ...[
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -2690,7 +2713,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
 
               const SizedBox(height: 16),
 
-              // Centre Affiliation Card
+              // Facility Affiliation Card
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
@@ -2713,7 +2736,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('LINKED Center', style: TextStyle(fontSize: 11, color: RecyclingColors.secondaryText)),
+                          const Text('Linked Facility', style: TextStyle(fontSize: 11, color: RecyclingColors.secondaryText)),
                           Text(
                             _myCentre?.name ?? 'Unassigned',
                             style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.bold, color: RecyclingColors.darkText),
@@ -2863,7 +2886,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
             children: [
               Expanded(child: _bottomNavItem(0, Icons.home_rounded, 'Home')),
               Expanded(child: _bottomNavItem(1, Icons.inventory_2_rounded, 'Deliveries')),
-              Expanded(child: _bottomNavItem(2, Icons.storefront_rounded, 'Center')),
+              Expanded(child: _bottomNavItem(2, Icons.storefront_rounded, 'Facility')),
               Expanded(child: _bottomNavItem(3, Icons.person_rounded, 'Account')),
             ],
           ),
@@ -2898,17 +2921,6 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
