@@ -86,7 +86,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
           style: TextStyle(fontWeight: FontWeight.bold, color: RecyclingColors.darkText),
         ),
         content: const Text(
-          'Are you sure you want to log out from the Recycling Officer Hub?',
+          'Are you sure you want to log out?',
           style: TextStyle(color: RecyclingColors.secondaryText),
         ),
         actions: [
@@ -1048,7 +1048,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                 children: [
                   _buildHomeTab(),
                   _buildDeliveriesTab(),
-                  _buildFacilityTab(),
+                  _buildCenterTab(),
                   _buildSettingsTab(),
                 ],
               ),
@@ -1099,7 +1099,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
               border: Border.all(color: RecyclingColors.cardBorder),
             ),
             child: const Text(
-              'Recycle Hub',
+              'Recycling Center',
               style: TextStyle(
                 color: RecyclingColors.primaryGreen,
                 fontSize: 11,
@@ -1109,19 +1109,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
           ),
         ],
       ),
-      actions: [
-        IconButton(
-          onPressed: _loadOfficerData,
-          icon: const Icon(Icons.refresh_rounded, color: RecyclingColors.primaryGreen),
-          tooltip: 'Refresh Hub',
-        ),
-        IconButton(
-          onPressed: _logout,
-          icon: const Icon(Icons.logout_rounded, color: Colors.grey),
-          tooltip: 'Logout',
-        ),
-        const SizedBox(width: 4),
-      ],
+      actions: [],
     );
   }
 
@@ -1155,7 +1143,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
 
                 const SizedBox(height: 14),
 
-                // Linked Facility Operations Card
+                // Linked Center Operations Card
                 _buildOperationsHeroCard(),
 
                 const SizedBox(height: 16),
@@ -1484,7 +1472,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                 ),
                 const SizedBox(height: 6),
                 const Text(
-                  'Recycling Inflow Hub',
+                  'Recycling Inflow',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -1561,7 +1549,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'LINKED FACILITY',
+                      'Linked Center',
                       style: TextStyle(
                         color: RecyclingColors.primaryGreen,
                         fontSize: 10.5,
@@ -1571,7 +1559,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      _myCentre?.name ?? 'No Facility Assigned',
+                      _myCentre?.name ?? 'No Center Assigned',
                       style: const TextStyle(
                         color: RecyclingColors.darkText,
                         fontSize: 16,
@@ -2324,10 +2312,10 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   }
 
   // =========================================================================
-  // TAB 2: FACILITY & MATERIALS
+  // TAB 2: Center & MATERIALS
   // =========================================================================
 
-  Widget _buildFacilityTab() {
+  Widget _buildCenterTab() {
     final acceptedList = _centreMaterials.where((m) => m.isActive).toList();
     final unsupportedList = _centreMaterials.where((m) => !m.isActive).toList();
 
@@ -2713,7 +2701,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
 
               const SizedBox(height: 16),
 
-              // Facility Affiliation Card
+              // Center Affiliation Card
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
@@ -2736,7 +2724,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Linked Facility', style: TextStyle(fontSize: 11, color: RecyclingColors.secondaryText)),
+                          const Text('Linked Center', style: TextStyle(fontSize: 11, color: RecyclingColors.secondaryText)),
                           Text(
                             _myCentre?.name ?? 'Unassigned',
                             style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.bold, color: RecyclingColors.darkText),
@@ -2886,7 +2874,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
             children: [
               Expanded(child: _bottomNavItem(0, Icons.home_rounded, 'Home')),
               Expanded(child: _bottomNavItem(1, Icons.inventory_2_rounded, 'Deliveries')),
-              Expanded(child: _bottomNavItem(2, Icons.storefront_rounded, 'Facility')),
+              Expanded(child: _bottomNavItem(2, Icons.storefront_rounded, 'Center')),
               Expanded(child: _bottomNavItem(3, Icons.person_rounded, 'Account')),
             ],
           ),
@@ -2921,6 +2909,9 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 }
+
+
+
 
 
 
