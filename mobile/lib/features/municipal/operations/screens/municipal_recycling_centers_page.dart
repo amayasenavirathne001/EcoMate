@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/municipal_colors.dart';
 import '../../../recycling/models/recycling_centre.dart';
+import '../../../recycling/models/material_item.dart';
 import '../../../recycling/services/recycling_service.dart';
 
 class MunicipalRecyclingCentersPage extends StatefulWidget {
@@ -13,6 +14,7 @@ class MunicipalRecyclingCentersPage extends StatefulWidget {
 class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCentersPage> {
   final RecyclingService _recyclingService = RecyclingService();
   final TextEditingController _searchController = TextEditingController();
+  List<MaterialItem> _materialsList = [];
 
   List<RecyclingCentre> _allCentres = [];
   List<RecyclingCentre> _filteredCentres = [];
@@ -33,9 +35,11 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
   Future<void> _loadCentres() async {
     setState(() => _isLoading = true);
     final list = await _recyclingService.fetchRecyclingCentres();
+    final mats = await _recyclingService.fetchAllMaterials();
     if (mounted) {
       setState(() {
         _allCentres = list;
+        _materialsList = mats;
         _filterCentres();
         _isLoading = false;
       });
@@ -64,24 +68,9 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
     final hoursController = TextEditingController(text: 'Mon - Sat: 8:00 AM - 5:30 PM');
     final notesController = TextEditingController();
 
-    final availableMaterials = [
-      'Plastic Bottles (PET #1)',
-      'Rigid Plastics (HDPE #2, PP #5)',
-      'Cardboard & Office Paper',
-      'Newspapers & Magazines',
-      'Aluminum Beverage Cans',
-      'Steel & Tin Food Cans',
-      'Glass Bottles & Jars',
-      'Mobile Phones & Tablets',
-      'Computers & Laptops',
-    ];
+    final availableMaterials = _materialsList.map((m) => m.name).toSet().toList();
 
-    final Set<String> selectedMaterials = {
-      'Plastic Bottles (PET #1)',
-      'Cardboard & Office Paper',
-      'Aluminum Beverage Cans',
-      'Glass Bottles & Jars',
-    };
+    final Set<String> selectedMaterials = {};
 
     bool isSubmitting = false;
 
@@ -330,13 +319,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
             fontSize: 20,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: MunicipalColors.darkGreen),
-            onPressed: _loadCentres,
-            tooltip: 'Refresh',
-          ),
-        ],
+        
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddCenterDialog,
@@ -672,3 +655,9 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
     );
   }
 }
+
+
+
+
+
+

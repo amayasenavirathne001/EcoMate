@@ -472,6 +472,17 @@ class RecyclingService {
   List<MaterialItem> getMasterMaterialList() {
     return _masterMaterials;
   }
+  // Fetch all materials from council API
+  Future<List<MaterialItem>> fetchAllMaterials() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/api/council/materials'));
+      if (response.statusCode == 200 && response.body.isNotEmpty) {
+        final list = jsonDecode(response.body) as List<dynamic>;
+        return list.map((item) => MaterialItem.fromJson(item as Map<String, dynamic>)).toList();
+      }
+    } catch (_) {}
+    return _masterMaterials;
+  }
 
   // Get master materials with is_active flag for the centre
   Future<List<MaterialItem>> getCentreMaterialsForOfficer(String? officerEmail) async {
@@ -888,3 +899,4 @@ class RecyclingService {
     return true;
   }
 }
+
