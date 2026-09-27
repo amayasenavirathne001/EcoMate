@@ -474,8 +474,15 @@ class RecyclingService {
   }
   // Fetch all materials from council API
   Future<List<MaterialItem>> fetchAllMaterials() async {
+    final token = await _authService.getToken();
     try {
-      final response = await http.get(Uri.parse('$baseUrl/api/council/materials'));
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/council/materials'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
       if (response.statusCode == 200 && response.body.isNotEmpty) {
         final list = jsonDecode(response.body) as List<dynamic>;
         return list.map((item) => MaterialItem.fromJson(item as Map<String, dynamic>)).toList();
@@ -899,4 +906,5 @@ class RecyclingService {
     return true;
   }
 }
+
 
