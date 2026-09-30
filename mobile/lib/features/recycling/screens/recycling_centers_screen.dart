@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../models/recycling_center.dart';
 import '../services/recycling_service.dart';
 import 'Center_detail_screen.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class RecyclingCentersScreen extends StatefulWidget {
   const RecyclingCentersScreen({super.key});
@@ -18,6 +21,7 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
   List<RecyclingCenter> _displayedCenters = [];
   String _selectedMaterial = 'All';
   bool _isLoading = false;
+  Position? _userPosition;
 
   final List<String> _materialOptions = [
     'All',
@@ -32,6 +36,7 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
   @override
   void initState() {
     super.initState();
+    _getUserLocation();
     _fetchCenters();
   }
 
@@ -41,387 +46,292 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
     super.dispose();
   }
 
+  Future<void> _getUserLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return;
+      }
+      if (permission == LocationPermission.deniedForever) return;
+      
+      Position position = await Geolocator.getCurrentPosition();
+      if (mounted) {
+        setState(() {
+          _userPosition = position;
+        });
+        _fetchCenters(); // re-sort based on distance
+      }
+    } catch (e) {
+      debugPrint('Location error: $e');
+    }
+  }
+
   Future<void> _fetchCenters() async {
     setState(() => _isLoading = true);
-    final centers = await _recyclingService.fetchRecyclingCenters(
-      query: _searchController.text,
-      materialFilter: _selectedMaterial,
-    );
-    if (mounted) {
-      setState(() {
-        _displayedCenters = centers;
-        _isLoading = false;
-      });
+    try {
+      final centers = await _recyclingService.fetchRecyclingCenters(
+        query: _searchController.text,
+        materialFilter: _selectedMaterial,
+      );
+      
+      if (_userPosition != null) {
+        centers.sort((a, b) {
+          final distA = Geolocator.distanceBetween(_userPosition!.latitude, _userPosition!.longitude, a.latitude, a.longitude);
+          final distB = Geolocator.distanceBetween(_userPosition!.latitude, _userPosition!.longitude, b.latitude, b.longitude);
+          return distA.compareTo(distB);
+        });
+      }
+      
+      if (mounted) {
+        setState(() => _displayedCenters = centers);
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  String _formatDistance(double? distanceMeters) {
+    if (distanceMeters == null) return 'Distance unknown';
+    if (distanceMeters < 1000) {
+      return '${distanceMeters.toStringAsFixed(0)} m away';
+    }
+    return '${(distanceMeters / 1000).toStringAsFixed(1)} km away';
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: RecyclingColors.offWhite,
-      appBar: AppBar(
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
         backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: RecyclingColors.deepForestGreen, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Nearby Recycling Centers',
-          style: TextStyle(
-            color: RecyclingColors.deepForestGreen,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: RecyclingColors.deepForestGreen, size: 20),
+            onPressed: () => Navigator.pop(context),
           ),
-        ),
-      ),
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: Column(
-              children: [
-                // Search and Material Filter Bar
-                Container(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      // Search Input
-                      TextField(
-                        controller: _searchController,
-                        onChanged: (_) => _fetchCenters(),
-                        style: const TextStyle(color: Color(0xFF2D3748)),
-                        decoration: InputDecoration(
-                          hintText: 'Search by center name, city, or address...',
-                          hintStyle: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 14),
-                          prefixIcon: const Icon(
-                            Icons.search_rounded,
-                            color: RecyclingColors.forestGreen,
-                          ),
-                          suffixIcon: _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(
-                                    Icons.clear,
-                                    color: Colors.grey,
-                                  ),
-                                  onPressed: () {
-                                    _searchController.clear();
-                                    _fetchCenters();
-                                  },
-                                )
-                              : null,
-                          filled: true,
-                          fillColor: RecyclingColors.offWhite,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: RecyclingColors.cardBorder),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: RecyclingColors.cardBorder),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(
-                              color: RecyclingColors.forestGreen,
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // Material Horizontal Filter Chips
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: _materialOptions.map((mat) {
-                            final isSelected = _selectedMaterial == mat;
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: ChoiceChip(
-                                label: Text(mat),
-                                selected: isSelected,
-                                onSelected: (_) {
-                                  setState(() {
-                                    _selectedMaterial = mat;
-                                  });
-                                  _fetchCenters();
-                                },
-                                selectedColor: RecyclingColors.deepForestGreen,
-                                backgroundColor: Colors.white,
-                                side: BorderSide(
-                                  color: isSelected
-                                      ? RecyclingColors.deepForestGreen
-                                      : RecyclingColors.cardBorder,
-                                ),
-                                labelStyle: TextStyle(
-                                  color: isSelected
-                                      ? Colors.white
-                                      : RecyclingColors.earthyBrown,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                  fontSize: 13,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                showCheckmark: false,
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const Divider(height: 1, color: Color(0xFFE0E0E0)),
-
-                // Centers List
-                Expanded(
-                  child: _isLoading
-                      ? const Center(
-                          child: CircularProgressIndicator(color: RecyclingColors.deepForestGreen),
-                        )
-                      : _displayedCenters.isEmpty
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.location_off_rounded,
-                                    size: 56,
-                                    color: Colors.grey.withValues(alpha: 0.5),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  const Text(
-                                    'No recycling centers found matching your search',
-                                    style: TextStyle(
-                                      color: RecyclingColors.earthyBrown,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : ListView.builder(
-                              padding: const EdgeInsets.all(20),
-                              itemCount: _displayedCenters.length,
-                              itemBuilder: (context, index) {
-                                final center = _displayedCenters[index];
-                                return _buildCenterCard(center);
-                              },
-                            ),
-                ),
-              ],
+          title: const Text(
+            'Nearby Centers',
+            style: TextStyle(
+              color: RecyclingColors.deepForestGreen,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
             ),
           ),
+          centerTitle: true,
+          bottom: const TabBar(
+            labelColor: RecyclingColors.forestGreen,
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: RecyclingColors.forestGreen,
+            tabs: [
+              Tab(icon: Icon(Icons.list_rounded), text: 'List'),
+              Tab(icon: Icon(Icons.map_rounded), text: 'Map'),
+            ],
+          ),
+        ),
+        body: Column(
+          children: [
+            // Search and Filters
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _searchController,
+                    onChanged: (_) => _fetchCenters(),
+                    style: const TextStyle(color: Color(0xFF2D3748)),
+                    decoration: InputDecoration(
+                      hintText: 'Search centers...',
+                      hintStyle: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 14),
+                      prefixIcon: const Icon(Icons.search_rounded, color: RecyclingColors.forestGreen),
+                      filled: true,
+                      fillColor: RecyclingColors.offWhite,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: RecyclingColors.cardBorder),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: RecyclingColors.forestGreen, width: 1.5),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: _materialOptions.map((mat) {
+                        final isSelected = _selectedMaterial == mat;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            label: Text(mat),
+                            selected: isSelected,
+                            onSelected: (_) {
+                              setState(() => _selectedMaterial = mat);
+                              _fetchCenters();
+                            },
+                            selectedColor: RecyclingColors.deepForestGreen,
+                            backgroundColor: Colors.white,
+                            labelStyle: TextStyle(
+                              color: isSelected ? Colors.white : RecyclingColors.earthyBrown,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1, color: Color(0xFFE0E0E0)),
+            // Tabs Content
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: RecyclingColors.deepForestGreen))
+                  : TabBarView(
+                      physics: const NeverScrollableScrollPhysics(), // Map needs its own gestures
+                      children: [
+                        _buildListView(),
+                        _buildMapView(),
+                      ],
+                    ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildCenterCard(RecyclingCenter center) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: RecyclingColors.cardBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+  Widget _buildListView() {
+    if (_displayedCenters.isEmpty) {
+      return const Center(child: Text('No centers found.', style: TextStyle(color: Colors.grey)));
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: _displayedCenters.length,
+      itemBuilder: (context, index) {
+        final center = _displayedCenters[index];
+        return _buildCenterCard(center);
+      },
+    );
+  }
+
+  Widget _buildMapView() {
+    if (_displayedCenters.isEmpty && _userPosition == null) {
+      return const Center(child: Text('No map data.'));
+    }
+    
+    final initialCenter = _userPosition != null 
+        ? LatLng(_userPosition!.latitude, _userPosition!.longitude)
+        : (_displayedCenters.isNotEmpty ? LatLng(_displayedCenters.first.latitude, _displayedCenters.first.longitude) : const LatLng(6.9271, 79.8612));
+        
+    return FlutterMap(
+      options: MapOptions(
+        initialCenter: initialCenter,
+        initialZoom: 12.0,
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(18),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => CenterDetailScreen(center: center),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.ecomate.app',
+        ),
+        MarkerLayer(
+          markers: [
+            if (_userPosition != null)
+              Marker(
+                point: LatLng(_userPosition!.latitude, _userPosition!.longitude),
+                width: 40,
+                height: 40,
+                child: const Icon(Icons.my_location, color: Colors.blue, size: 30),
               ),
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Top Row: Name + Open/Closed Badge + Distance
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE5E9DD),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: const Icon(
-                        Icons.store_mall_directory_rounded,
-                        color: RecyclingColors.forestGreen,
-                        size: 26,
-                      ),
+            ..._displayedCenters.map((c) => Marker(
+                  point: LatLng(c.latitude, c.longitude),
+                  width: 40,
+                  height: 40,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => CenterDetailScreen(center: c)));
+                    },
+                    child: Icon(
+                      Icons.location_on,
+                      color: c.isOpen ? RecyclingColors.forestGreen : Colors.red,
+                      size: 30,
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            center.name,
-                            style: const TextStyle(
-                              color: RecyclingColors.deepForestGreen,
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            center.address,
-                            style: const TextStyle(
-                              color: RecyclingColors.earthyBrown,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: center.isOpen
-                                ? const Color(0xFFE5E9DD)
-                                : const Color(0xFFFFEBEE),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            center.isOpen ? 'OPEN' : 'CLOSED',
-                            style: TextStyle(
-                              color: center.isOpen
-                                  ? RecyclingColors.forestGreen
-                                  : const Color(0xFFC62828),
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.directions_walk_rounded,
-                              size: 14,
-                              color: Color(0xFF1976D2),
-                            ),
-                            const SizedBox(width: 2),
-                            Text(
-                              '${center.distanceKm} km',
-                              style: const TextStyle(
-                                color: Color(0xFF1976D2),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 14),
-
-                // Operating Hours Row
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.access_time_rounded,
-                      size: 15,
-                      color: RecyclingColors.earthyBrown,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      center.operatingHours,
-                      style: const TextStyle(
-                        color: RecyclingColors.earthyBrown,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                // Accepted Materials Chips Preview
-                const Text(
-                  'Accepted Materials:',
-                  style: TextStyle(
-                    color: RecyclingColors.forestGreen,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
                   ),
-                ),
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: center.acceptedMaterials.take(4).map((mat) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE5E9DD),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: RecyclingColors.lightSage),
-                      ),
-                      child: Text(
-                        mat,
-                        style: const TextStyle(
-                          color: RecyclingColors.deepForestGreen,
-                          fontSize: 11,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
+                )),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCenterCard(RecyclingCenter center) {
+    double? dist;
+    if (_userPosition != null) {
+      dist = Geolocator.distanceBetween(_userPosition!.latitude, _userPosition!.longitude, center.latitude, center.longitude);
+    }
+    
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 2,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CenterDetailScreen(center: center))),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      center.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: RecyclingColors.deepForestGreen),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: center.isOpen ? const Color(0xFFE5E9DD) : const Color(0xFFFFEBEE),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      center.isOpen ? 'OPEN' : 'CLOSED',
+                      style: TextStyle(color: center.isOpen ? RecyclingColors.forestGreen : Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(center.address, style: const TextStyle(color: Colors.grey)),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.location_on_rounded, size: 16, color: Colors.blue),
+                  const SizedBox(width: 4),
+                  Text(_formatDistance(dist), style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 13)),
+                  const Spacer(),
+                  const Icon(Icons.access_time_rounded, size: 16, color: Colors.grey),
+                  const SizedBox(width: 4),
+                  Text(center.operatingHours, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                ],
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
-
-
-
-
-
-
-
-
-
 

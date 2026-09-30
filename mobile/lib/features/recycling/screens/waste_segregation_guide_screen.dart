@@ -7,7 +7,8 @@ import 'add_category_screen.dart';
 import 'recycling_centers_screen.dart';
 
 class WasteSegregationGuideScreen extends StatefulWidget {
-  const WasteSegregationGuideScreen({super.key});
+  final bool showNearbyCenters;
+  const WasteSegregationGuideScreen({super.key, this.showNearbyCenters = true});
 
   @override
   State<WasteSegregationGuideScreen> createState() =>
@@ -107,18 +108,19 @@ class _WasteSegregationGuideScreenState
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.location_on_outlined, color: RecyclingColors.deepForestGreen),
-            tooltip: 'Nearby Recycling Centers',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const RecyclingCentersScreen(),
-                ),
-              );
-            },
-          ),
+          if (widget.showNearbyCenters)
+            IconButton(
+              icon: const Icon(Icons.location_on_outlined, color: RecyclingColors.deepForestGreen),
+              tooltip: 'Nearby Recycling Centers',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const RecyclingCentersScreen(),
+                  ),
+                );
+              },
+            ),
         ],
       ),
       body: SafeArea(

@@ -85,7 +85,9 @@ class CenterDetailScreen extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 6),
-                                Row(
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 4,
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.symmetric(
@@ -109,8 +111,8 @@ class CenterDetailScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
                                     Row(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         const Icon(
                                           Icons.directions_walk_rounded,
@@ -119,7 +121,7 @@ class CenterDetailScreen extends StatelessWidget {
                                         ),
                                         const SizedBox(width: 2),
                                         Text(
-                                          '${center.distanceKm} km away',
+                                          'View Location on Map',
                                           style: const TextStyle(
                                             color: Color(0xFF1976D2),
                                             fontSize: 12,
@@ -356,6 +358,7 @@ class CenterDetailScreen extends StatelessWidget {
     );
   }
 }
+
 
 
 

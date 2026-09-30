@@ -567,7 +567,7 @@ class RecyclingService {
     if (token != null && token.isNotEmpty) {
       try {
         final response = await http.patch(
-          Uri.parse('$baseUrl/api/recycling/deliveries/$deliveryId/status'),
+          Uri.parse('$baseUrl/api/recycling/deliveries/${deliveryId.replaceAll('DEL-', '')}/status'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -587,6 +587,8 @@ class RecyclingService {
     return true;
   }
 }
+
+
 
 
 

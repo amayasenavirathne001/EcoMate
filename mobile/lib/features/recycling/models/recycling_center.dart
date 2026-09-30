@@ -5,7 +5,8 @@ class RecyclingCenter {
   final String name;
   final String address;
   final String city;
-  final double distanceKm;
+  final double latitude;
+  final double longitude;
   final String contactNumber;
   final String email;
   final String operatingHours;
@@ -13,6 +14,7 @@ class RecyclingCenter {
   final List<String> acceptedMaterials;
   final List<String> unsupportedMaterials;
   final String notes;
+  final bool isDeleted;
 
   const RecyclingCenter({
     required this.id,
@@ -21,7 +23,8 @@ class RecyclingCenter {
     required this.name,
     required this.address,
     required this.city,
-    required this.distanceKm,
+    required this.latitude,
+    required this.longitude,
     required this.contactNumber,
     required this.email,
     required this.operatingHours,
@@ -29,6 +32,7 @@ class RecyclingCenter {
     required this.acceptedMaterials,
     required this.unsupportedMaterials,
     required this.notes,
+    this.isDeleted = false,
   });
 
   RecyclingCenter copyWith({
@@ -38,7 +42,8 @@ class RecyclingCenter {
     String? name,
     String? address,
     String? city,
-    double? distanceKm,
+    double? latitude,
+    double? longitude,
     String? contactNumber,
     String? email,
     String? operatingHours,
@@ -46,6 +51,7 @@ class RecyclingCenter {
     List<String>? acceptedMaterials,
     List<String>? unsupportedMaterials,
     String? notes,
+    bool? isDeleted,
   }) {
     return RecyclingCenter(
       id: id ?? this.id,
@@ -54,7 +60,8 @@ class RecyclingCenter {
       name: name ?? this.name,
       address: address ?? this.address,
       city: city ?? this.city,
-      distanceKm: distanceKm ?? this.distanceKm,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       contactNumber: contactNumber ?? this.contactNumber,
       email: email ?? this.email,
       operatingHours: operatingHours ?? this.operatingHours,
@@ -62,6 +69,7 @@ class RecyclingCenter {
       acceptedMaterials: acceptedMaterials ?? this.acceptedMaterials,
       unsupportedMaterials: unsupportedMaterials ?? this.unsupportedMaterials,
       notes: notes ?? this.notes,
+      isDeleted: isDeleted ?? this.isDeleted,
     );
   }
 
@@ -73,7 +81,8 @@ class RecyclingCenter {
       name: json['name'] as String? ?? '',
       address: json['address'] as String? ?? '',
       city: json['city'] as String? ?? '',
-      distanceKm: (json['distanceKm'] is num) ? (json['distanceKm'] as num).toDouble() : 1.2,
+      latitude: (json['latitude'] is num) ? (json['latitude'] as num).toDouble() : 6.9271,
+      longitude: (json['longitude'] is num) ? (json['longitude'] as num).toDouble() : 79.8612,
       contactNumber: json['contactNumber'] as String? ?? '',
       email: json['email'] as String? ?? '',
       operatingHours: json['operatingHours'] as String? ?? 'Mon - Sat: 8:00 AM - 5:30 PM',
@@ -87,6 +96,7 @@ class RecyclingCenter {
               .toList() ??
           [],
       notes: json['notes'] as String? ?? '',
+      isDeleted: json['isDeleted'] as bool? ?? false,
     );
   }
 
@@ -102,9 +112,14 @@ class RecyclingCenter {
       'acceptedMaterials': acceptedMaterials,
       'unsupportedMaterials': unsupportedMaterials,
       'notes': notes,
+      'isDeleted': isDeleted,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 }
+
+
 
 
 

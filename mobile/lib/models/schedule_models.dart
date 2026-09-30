@@ -85,7 +85,8 @@ class CollectionScheduleModel {
         name: rc['name'] as String? ?? '',
         address: rc['address'] as String? ?? '',
         city: rc['city'] as String? ?? '',
-        distanceKm: (rc['distanceKm'] as num?)?.toDouble() ?? 0.0,
+        latitude: (rc['latitude'] as num?)?.toDouble() ?? 6.9271,
+          longitude: (rc['longitude'] as num?)?.toDouble() ?? 79.8612,
         contactNumber: rc['contactNumber'] as String? ?? '',
         email: rc['email'] as String? ?? '',
         operatingHours: rc['operatingHours'] as String? ?? '',
@@ -133,5 +134,6 @@ class CollectionScheduleModel {
     };
   }
 }
+
 
 

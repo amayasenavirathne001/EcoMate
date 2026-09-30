@@ -34,8 +34,7 @@ public class RecyclingCenter {
     @Column(name = "longitude")
     private Double longitude = 79.8612;
 
-    @Column(name = "distance_km")
-    private Double distanceKm = 1.2;
+    
 
     @Column(name = "contact_number", nullable = false)
     private String contactNumber;
@@ -52,7 +51,10 @@ public class RecyclingCenter {
     @Column(length = 1000)
     private String notes = "";
 
-    @OneToMany(mappedBy = "RecyclingCenter", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
+
+    @OneToMany(mappedBy = "recyclingCenter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecyclingCenterMaterial> centerMaterials = new ArrayList<>();
 
     public RecyclingCenter() {
@@ -136,13 +138,9 @@ public class RecyclingCenter {
         this.longitude = longitude;
     }
 
-    public Double getDistanceKm() {
-        return distanceKm;
-    }
+    
 
-    public void setDistanceKm(Double distanceKm) {
-        this.distanceKm = distanceKm;
-    }
+    
 
     public String getContactNumber() {
         return contactNumber;
@@ -191,6 +189,16 @@ public class RecyclingCenter {
     public void setCenterMaterials(List<RecyclingCenterMaterial> centerMaterials) {
         this.centerMaterials = centerMaterials;
     }
+
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }
+
+
 
 

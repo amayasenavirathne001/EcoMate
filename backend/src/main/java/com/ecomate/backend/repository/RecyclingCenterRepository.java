@@ -18,9 +18,11 @@ public interface RecyclingCenterRepository extends JpaRepository<RecyclingCenter
 
     List<RecyclingCenter> findByCityIgnoreCase(String city);
 
-    List<RecyclingCenter> findByIsOpenTrue();
+    List<RecyclingCenter> findByIsDeletedFalse();
 
-    @Query("SELECT DISTINCT rc FROM RecyclingCenter rc JOIN rc.centerMaterials cm WHERE LOWER(cm.material.category) IN :categories AND cm.isActive = true")
+    List<RecyclingCenter> findByIsDeletedFalseAndIsOpenTrue();
+
+    @Query("SELECT DISTINCT rc FROM RecyclingCenter rc JOIN rc.centerMaterials cm WHERE LOWER(cm.material.category) IN :categories AND cm.isActive = true AND rc.isDeleted = false")
     List<RecyclingCenter> findByAcceptedWasteCategory(@Param("categories") List<String> categories);
 }
 

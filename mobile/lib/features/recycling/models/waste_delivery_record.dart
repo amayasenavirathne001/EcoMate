@@ -116,8 +116,3 @@ class WasteDeliveryRecord {
     return 'REC';
   }
 }
-
-
-
-
-

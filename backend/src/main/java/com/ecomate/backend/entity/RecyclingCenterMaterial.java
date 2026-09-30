@@ -15,7 +15,7 @@ public class RecyclingCenterMaterial {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recycling_center_id", nullable = false)
-    private RecyclingCenter RecyclingCenter;
+    private RecyclingCenter recyclingCenter;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "material_id", nullable = false)
@@ -30,8 +30,8 @@ public class RecyclingCenterMaterial {
     public RecyclingCenterMaterial() {
     }
 
-    public RecyclingCenterMaterial(RecyclingCenter RecyclingCenter, Material material, Boolean isActive) {
-        this.RecyclingCenter = RecyclingCenter;
+    public RecyclingCenterMaterial(RecyclingCenter recyclingCenter, Material material, Boolean isActive) {
+        this.recyclingCenter = recyclingCenter;
         this.material = material;
         this.isActive = isActive;
         this.updatedAt = LocalDateTime.now();
@@ -46,11 +46,11 @@ public class RecyclingCenterMaterial {
     }
 
     public RecyclingCenter getRecyclingCenter() {
-        return RecyclingCenter;
+        return recyclingCenter;
     }
 
-    public void setRecyclingCenter(RecyclingCenter RecyclingCenter) {
-        this.RecyclingCenter = RecyclingCenter;
+    public void setRecyclingCenter(RecyclingCenter recyclingCenter) {
+        this.recyclingCenter = recyclingCenter;
     }
 
     public Material getMaterial() {
@@ -78,3 +78,4 @@ public class RecyclingCenterMaterial {
         this.updatedAt = updatedAt;
     }
 }
+

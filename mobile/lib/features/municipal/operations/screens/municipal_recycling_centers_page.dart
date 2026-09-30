@@ -3,6 +3,9 @@ import '../../theme/municipal_colors.dart';
 import '../../../recycling/models/recycling_center.dart';
 import '../../../recycling/models/material_item.dart';
 import '../../../recycling/services/recycling_service.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+
 
 class MunicipalRecyclingCentersPage extends StatefulWidget {
   const MunicipalRecyclingCentersPage({super.key});
@@ -69,10 +72,14 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
     final notesController = TextEditingController();
 
     final availableMaterials = _materialsList.map((m) => m.name).toSet().toList();
-
     final Set<String> selectedMaterials = {};
 
     bool isSubmitting = false;
+    bool autovalidate = false;
+    LatLng? selectedLocation; 
+    
+    final _formKey = GlobalKey<FormState>();
+    final _scrollController = ScrollController();
 
     showModalBottomSheet(
       context: context,
@@ -92,171 +99,249 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Row(
-                          children: [
-                            Icon(Icons.add_business_rounded, color: MunicipalColors.darkGreen),
-                            SizedBox(width: 10),
-                            Text(
-                              'Add Recycling Center',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: MunicipalColors.primaryText,
+              child: Form(
+                key: _formKey,
+                autovalidateMode: autovalidate ? AutovalidateMode.onUserInteraction : AutovalidateMode.disabled,
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Row(
+                            children: [
+                              Icon(Icons.add_business_rounded, color: MunicipalColors.darkGreen),
+                              SizedBox(width: 10),
+                              Text(
+                                'Add Recycling Center',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: MunicipalColors.primaryText,
+                                ),
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      const Text(
+                        'Select Location on Map *',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: MunicipalColors.primaryText),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        height: 200,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: autovalidate && selectedLocation == null ? MunicipalColors.error : MunicipalColors.border,
+                            width: autovalidate && selectedLocation == null ? 1.5 : 1.0,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: FlutterMap(
+                            options: MapOptions(
+                              initialCenter: const LatLng(6.9271, 79.8612),
+                              initialZoom: 10.0,
+                              onTap: (tapPosition, point) {
+                                setModalState(() {
+                                  selectedLocation = point;
+                                });
+                              },
+                            ),
+                            children: [
+                              TileLayer(
+                                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                userAgentPackageName: 'com.ecomate.app',
+                              ),
+                              if (selectedLocation != null)
+                                MarkerLayer(
+                                  markers: [
+                                    Marker(
+                                      point: selectedLocation!,
+                                      width: 40,
+                                      height: 40,
+                                      child: const Icon(Icons.location_on, color: Colors.red, size: 40),
+                                    ),
+                                  ],
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (autovalidate && selectedLocation == null)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 6, left: 12),
+                          child: Text('Please select a location on the map', style: TextStyle(color: MunicipalColors.error, fontSize: 12)),
+                        )
+                      else if (selectedLocation == null)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 4),
+                          child: Text('Tap on the map to pin the center location', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                        ),
+                      const SizedBox(height: 16),
+_buildFormField(nameController, 'Center Name *', Icons.storefront, isRequired: true),
+                      const SizedBox(height: 12),
+                      _buildFormField(cityController, 'City / Municipal Ward *', Icons.location_city_rounded, isRequired: true),
+                      const SizedBox(height: 12),
+                      _buildFormField(addressController, 'Full Street Address *', Icons.location_on_outlined, isRequired: true),
+                      const SizedBox(height: 12),
+                      _buildFormField(phoneController, 'Contact Phone *', Icons.phone_outlined, keyboardType: TextInputType.phone, isRequired: true),
+                      const SizedBox(height: 12),
+                      _buildFormField(emailController, 'Officer Login Email (e.g. officer@gmail.com) *', Icons.badge_outlined, keyboardType: TextInputType.emailAddress, isRequired: true),
+                      const SizedBox(height: 12),
+                      _buildFormField(hoursController, 'Operating Hours', Icons.access_time_rounded),
+                      const SizedBox(height: 12),
+                      _buildFormField(notesController, 'Notes / Instructions', Icons.notes_outlined, maxLines: 2),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Accepted Materials',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: MunicipalColors.primaryText,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      
+                      // 2-by-2 Grid for Accepted Materials
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 3.5,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                        ),
+                        itemCount: availableMaterials.length,
+                        itemBuilder: (context, index) {
+                          final mat = availableMaterials[index];
+                          final isSelected = selectedMaterials.contains(mat);
+                          return FilterChip(
+                            label: Text(mat, overflow: TextOverflow.ellipsis),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              setModalState(() {
+                                if (selected) {
+                                  selectedMaterials.add(mat);
+                                } else {
+                                  selectedMaterials.remove(mat);
+                                }
+                              });
+                            },
+                            selectedColor: MunicipalColors.secondaryGreen.withValues(alpha: 0.15),
+                            checkmarkColor: MunicipalColors.secondaryGreen,
+                            labelStyle: TextStyle(
+                              color: isSelected ? MunicipalColors.darkGreen : MunicipalColors.secondaryText,
+                              fontSize: 12,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              side: BorderSide(
+                                color: isSelected ? MunicipalColors.secondaryGreen : MunicipalColors.border,
                               ),
                             ),
-                          ],
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    _buildFormField(nameController, 'Center Name *', Icons.storefront),
-                    const SizedBox(height: 12),
-                    _buildFormField(cityController, 'City / Municipal Ward *', Icons.location_city_rounded),
-                    const SizedBox(height: 12),
-                    _buildFormField(addressController, 'Full Street Address *', Icons.location_on_outlined),
-                    const SizedBox(height: 12),
-                    _buildFormField(phoneController, 'Contact Phone *', Icons.phone_outlined, keyboardType: TextInputType.phone),
-                    const SizedBox(height: 12),
-                    _buildFormField(emailController, 'Officer Login Email (e.g. officer@gmail.com) *', Icons.badge_outlined, keyboardType: TextInputType.emailAddress),
-                    const SizedBox(height: 12),
-                    _buildFormField(hoursController, 'Operating Hours', Icons.access_time_rounded),
-                    const SizedBox(height: 12),
-                    _buildFormField(notesController, 'Notes / Instructions', Icons.notes_outlined, maxLines: 2),
-                    const SizedBox(height: 16),
-
-                    const Text(
-                      'Accepted Materials',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: MunicipalColors.primaryText,
+                          );
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: availableMaterials.map((mat) {
-                        final isSelected = selectedMaterials.contains(mat);
-                        return FilterChip(
-                          label: Text(mat),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setModalState(() {
-                              if (selected) {
-                                selectedMaterials.add(mat);
-                              } else {
-                                selectedMaterials.remove(mat);
-                              }
-                            });
-                          },
-                          selectedColor: MunicipalColors.secondaryGreen.withValues(alpha: 0.15),
-                          checkmarkColor: MunicipalColors.secondaryGreen,
-                          labelStyle: TextStyle(
-                            color: isSelected ? MunicipalColors.darkGreen : MunicipalColors.secondaryText,
-                            fontSize: 12,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(
-                              color: isSelected ? MunicipalColors.secondaryGreen : MunicipalColors.border,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-                    ElevatedButton(
-                      onPressed: isSubmitting
-                          ? null
-                          : () async {
-                              final name = nameController.text.trim();
-                              final city = cityController.text.trim();
-                              final address = addressController.text.trim();
-                              final phone = phoneController.text.trim();
-                              final officerEmail = emailController.text.trim();
+                      ElevatedButton(
+                        onPressed: isSubmitting
+                            ? null
+                            : () async {
+                                if (!_formKey.currentState!.validate() || selectedLocation == null) {
+                                  setModalState(() => autovalidate = true);
+                                  _scrollController.animateTo(
+                                    0,
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeOut,
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Please correct the highlighted errors'),
+                                      backgroundColor: MunicipalColors.error,
+                                    ),
+                                  );
+                                  return;
+                                }
 
-                              if (name.isEmpty || city.isEmpty || address.isEmpty || phone.isEmpty || officerEmail.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Please fill all required fields (*) including Officer Email'),
-                                    backgroundColor: MunicipalColors.error,
-                                  ),
+                                final name = nameController.text.trim();
+                                final city = cityController.text.trim();
+                                final address = addressController.text.trim();
+                                final phone = phoneController.text.trim();
+                                final officerEmail = emailController.text.trim();
+
+                                setModalState(() => isSubmitting = true);
+
+                                final newCenter = RecyclingCenter(
+                                  id: '',
+                                  officerEmail: officerEmail,
+                                  name: name,
+                                  address: address,
+                                  city: city,
+                                  latitude: selectedLocation!.latitude,
+                                  longitude: selectedLocation!.longitude,
+                                  contactNumber: phone,
+                                  email: officerEmail,
+                                  operatingHours: hoursController.text.trim().isNotEmpty
+                                      ? hoursController.text.trim()
+                                      : 'Mon - Sat: 8:00 AM - 5:30 PM',
+                                  isOpen: true,
+                                  acceptedMaterials: selectedMaterials.toList(),
+                                  unsupportedMaterials: availableMaterials
+                                      .where((m) => !selectedMaterials.contains(m))
+                                      .toList(),
+                                  notes: notesController.text.trim(),
                                 );
-                                return;
-                              }
 
-                              setModalState(() => isSubmitting = true);
+                                final created = await _recyclingService.createCenter(newCenter);
 
-                              final newCenter = RecyclingCenter(
-                                id: '',
-                                officerEmail: officerEmail,
-                                name: name,
-                                address: address,
-                                city: city,
-                                distanceKm: 1.5,
-                                contactNumber: phone,
-                                email: officerEmail,
-                                operatingHours: hoursController.text.trim().isNotEmpty
-                                    ? hoursController.text.trim()
-                                    : 'Mon - Sat: 8:00 AM - 5:30 PM',
-                                isOpen: true,
-                                acceptedMaterials: selectedMaterials.toList(),
-                                unsupportedMaterials: availableMaterials
-                                    .where((m) => !selectedMaterials.contains(m))
-                                    .toList(),
-                                notes: notesController.text.trim(),
-                              );
+                                if (!context.mounted) return;
+                                Navigator.pop(context);
 
-                              final created = await _recyclingService.createCenter(newCenter);
-
-                              if (!context.mounted) return;
-                              Navigator.pop(context);
-
-                              if (created != null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Recycling center "${created.name}" registered successfully!'),
-                                    backgroundColor: MunicipalColors.secondaryGreen,
-                                  ),
-                                );
-                                _loadCenters();
-                              }
-                            },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: MunicipalColors.secondaryGreen,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        elevation: 0,
+                                if (created != null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Recycling center "${created.name}" registered successfully!'),
+                                      backgroundColor: MunicipalColors.secondaryGreen,
+                                    ),
+                                  );
+                                  _loadCenters();
+                                }
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: MunicipalColors.secondaryGreen,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          elevation: 0,
+                        ),
+                        child: isSubmitting
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                              )
+                            : const Text(
+                                'Save Recycling Center',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
                       ),
-                      child: isSubmitting
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                            )
-                          : const Text(
-                              'Save Recycling Center',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
@@ -272,17 +357,30 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
     IconData icon, {
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
+    bool isRequired = false,
   }) {
-    return TextField(
+    return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       maxLines: maxLines,
+      validator: isRequired
+          ? (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'This field is required';
+              }
+              if (keyboardType == TextInputType.emailAddress && !value.contains('@')) {
+                return 'Enter a valid email address';
+              }
+              return null;
+            }
+          : null,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: MunicipalColors.secondaryGreen, size: 20),
         labelStyle: const TextStyle(color: MunicipalColors.secondaryText, fontSize: 13),
         filled: true,
         fillColor: MunicipalColors.primaryBg,
+        errorStyle: const TextStyle(color: MunicipalColors.error),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: MunicipalColors.border),
@@ -295,6 +393,14 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: MunicipalColors.secondaryGreen, width: 1.5),
         ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: MunicipalColors.error, width: 1.5),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: MunicipalColors.error, width: 1.5),
+        ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       ),
     );
@@ -302,7 +408,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return DefaultTabController(length: 2, child: Scaffold(
       backgroundColor: MunicipalColors.primaryBg,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -310,6 +416,15 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: MunicipalColors.darkGreen, size: 20),
           onPressed: () => Navigator.pop(context),
+        ),
+        bottom: const TabBar(
+          labelColor: MunicipalColors.secondaryGreen,
+          unselectedLabelColor: MunicipalColors.mutedText,
+          indicatorColor: MunicipalColors.secondaryGreen,
+          tabs: [
+            Tab(icon: Icon(Icons.list_rounded), text: 'List'),
+            Tab(icon: Icon(Icons.map_rounded), text: 'Map'),
+          ],
         ),
         title: const Text(
           'Recycling Centers',
@@ -388,18 +503,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      TextButton.icon(
-                        onPressed: _openAddCenterDialog,
-                        icon: const Icon(Icons.add_circle_outline, size: 16, color: MunicipalColors.secondaryGreen),
-                        label: const Text(
-                          'Add Center',
-                          style: TextStyle(
-                            color: MunicipalColors.secondaryGreen,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
+const SizedBox(),
                     ],
                   ),
                 ],
@@ -414,50 +518,91 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                   ? const Center(
                       child: CircularProgressIndicator(color: MunicipalColors.secondaryGreen),
                     )
-                  : _filteredCenters.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.storefront_outlined,
-                                size: 56,
-                                color: MunicipalColors.mutedText.withValues(alpha: 0.5),
-                              ),
-                              const SizedBox(height: 12),
-                              const Text(
-                                'No recycling centers found',
-                                style: TextStyle(
-                                  color: MunicipalColors.secondaryText,
-                                  fontSize: 16,
+                  : TabBarView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        // LIST VIEW
+                        _filteredCenters.isEmpty
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.storefront_outlined,
+                                      size: 56,
+                                      color: MunicipalColors.mutedText.withValues(alpha: 0.5),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    const Text(
+                                      'No recycling centers found',
+                                      style: TextStyle(
+                                        color: MunicipalColors.secondaryText,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    ElevatedButton.icon(
+                                      onPressed: _openAddCenterDialog,
+                                      icon: const Icon(Icons.add_rounded),
+                                      label: const Text('Add Your First Center'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: MunicipalColors.secondaryGreen,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                    ),
+                                  ],
                                 ),
+                              )
+                            : ListView.builder(
+                                padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
+                                itemCount: _filteredCenters.length,
+                                itemBuilder: (context, index) {
+                                  final center = _filteredCenters[index];
+                                  return _buildCenterCard(center);
+                                },
                               ),
-                              const SizedBox(height: 12),
-                              ElevatedButton.icon(
-                                onPressed: _openAddCenterDialog,
-                                icon: const Icon(Icons.add_rounded),
-                                label: const Text('Add Your First Center'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: MunicipalColors.secondaryGreen,
-                                  foregroundColor: Colors.white,
+                        
+                        // MAP VIEW
+                        _filteredCenters.isEmpty
+                            ? const Center(child: Text('No centers to display on map'))
+                            : FlutterMap(
+                                options: MapOptions(
+                                  initialCenter: LatLng(_filteredCenters.first.latitude, _filteredCenters.first.longitude),
+                                  initialZoom: 12,
                                 ),
+                                children: [
+                                  TileLayer(
+                                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                    userAgentPackageName: 'com.ecomate.app',
+                                  ),
+                                  MarkerLayer(
+                                    markers: _filteredCenters.map((c) => Marker(
+                                      point: LatLng(c.latitude, c.longitude),
+                                      width: 40,
+                                      height: 40,
+                                      child: GestureDetector(
+                                          onTap: () {
+                                              // Can do something
+                                          },
+                                          child: const Icon(
+                                            Icons.location_city_rounded,
+                                            color: MunicipalColors.secondaryGreen,
+                                            size: 30,
+                                          )
+                                      ),
+                                    )).toList(),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        )
-                      : ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
-                          itemCount: _filteredCenters.length,
-                          itemBuilder: (context, index) {
-                            final center = _filteredCenters[index];
-                            return _buildCenterCard(center);
-                          },
-                        ),
+                      ],
+                    ),
             ),
+
           ],
         ),
       ),
-    );
+    ));
+
   }
 
   Widget _buildCenterCard(RecyclingCenter center) {

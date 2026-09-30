@@ -111,8 +111,14 @@ public class RecyclingCenterService {
         if (request.getIsOpen() != null) {
             center.setIsOpen(request.getIsOpen());
         }
-        if (request.getNotes() != null) {
+                if (request.getNotes() != null) {
             center.setNotes(request.getNotes());
+        }
+        if (request.getLatitude() != null) {
+            center.setLatitude(request.getLatitude());
+        }
+        if (request.getLongitude() != null) {
+            center.setLongitude(request.getLongitude());
         }
 
         RecyclingCenter saved = recyclingCenterRepository.save(center);
@@ -142,15 +148,23 @@ public class RecyclingCenterService {
         if (request.getIsOpen() != null) {
             center.setIsOpen(request.getIsOpen());
         }
-        if (request.getNotes() != null) {
+                if (request.getNotes() != null) {
             center.setNotes(request.getNotes());
         }
+        if (request.getLatitude() != null) {
+            center.setLatitude(request.getLatitude());
+        }
+        if (request.getLongitude() != null) {
+            center.setLongitude(request.getLongitude());
+        }
 
-        RecyclingCenter saved = recyclingCenterRepository.save(center);
+        RecyclingCenter saved = recyclingCenterRepository.saveAndFlush(center);
+        System.out.println("DEBUG: saved center ID = " + saved.getId());
 
         if (request.getAcceptedMaterials() != null && !request.getAcceptedMaterials().isEmpty()) {
             List<Material> allMaterials = materialRepository.findAll();
             for (Material mat : allMaterials) {
+                System.out.println("DEBUG: mat ID = " + mat.getId());
                 boolean isAccepted = request.getAcceptedMaterials().stream()
                         .anyMatch(accepted -> accepted.equalsIgnoreCase(mat.getName()) || accepted.equalsIgnoreCase(mat.getCategory()));
                 Optional<RecyclingCenterMaterial> existingMapping = recyclingCenterMaterialRepository
@@ -171,8 +185,10 @@ public class RecyclingCenterService {
 
     @Transactional
     public void deleteCenter(Long id) {
-        recyclingCenterMaterialRepository.deleteByRecyclingCenterId(id);
-        recyclingCenterRepository.deleteById(id);
+        RecyclingCenter center = recyclingCenterRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Recycling center not found with id: " + id));
+        center.setIsDeleted(true);
+        recyclingCenterRepository.save(center);
     }
 
     @Transactional
@@ -187,7 +203,7 @@ public class RecyclingCenterService {
 
     @Transactional(readOnly = true)
     public List<RecyclingCenterResponse> getAllCenters(String query, String materialFilter) {
-        List<RecyclingCenter> list = recyclingCenterRepository.findAll();
+        List<RecyclingCenter> list = recyclingCenterRepository.findByIsDeletedFalse();
 
         return list.stream()
                 .filter(c -> {
@@ -226,6 +242,9 @@ public class RecyclingCenterService {
             .collect(Collectors.toList());
     }
 }
+
+
+
 
 
 
