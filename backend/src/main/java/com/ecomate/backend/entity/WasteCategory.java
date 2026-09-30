@@ -2,6 +2,8 @@ package com.ecomate.backend.entity;
 
 import jakarta.persistence.*;
 import java.util.List;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "waste_categories")
@@ -23,24 +25,20 @@ public class WasteCategory {
     private String binColor; // e.g. "0xFFF59E0B"
     private String icon; // string identifier for Flutter icons
 
-    @ElementCollection
-    @CollectionTable(name = "waste_category_common_items", joinColumns = @JoinColumn(name = "waste_category_id"))
-    @Column(name = "item")
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "common_items", columnDefinition = "text[]")
     private List<String> commonItems;
 
-    @ElementCollection
-    @CollectionTable(name = "waste_category_prep_steps", joinColumns = @JoinColumn(name = "waste_category_id"))
-    @Column(name = "step")
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "preparation_steps", columnDefinition = "text[]")
     private List<String> preparationSteps;
 
-    @ElementCollection
-    @CollectionTable(name = "waste_category_dos", joinColumns = @JoinColumn(name = "waste_category_id"))
-    @Column(name = "do_item")
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "dos", columnDefinition = "text[]")
     private List<String> dos;
 
-    @ElementCollection
-    @CollectionTable(name = "waste_category_donts", joinColumns = @JoinColumn(name = "waste_category_id"))
-    @Column(name = "dont_item")
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "donts", columnDefinition = "text[]")
     private List<String> donts;
 
     public WasteCategory() {
@@ -85,3 +83,4 @@ public class WasteCategory {
     public List<String> getDonts() { return donts; }
     public void setDonts(List<String> donts) { this.donts = donts; }
 }
+

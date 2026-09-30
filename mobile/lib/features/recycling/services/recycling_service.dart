@@ -28,6 +28,49 @@ class RecyclingService {
     return 'category_rounded';
   }
 
+  Future<WasteCategory> createWasteCategory(WasteCategory category) async {
+    final token = await _authService.getToken();
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/waste-categories'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'name': category.name,
+        'recyclable': category.isRecyclable,
+        'description': category.description,
+        'binColorName': category.binColorName,
+        'binColor': '0x${category.binColor.value.toRadixString(16).toUpperCase()}',
+        'icon': _iconToStr(category.icon),
+        'commonItems': category.commonItems,
+        'preparationSteps': category.preparationSteps,
+        'dos': category.dos,
+        'donts': category.donts,
+      }),
+    );
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception('Failed to create category: ${response.body}');
+    }
+    final newCat = WasteCategory.fromJson(jsonDecode(response.body));
+    _categories.add(newCat);
+    return newCat;
+  }
+
+  Future<void> deleteWasteCategory(String id) async {
+    final token = await _authService.getToken();
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/waste-categories/$id'),
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Failed to delete category: ${response.body}');
+    }
+    _categories.removeWhere((c) => c.id == id);
+  }
+
   Future<void> updateWasteCategory(WasteCategory category) async {
     final token = await _authService.getToken();
     final response = await http.put(
@@ -363,13 +406,16 @@ class RecyclingService {
           final created = RecyclingCenter.fromJson(data);
           _centers.add(created);
           return created;
+        } else {
+          print('Failed to create center: \${response.statusCode} - \${response.body}');
+          return null;
         }
-      } catch (_) {
-        // Fallback
+      } catch (e) {
+        print('Error creating center: \$e');
+        return null;
       }
     }
-    _centers.add(center);
-    return center;
+    return null;
   }
 
   Future<bool> deleteCenter(String id) async {
@@ -541,6 +587,12 @@ class RecyclingService {
     return true;
   }
 }
+
+
+
+
+
+
 
 
 

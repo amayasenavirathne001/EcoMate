@@ -83,7 +83,45 @@ public class WasteCategoryController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @org.springframework.web.bind.annotation.PostMapping
+    public ResponseEntity<WasteCategoryDto> createCategory(@RequestBody WasteCategoryDto dto) {
+        String newId = dto.getId() != null && !dto.getId().trim().isEmpty() 
+            ? dto.getId() 
+            : dto.getName().toLowerCase().replaceAll("[^a-z0-9]", "_");
+            
+        if(wasteCategoryRepository.existsById(newId)) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        WasteCategory cat = new WasteCategory();
+        cat.setId(newId);
+        cat.setName(dto.getName());
+        cat.setRecyclable(dto.isRecyclable() != null ? dto.isRecyclable() : false);
+        cat.setDescription(dto.getDescription());
+        cat.setBinColor(dto.getBinColor());
+        cat.setBinColorName(dto.getBinColorName());
+        cat.setIcon(dto.getIcon());
+        cat.setCommonItems(dto.getCommonItems());
+        cat.setPreparationSteps(dto.getPreparationSteps());
+        cat.setDos(dto.getDos());
+        cat.setDonts(dto.getDonts());
+        
+        WasteCategory savedCat = wasteCategoryRepository.save(cat);
+        dto.setId(savedCat.getId());
+        return ResponseEntity.ok(dto);
+    }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable String id) {
+        if(!wasteCategoryRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        wasteCategoryRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
+
 
 
 

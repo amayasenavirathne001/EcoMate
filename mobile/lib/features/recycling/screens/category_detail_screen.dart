@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../models/waste_category.dart';
 import 'edit_category_screen.dart';
 import '../../../services/auth_service.dart';
+import '../services/recycling_service.dart';
 
 class CategoryDetailScreen extends StatefulWidget {
   final WasteCategory category;
@@ -58,6 +59,36 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
           ),
         ),
         actions: [
+                    if (_isAdmin)
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+              onPressed: () async {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Delete Category'),
+                    content: Text('Are you sure you want to delete ${category.name}?'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, true), 
+                        child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirm == true) {
+                  try {
+                    await RecyclingService().deleteWasteCategory(category.id);
+                    if (!mounted) return;
+                    Navigator.pop(context); // Go back to the guide screen
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Category deleted successfully')));
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete: $e')));
+                  }
+                }
+              },
+            ),
           if (_isAdmin)
             IconButton(
               icon: const Icon(Icons.edit, color: RecyclingColors.deepForestGreen),
@@ -423,3 +454,6 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
     );
   }
 }
+
+
+
