@@ -3,6 +3,7 @@ package com.ecomate.backend.service;
 import com.ecomate.backend.dto.AuthResponse;
 import com.ecomate.backend.dto.LoginRequest;
 import com.ecomate.backend.dto.RegisterRequest;
+import com.ecomate.backend.dto.UpdateProfileRequest;
 import com.ecomate.backend.entity.User;
 import com.ecomate.backend.repository.UserRepository;
 import com.ecomate.backend.security.JwtService;
@@ -81,4 +82,15 @@ public class AuthService {
                 .orElseThrow(() ->
                         new RuntimeException("User not found"));
     }
+
+    public User updateProfile(String email, UpdateProfileRequest request) {
+        User user = getUserByEmail(email);
+        user.updateProfile(
+                request.name().trim(),
+                request.phoneNumber() == null ? "" : request.phoneNumber().trim(),
+                request.address() == null ? "" : request.address().trim(),
+                request.profilePictureData() == null ? "" : request.profilePictureData());
+        return userRepository.save(user);
+    }
 }
+

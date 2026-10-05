@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../login_screen.dart';
@@ -7,6 +9,9 @@ import '../../features/recycling/screens/resident_recycling_history_screen.dart'
 import '../collection_schedule_screen.dart';
 import '../report_issue_screen.dart';
 import '../my_reports_screen.dart';
+import '../resident_profile_screen.dart';
+import '../../features/recycling/screens/waste_segregation_guide_screen.dart';
+import '../../features/recycling/screens/recycling_centres_screen.dart';
 import '../../features/special_pickup/screens/pickup_requests_screen.dart';
 import '../../features/special_pickup/screens/pickup_request_details_screen.dart';
 import '../../features/special_pickup/data/pickup_mock_data.dart';
@@ -24,13 +29,13 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
 
   int _selectedIndex = 0;
   String _userName = 'Resident';
+  String? _profilePictureData;
   SpecialPickup? _specialPickup;
   bool _isLoadingSpecialPickup = true;
   String? _specialPickupError;
   static const Color darkText = Color(0xFF071A26);
   static const Color primaryGreen = Color(0xFF0E8A38);
   static const Color deepGreen = Color(0xFF006B4F);
-  static const Color mediumGreen = Color(0xFF2E7D32);
   static const Color lightGreen = Color(0xFFEAF7E8);
   static const Color background = Color(0xFFFAFCFA);
   @override
@@ -45,11 +50,11 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
       if (!mounted) return;
       if (user != null) {
         final name = user['name']?.toString();
-        if (name != null && name.trim().isNotEmpty) {
-          setState(() {
-            _userName = name.trim();
-          });
-        }
+        final photo = (user['profilePictureData'] ?? user['profilePic'])?.toString();
+        setState(() {
+          if (name != null && name.trim().isNotEmpty) _userName = name.trim();
+          _profilePictureData = photo?.isNotEmpty == true ? photo : null;
+        });
       }
     } catch (_) {
       // Keep the fallback resident name.
@@ -127,6 +132,16 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
       MaterialPageRoute(builder: (_) => const MyReportsScreen()),
     );
   }
+  Future<void> _openProfile() async {
+    setState(() => _selectedIndex = 4);
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ResidentProfileScreen()),
+    );
+    if (!mounted) return;
+    setState(() => _selectedIndex = 0);
+    await _loadUserInfo();
+  }
   void _openRecyclingGuide() {
     Navigator.push(
       context,
@@ -151,10 +166,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
       return;
     }
     if (index == 4) {
-      setState(() => _selectedIndex = 4);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile page is not connected yet.')),
-      );
+      _openProfile();
     }
   }
   @override
@@ -501,19 +513,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
               color: Colors.white,
               border: Border.all(color: const Color(0xFFDDEED8), width: 3),
             ),
-            child: ClipOval(
-              child: Image.asset(
-                'assets/images/resident_profile.png',
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) {
-                  return const Icon(
-                    Icons.eco_rounded,
-                    color: primaryGreen,
-                    size: 36,
-                  );
-                },
-              ),
-            ),
+            child: ClipOval(child: _buildResidentAvatar()),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -569,6 +569,25 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
           const Icon(Icons.chevron_right_rounded, color: darkText),
         ],
       ),
+    );
+  }
+  Widget _buildResidentAvatar() {
+    final photoData = _profilePictureData;
+    if (photoData != null && photoData.startsWith('data:image')) {
+      try {
+        return Image.memory(
+          base64Decode(photoData.split(',').last),
+          fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => const Icon(Icons.eco_rounded, color: primaryGreen, size: 36),
+        );
+      } catch (_) {
+        return const Icon(Icons.eco_rounded, color: primaryGreen, size: 36);
+      }
+    }
+    return Image.asset(
+      'assets/images/resident_profile.png',
+      fit: BoxFit.cover,
+      errorBuilder: (_, _, _) => const Icon(Icons.eco_rounded, color: primaryGreen, size: 36),
     );
   }
   // ============================================================
@@ -1647,6 +1666,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
     );
   }
 }
+
 
 
 

@@ -40,6 +40,8 @@ public class SecurityConfig {
 
                 .requestMatchers("/api/auth/me")
                 .authenticated()
+                .requestMatchers("/api/auth/profile")
+                    .authenticated()
                 // Role-based endpoints
                 .requestMatchers("/api/resident/**")
                     .hasRole("RESIDENT")
