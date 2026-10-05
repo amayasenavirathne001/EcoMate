@@ -1,7 +1,7 @@
 class WasteDeliveryRecord {
   final String id;
-  final String? RecyclingCenterId;
-  final String? RecyclingCenterName;
+  final String? recyclingCenterId;
+  final String? recyclingCenterName;
   final String materialType;
   final double weightKg;
   final String deliveredBy;
@@ -12,8 +12,8 @@ class WasteDeliveryRecord {
 
   const WasteDeliveryRecord({
     required this.id,
-    this.RecyclingCenterId,
-    this.RecyclingCenterName,
+    this.recyclingCenterId,
+    this.recyclingCenterName,
     required this.materialType,
     required this.weightKg,
     required this.deliveredBy,
@@ -35,8 +35,8 @@ class WasteDeliveryRecord {
 
     return WasteDeliveryRecord(
       id: json['id'] != null ? 'DEL-${json['id']}' : 'DEL-0',
-      RecyclingCenterId: json['RecyclingCenterId']?.toString(),
-      RecyclingCenterName: json['RecyclingCenterName']?.toString(),
+      recyclingCenterId: json['recyclingCenterId']?.toString(),
+      recyclingCenterName: json['recyclingCenterName']?.toString(),
       materialType: json['materialType']?.toString() ?? '',
       weightKg: (json['weightKg'] is num) ? (json['weightKg'] as num).toDouble() : 0.0,
       deliveredBy: json['deliveredBy']?.toString() ?? '',
@@ -49,7 +49,7 @@ class WasteDeliveryRecord {
 
   Map<String, dynamic> toJson() {
     return {
-      'RecyclingCenterId': RecyclingCenterId != null ? int.tryParse(RecyclingCenterId!) : null,
+      'RecyclingCenterId': recyclingCenterId != null ? int.tryParse(recyclingCenterId!) : null,
       'materialType': materialType,
       'weightKg': weightKg,
       'deliveredBy': deliveredBy,
@@ -116,4 +116,8 @@ class WasteDeliveryRecord {
     return 'REC';
   }
 }
+
+
+
+
 

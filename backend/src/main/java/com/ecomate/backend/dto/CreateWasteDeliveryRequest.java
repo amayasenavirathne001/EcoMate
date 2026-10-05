@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 
 public class CreateWasteDeliveryRequest {
 
-    private Long RecyclingCenterId;
+    private Long recyclingcenterId;
 
     @NotBlank(message = "Material type is required")
     private String materialType;
@@ -24,12 +24,12 @@ public class CreateWasteDeliveryRequest {
     public CreateWasteDeliveryRequest() {
     }
 
-    public Long getRecyclingCenterId() {
-        return RecyclingCenterId;
+    public Long getRecyclingcenterId() {
+        return recyclingcenterId;
     }
 
-    public void setRecyclingCenterId(Long RecyclingCenterId) {
-        this.RecyclingCenterId = RecyclingCenterId;
+    public void setRecyclingcenterId(Long recyclingcenterId) {
+        this.recyclingcenterId = recyclingcenterId;
     }
 
     public String getMaterialType() {
@@ -72,4 +72,5 @@ public class CreateWasteDeliveryRequest {
         this.notes = notes;
     }
 }
+
 

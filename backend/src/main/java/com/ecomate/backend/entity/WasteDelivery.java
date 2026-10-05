@@ -13,7 +13,7 @@ public class WasteDelivery {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recycling_center_id")
-    private RecyclingCenter RecyclingCenter;
+    private RecyclingCenter recyclingCenter;
 
     @Column(name = "material_type", nullable = false)
     private String materialType;
@@ -40,9 +40,9 @@ public class WasteDelivery {
         this.dateTime = LocalDateTime.now();
     }
 
-    public WasteDelivery(RecyclingCenter RecyclingCenter, String materialType, Double weightKg,
+    public WasteDelivery(RecyclingCenter recyclingCenter, String materialType, Double weightKg,
                          String deliveredBy, String contactNumber, LocalDateTime dateTime, String notes) {
-        this.RecyclingCenter = RecyclingCenter;
+        this.recyclingCenter = recyclingCenter;
         this.materialType = materialType;
         this.weightKg = weightKg;
         this.deliveredBy = deliveredBy;
@@ -60,11 +60,11 @@ public class WasteDelivery {
     }
 
     public RecyclingCenter getRecyclingCenter() {
-        return RecyclingCenter;
+        return recyclingCenter;
     }
 
-    public void setRecyclingCenter(RecyclingCenter RecyclingCenter) {
-        this.RecyclingCenter = RecyclingCenter;
+    public void setRecyclingCenter(RecyclingCenter recyclingCenter) {
+        this.recyclingCenter = recyclingCenter;
     }
 
     public String getMaterialType() {
@@ -118,6 +118,8 @@ public class WasteDelivery {
         this.notes = notes;
     }
 }
+
+
 
 
 

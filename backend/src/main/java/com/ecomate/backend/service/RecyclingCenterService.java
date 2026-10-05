@@ -13,24 +13,24 @@ import java.util.stream.Collectors;
 @Service
 public class RecyclingCenterService {
 
-    private final RecyclingCenterRepository RecyclingCenterRepository;
+    private final RecyclingCenterRepository recyclingCenterRepository;
     private final MaterialRepository materialRepository;
-    private final RecyclingCenterMaterialRepository RecyclingCenterMaterialRepository;
+    private final RecyclingCenterMaterialRepository recyclingCenterMaterialRepository;
     private final UserRepository userRepository;
 
-    public RecyclingCenterService(RecyclingCenterRepository RecyclingCenterRepository,
+    public RecyclingCenterService(RecyclingCenterRepository recyclingCenterRepository,
                                   MaterialRepository materialRepository,
-                                  RecyclingCenterMaterialRepository RecyclingCenterMaterialRepository,
+                                  RecyclingCenterMaterialRepository recyclingCenterMaterialRepository,
                                   UserRepository userRepository) {
-        this.RecyclingCenterRepository = RecyclingCenterRepository;
+        this.recyclingCenterRepository = recyclingCenterRepository;
         this.materialRepository = materialRepository;
-        this.RecyclingCenterMaterialRepository = RecyclingCenterMaterialRepository;
+        this.recyclingCenterMaterialRepository = recyclingCenterMaterialRepository;
         this.userRepository = userRepository;
     }
 
     @Transactional(readOnly = true)
     public RecyclingCenterResponse getMyCenter(String officerEmail) {
-        return RecyclingCenterRepository.findByOfficerEmailIgnoreCase(officerEmail)
+        return recyclingCenterRepository.findByOfficerEmailIgnoreCase(officerEmail)
                 .map(RecyclingCenterResponse::fromEntity)
                 .orElse(null);
     }
@@ -44,14 +44,14 @@ public class RecyclingCenterService {
 
     @Transactional(readOnly = true)
     public List<MaterialDto> getCenterMaterials(String officerEmail) {
-                Optional<RecyclingCenter> CenterOpt = RecyclingCenterRepository.findByOfficerEmailIgnoreCase(officerEmail);
-        if (CenterOpt.isEmpty()) {
-            throw new RuntimeException("Center not found");
+        Optional<RecyclingCenter> centerOpt = recyclingCenterRepository.findByOfficerEmailIgnoreCase(officerEmail);
+        if (centerOpt.isEmpty()) {
+            return java.util.Collections.emptyList();
         }
-        RecyclingCenter Center = CenterOpt.get();
+        RecyclingCenter center = centerOpt.get();
 
         List<Material> allMaterials = materialRepository.findAll();
-        List<RecyclingCenterMaterial> mappings = RecyclingCenterMaterialRepository.findByRecyclingCenterId(Center.getId());
+        List<RecyclingCenterMaterial> mappings = recyclingCenterMaterialRepository.findByRecyclingCenterId(center.getId());
 
         return allMaterials.stream().map(mat -> {
             Optional<RecyclingCenterMaterial> mapOpt = mappings.stream()
@@ -64,25 +64,23 @@ public class RecyclingCenterService {
 
     @Transactional
     public RecyclingCenterResponse toggleMaterialStatus(String officerEmail, Long materialId, Boolean isActive) {
-                Optional<RecyclingCenter> CenterOpt = RecyclingCenterRepository.findByOfficerEmailIgnoreCase(officerEmail);
-        if (CenterOpt.isEmpty()) {
-            throw new RuntimeException("Center not found");
-        }
-        RecyclingCenter Center = CenterOpt.get();
+                Optional<RecyclingCenter> centerOpt = recyclingCenterRepository.findByOfficerEmailIgnoreCase(officerEmail);
+        if (centerOpt.isEmpty()) { throw new RuntimeException("center not found"); }
+        RecyclingCenter center = centerOpt.get();
 
         Material material = materialRepository.findById(materialId)
                 .orElseThrow(() -> new RuntimeException("Material not found with id: " + materialId));
 
-        Optional<RecyclingCenterMaterial> existingMapping = RecyclingCenterMaterialRepository
-                .findByRecyclingCenterIdAndMaterialId(Center.getId(), materialId);
+        Optional<RecyclingCenterMaterial> existingMapping = recyclingCenterMaterialRepository
+                .findByRecyclingCenterIdAndMaterialId(center.getId(), materialId);
 
         if (existingMapping.isPresent()) {
             RecyclingCenterMaterial mapping = existingMapping.get();
             mapping.setIsActive(isActive);
-            RecyclingCenterMaterialRepository.save(mapping);
+            recyclingCenterMaterialRepository.save(mapping);
         } else {
-            RecyclingCenterMaterial newMapping = new RecyclingCenterMaterial(Center, material, isActive);
-            RecyclingCenterMaterialRepository.save(newMapping);
+            RecyclingCenterMaterial newMapping = new RecyclingCenterMaterial(center, material, isActive);
+            recyclingCenterMaterialRepository.save(newMapping);
         }
 
         return getMyCenter(officerEmail);
@@ -90,34 +88,34 @@ public class RecyclingCenterService {
 
     @Transactional
     public RecyclingCenterResponse createOrUpdateMyCenter(String officerEmail, RecyclingCenterRequest request) {
-        Optional<RecyclingCenter> existingOpt = RecyclingCenterRepository.findByOfficerEmailIgnoreCase(officerEmail);
-        RecyclingCenter Center;
+        Optional<RecyclingCenter> existingOpt = recyclingCenterRepository.findByOfficerEmailIgnoreCase(officerEmail);
+        RecyclingCenter center;
 
         if (existingOpt.isPresent()) {
-            Center = existingOpt.get();
+            center = existingOpt.get();
         } else {
-            Center = new RecyclingCenter();
-            Center.setOfficerEmail(officerEmail);
-            userRepository.findByEmail(officerEmail).ifPresent(Center::setOfficer);
+            center = new RecyclingCenter();
+            center.setOfficerEmail(officerEmail);
+            userRepository.findByEmail(officerEmail).ifPresent(center::setOfficer);
         }
 
-        Center.setName(request.getName());
-        Center.setAddress(request.getAddress());
-        Center.setCity(request.getCity());
-        Center.setContactNumber(request.getContactNumber());
-        Center.setEmail(request.getEmail());
+        center.setName(request.getName());
+        center.setAddress(request.getAddress());
+        center.setCity(request.getCity());
+        center.setContactNumber(request.getContactNumber());
+        center.setEmail(request.getEmail());
 
         if (request.getOperatingHours() != null) {
-            Center.setOperatingHours(request.getOperatingHours());
+            center.setOperatingHours(request.getOperatingHours());
         }
         if (request.getIsOpen() != null) {
-            Center.setIsOpen(request.getIsOpen());
+            center.setIsOpen(request.getIsOpen());
         }
         if (request.getNotes() != null) {
-            Center.setNotes(request.getNotes());
+            center.setNotes(request.getNotes());
         }
 
-        RecyclingCenter saved = RecyclingCenterRepository.save(Center);
+        RecyclingCenter saved = recyclingCenterRepository.save(center);
         return RecyclingCenterResponse.fromEntity(saved);
     }
 
@@ -127,43 +125,43 @@ public class RecyclingCenterService {
                 ? request.getEmail().trim()
                 : (createdByEmail != null ? createdByEmail : "council@ecomate.lk");
 
-        Optional<RecyclingCenter> existingOpt = RecyclingCenterRepository.findByOfficerEmailIgnoreCase(assignedOfficerEmail);
-        RecyclingCenter Center = existingOpt.orElseGet(RecyclingCenter::new);
+        Optional<RecyclingCenter> existingOpt = recyclingCenterRepository.findByOfficerEmailIgnoreCase(assignedOfficerEmail);
+        RecyclingCenter center = existingOpt.orElseGet(RecyclingCenter::new);
 
-        Center.setName(request.getName());
-        Center.setAddress(request.getAddress());
-        Center.setCity(request.getCity());
-        Center.setContactNumber(request.getContactNumber());
-        Center.setEmail(assignedOfficerEmail);
-        Center.setOfficerEmail(assignedOfficerEmail);
-        userRepository.findByEmail(assignedOfficerEmail).ifPresent(Center::setOfficer);
+        center.setName(request.getName());
+        center.setAddress(request.getAddress());
+        center.setCity(request.getCity());
+        center.setContactNumber(request.getContactNumber());
+        center.setEmail(assignedOfficerEmail);
+        center.setOfficerEmail(assignedOfficerEmail);
+        userRepository.findByEmail(assignedOfficerEmail).ifPresent(center::setOfficer);
 
         if (request.getOperatingHours() != null && !request.getOperatingHours().isBlank()) {
-            Center.setOperatingHours(request.getOperatingHours());
+            center.setOperatingHours(request.getOperatingHours());
         }
         if (request.getIsOpen() != null) {
-            Center.setIsOpen(request.getIsOpen());
+            center.setIsOpen(request.getIsOpen());
         }
         if (request.getNotes() != null) {
-            Center.setNotes(request.getNotes());
+            center.setNotes(request.getNotes());
         }
 
-        RecyclingCenter saved = RecyclingCenterRepository.save(Center);
+        RecyclingCenter saved = recyclingCenterRepository.save(center);
 
         if (request.getAcceptedMaterials() != null && !request.getAcceptedMaterials().isEmpty()) {
             List<Material> allMaterials = materialRepository.findAll();
             for (Material mat : allMaterials) {
                 boolean isAccepted = request.getAcceptedMaterials().stream()
                         .anyMatch(accepted -> accepted.equalsIgnoreCase(mat.getName()) || accepted.equalsIgnoreCase(mat.getCategory()));
-                Optional<RecyclingCenterMaterial> existingMapping = RecyclingCenterMaterialRepository
+                Optional<RecyclingCenterMaterial> existingMapping = recyclingCenterMaterialRepository
                         .findByRecyclingCenterIdAndMaterialId(saved.getId(), mat.getId());
                 if (existingMapping.isPresent()) {
                     RecyclingCenterMaterial mapping = existingMapping.get();
                     mapping.setIsActive(isAccepted);
-                    RecyclingCenterMaterialRepository.save(mapping);
+                    recyclingCenterMaterialRepository.save(mapping);
                 } else {
                     RecyclingCenterMaterial mapping = new RecyclingCenterMaterial(saved, mat, isAccepted);
-                    RecyclingCenterMaterialRepository.save(mapping);
+                    recyclingCenterMaterialRepository.save(mapping);
                 }
             }
         }
@@ -173,23 +171,23 @@ public class RecyclingCenterService {
 
     @Transactional
     public void deleteCenter(Long id) {
-        RecyclingCenterMaterialRepository.deleteByRecyclingCenterId(id);
-        RecyclingCenterRepository.deleteById(id);
+        recyclingCenterMaterialRepository.deleteByRecyclingCenterId(id);
+        recyclingCenterRepository.deleteById(id);
     }
 
     @Transactional
     public RecyclingCenterResponse toggleStatus(String officerEmail, boolean isOpen) {
-        RecyclingCenter Center = RecyclingCenterRepository.findByOfficerEmailIgnoreCase(officerEmail)
-                .orElseThrow(() -> new RuntimeException("No recycling Center found for officer: " + officerEmail));
+        RecyclingCenter center = recyclingCenterRepository.findByOfficerEmailIgnoreCase(officerEmail)
+                .orElseThrow(() -> new RuntimeException("No recycling center found for officer: " + officerEmail));
 
-        Center.setIsOpen(isOpen);
-        RecyclingCenter saved = RecyclingCenterRepository.save(Center);
+        center.setIsOpen(isOpen);
+        RecyclingCenter saved = recyclingCenterRepository.save(center);
         return RecyclingCenterResponse.fromEntity(saved);
     }
 
     @Transactional(readOnly = true)
     public List<RecyclingCenterResponse> getAllCenters(String query, String materialFilter) {
-        List<RecyclingCenter> list = RecyclingCenterRepository.findAll();
+        List<RecyclingCenter> list = recyclingCenterRepository.findAll();
 
         return list.stream()
                 .filter(c -> {
@@ -205,9 +203,9 @@ public class RecyclingCenterService {
 
     @Transactional(readOnly = true)
     public RecyclingCenterResponse getCenterById(Long id) {
-        return RecyclingCenterRepository.findById(id)
+        return recyclingCenterRepository.findById(id)
                 .map(RecyclingCenterResponse::fromEntity)
-                .orElseThrow(() -> new RuntimeException("Recycling Center not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Recycling center not found with id: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -223,11 +221,19 @@ public class RecyclingCenterService {
             case "hazardous": categories.add("hazardous"); break;
             default: categories.add(wasteCategoryId.toLowerCase());
         }
-        return RecyclingCenterRepository.findByAcceptedWasteCategory(categories).stream()
+        return recyclingCenterRepository.findByAcceptedWasteCategory(categories).stream()
             .map(RecyclingCenterResponse::fromEntity)
             .collect(Collectors.toList());
     }
 }
+
+
+
+
+
+
+
+
 
 
 

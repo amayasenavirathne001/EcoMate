@@ -53,7 +53,7 @@ public class RecyclingCenter {
     private String notes = "";
 
     @OneToMany(mappedBy = "RecyclingCenter", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RecyclingCenterMaterial> CenterMaterials = new ArrayList<>();
+    private List<RecyclingCenterMaterial> centerMaterials = new ArrayList<>();
 
     public RecyclingCenter() {
     }
@@ -185,10 +185,12 @@ public class RecyclingCenter {
     }
 
     public List<RecyclingCenterMaterial> getCenterMaterials() {
-        return CenterMaterials;
+        return centerMaterials;
     }
 
-    public void setCenterMaterials(List<RecyclingCenterMaterial> CenterMaterials) {
-        this.CenterMaterials = CenterMaterials;
+    public void setCenterMaterials(List<RecyclingCenterMaterial> centerMaterials) {
+        this.centerMaterials = centerMaterials;
     }
 }
+
+

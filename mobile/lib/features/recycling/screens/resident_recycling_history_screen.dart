@@ -246,7 +246,7 @@ class _ResidentRecyclingHistoryScreenState extends State<ResidentRecyclingHistor
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      record.RecyclingCenterName ?? 'Unknown Center',
+                      record.recyclingCenterName ?? 'Unknown Center',
                       style: const TextStyle(
                         color: Colors.black54,
                         fontSize: 12,
@@ -328,5 +328,7 @@ class _ResidentRecyclingHistoryScreenState extends State<ResidentRecyclingHistor
     );
   }
 }
+
+
 
 

@@ -147,3 +147,4 @@ class MunicipalOperationsPage extends StatelessWidget {
     );
   }
 }
+

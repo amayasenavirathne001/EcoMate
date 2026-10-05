@@ -20,8 +20,9 @@ public interface RecyclingCenterRepository extends JpaRepository<RecyclingCenter
 
     List<RecyclingCenter> findByIsOpenTrue();
 
-    @Query("SELECT DISTINCT rc FROM RecyclingCenter rc JOIN rc.CenterMaterials cm WHERE LOWER(cm.material.category) IN :categories AND cm.isActive = true")
+    @Query("SELECT DISTINCT rc FROM RecyclingCenter rc JOIN rc.centerMaterials cm WHERE LOWER(cm.material.category) IN :categories AND cm.isActive = true")
     List<RecyclingCenter> findByAcceptedWasteCategory(@Param("categories") List<String> categories);
 }
+
 
 

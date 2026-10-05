@@ -128,7 +128,7 @@ class ScheduleService {
   // --- Recycling Centers Filtering ---
   Future<List<RecyclingCenter>> getCompatibleCenters(String wasteCategoryId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/api/recycling/Centers/by-material/$wasteCategoryId'),
+      Uri.parse('$baseUrl/api/recycling/centers/by-material/$wasteCategoryId'),
       headers: await _getHeaders(),
     );
     if (response.statusCode == 200) {
@@ -156,4 +156,6 @@ class ScheduleService {
     throw Exception('Failed to load compatible Centers: ${response.statusCode}');
   }
 }
+
+
 

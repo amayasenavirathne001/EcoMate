@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 public class WasteDeliveryDto {
 
     private Long id;
-    private Long RecyclingCenterId;
+    private Long recyclingcenterId;
     private String RecyclingCenterName;
     private String materialType;
     private Double weightKg;
@@ -23,7 +23,7 @@ public class WasteDeliveryDto {
         WasteDeliveryDto dto = new WasteDeliveryDto();
         dto.setId(entity.getId());
         if (entity.getRecyclingCenter() != null) {
-            dto.setRecyclingCenterId(entity.getRecyclingCenter().getId());
+            dto.setRecyclingcenterId(entity.getRecyclingCenter().getId());
             dto.setRecyclingCenterName(entity.getRecyclingCenter().getName());
         }
         dto.setMaterialType(entity.getMaterialType());
@@ -46,12 +46,12 @@ public class WasteDeliveryDto {
         this.id = id;
     }
 
-    public Long getRecyclingCenterId() {
-        return RecyclingCenterId;
+    public Long getRecyclingcenterId() {
+        return recyclingcenterId;
     }
 
-    public void setRecyclingCenterId(Long RecyclingCenterId) {
-        this.RecyclingCenterId = RecyclingCenterId;
+    public void setRecyclingcenterId(Long recyclingcenterId) {
+        this.recyclingcenterId = recyclingcenterId;
     }
 
     public String getRecyclingCenterName() {
@@ -113,5 +113,6 @@ public class WasteDeliveryDto {
         this.notes = notes;
     }
 }
+
 
 

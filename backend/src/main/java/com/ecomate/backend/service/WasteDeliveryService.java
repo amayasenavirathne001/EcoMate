@@ -18,28 +18,28 @@ import java.util.stream.Collectors;
 public class WasteDeliveryService {
 
     private final WasteDeliveryRepository wasteDeliveryRepository;
-    private final RecyclingCenterRepository RecyclingCenterRepository;
+    private final RecyclingCenterRepository recyclingCenterRepository;
 
     public WasteDeliveryService(WasteDeliveryRepository wasteDeliveryRepository,
-                                RecyclingCenterRepository RecyclingCenterRepository) {
+                                RecyclingCenterRepository recyclingCenterRepository) {
         this.wasteDeliveryRepository = wasteDeliveryRepository;
-        this.RecyclingCenterRepository = RecyclingCenterRepository;
+        this.recyclingCenterRepository = recyclingCenterRepository;
     }
 
     @Transactional
     public WasteDeliveryDto recordDelivery(String userEmail, CreateWasteDeliveryRequest request) {
-        RecyclingCenter Center = null;
+        RecyclingCenter center = null;
 
-        if (request.getRecyclingCenterId() != null) {
-            Center = RecyclingCenterRepository.findById(request.getRecyclingCenterId()).orElse(null);
+        if (request.getRecyclingcenterId() != null) {
+            center = recyclingCenterRepository.findById(request.getRecyclingcenterId()).orElse(null);
         }
 
-        if (Center == null && userEmail != null && !userEmail.isBlank()) {
-            Center = RecyclingCenterRepository.findByOfficerEmailIgnoreCase(userEmail).orElse(null);
+        if (center == null && userEmail != null && !userEmail.isBlank()) {
+            center = recyclingCenterRepository.findByOfficerEmailIgnoreCase(userEmail).orElse(null);
         }
 
         WasteDelivery delivery = new WasteDelivery();
-        delivery.setRecyclingCenter(Center);
+        delivery.setRecyclingCenter(center);
         delivery.setMaterialType(request.getMaterialType());
         delivery.setWeightKg(request.getWeightKg());
         delivery.setDeliveredBy(request.getDeliveredBy());
@@ -53,9 +53,9 @@ public class WasteDeliveryService {
 
     @Transactional(readOnly = true)
     public List<WasteDeliveryDto> getDeliveriesForUser(String userEmail) {
-        Optional<RecyclingCenter> CenterOpt = RecyclingCenterRepository.findByOfficerEmailIgnoreCase(userEmail);
-        if (CenterOpt.isPresent()) {
-            return wasteDeliveryRepository.findByRecyclingCenterIdOrderByDateTimeDesc(CenterOpt.get().getId())
+        Optional<RecyclingCenter> centerOpt = recyclingCenterRepository.findByOfficerEmailIgnoreCase(userEmail);
+        if (centerOpt.isPresent()) {
+            return wasteDeliveryRepository.findByRecyclingCenterIdOrderByDateTimeDesc(centerOpt.get().getId())
                     .stream()
                     .map(WasteDeliveryDto::fromEntity)
                     .collect(Collectors.toList());
@@ -67,8 +67,8 @@ public class WasteDeliveryService {
     }
 
     @Transactional(readOnly = true)
-    public List<WasteDeliveryDto> getDeliveriesForCenter(Long CenterId) {
-        return wasteDeliveryRepository.findByRecyclingCenterIdOrderByDateTimeDesc(CenterId)
+    public List<WasteDeliveryDto> getDeliveriesForCenter(Long centerId) {
+        return wasteDeliveryRepository.findByRecyclingCenterIdOrderByDateTimeDesc(centerId)
                 .stream()
                 .map(WasteDeliveryDto::fromEntity)
                 .collect(Collectors.toList());
@@ -88,4 +88,11 @@ public class WasteDeliveryService {
         wasteDeliveryRepository.save(delivery);
     }
 }
+
+
+
+
+
+
+
 

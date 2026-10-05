@@ -22,7 +22,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   String _officerName = 'Officer';
   String _officerEmail = 'trash@gmail.com';
   RecyclingCenter? _myCenter;
-  List<MaterialItem> _CenterMaterials = [];
+  List<MaterialItem> _centerMaterials = [];
   bool _isLoading = true;
 
   // Waste Deliveries
@@ -59,16 +59,16 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
         ? storedName
         : 'Officer';
 
-        final Center = await _recyclingService.getCenterForOfficer(activeEmail);
+        final center = await _recyclingService.getCenterForOfficer(activeEmail);
     final materials = await _recyclingService.getCenterMaterialsForOfficer(activeEmail);
-    final deliveries = Center != null ? await _recyclingService.fetchDeliveries(CenterId: Center.id) : <WasteDeliveryRecord>[];
+    final deliveries = center != null ? await _recyclingService.fetchDeliveries(centerId: center.id) : <WasteDeliveryRecord>[];
 
     if (mounted) {
       setState(() {
         _officerEmail = activeEmail;
         _officerName = activeName;
-        _myCenter = Center;
-        _CenterMaterials = materials;
+        _myCenter = center;
+        _centerMaterials = materials;
         _deliveryRecords = deliveries;
         _isLoading = false;
       });
@@ -415,7 +415,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     }
     if (_myCenter == null) return;
 
-    List<MaterialItem> tempMaterials = List.from(_CenterMaterials);
+    List<MaterialItem> tempMaterials = List.from(_centerMaterials);
 
     showDialog(
       context: context,
@@ -512,7 +512,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                     await _recyclingService.saveOrUpdateCenter(updatedCenter);
 
                     setState(() {
-                      _CenterMaterials = tempMaterials;
+                      _centerMaterials = tempMaterials;
                       _myCenter = updatedCenter;
                     });
 
@@ -795,8 +795,8 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
 
                         final newRecord = WasteDeliveryRecord(
                           id: '',
-                          RecyclingCenterId: _myCenter?.id,
-                          RecyclingCenterName: _myCenter?.name,
+                          recyclingCenterId: _myCenter?.id,
+                          recyclingCenterName: _myCenter?.name,
                           materialType: selectedMaterial,
                           weightKg: weight,
                           deliveredBy: deliverer,
@@ -1119,7 +1119,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
 
   Widget _buildHomeTab() {
     final totalWeight = _deliveryRecords.fold<double>(0.0, (sum, r) => sum + r.weightKg);
-    final acceptedList = _CenterMaterials.where((m) => m.isActive).toList();
+    final acceptedList = _centerMaterials.where((m) => m.isActive).toList();
 
     return RefreshIndicator(
       color: RecyclingColors.primaryGreen,
@@ -2316,8 +2316,8 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   // =========================================================================
 
   Widget _buildCenterTab() {
-    final acceptedList = _CenterMaterials.where((m) => m.isActive).toList();
-    final unsupportedList = _CenterMaterials.where((m) => !m.isActive).toList();
+    final acceptedList = _centerMaterials.where((m) => m.isActive).toList();
+    final unsupportedList = _centerMaterials.where((m) => !m.isActive).toList();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 30),
@@ -2909,6 +2909,12 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 }
+
+
+
+
+
+
 
 
 

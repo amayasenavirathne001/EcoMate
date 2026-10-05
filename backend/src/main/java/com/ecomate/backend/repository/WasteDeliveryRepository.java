@@ -9,8 +9,10 @@ import java.util.List;
 @Repository
 public interface WasteDeliveryRepository extends JpaRepository<WasteDelivery, Long> {
 
-    List<WasteDelivery> findByRecyclingCenterIdOrderByDateTimeDesc(Long RecyclingCenterId);
+    List<WasteDelivery> findByRecyclingCenterIdOrderByDateTimeDesc(Long recyclingcenterId);
 
     List<WasteDelivery> findAllByOrderByDateTimeDesc();
 }
+
+
 

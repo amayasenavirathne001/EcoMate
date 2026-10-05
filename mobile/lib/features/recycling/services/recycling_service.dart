@@ -11,251 +11,11 @@ class RecyclingService {
   static const String baseUrl = 'http://localhost:8080';
   final AuthService _authService = AuthService();
 
-  static final List<MaterialItem> _masterMaterials = [
-    const MaterialItem(
-      id: 1,
-      name: 'Plastic Bottles (PET #1)',
-      category: 'Plastics',
-      description: 'Clean transparent water & soda beverage bottles',
-      imageUrl: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=300',
-      binColor: '#F59E0B',
-      isRecyclable: true,
-      preparationTips: 'Rinse with clean water, remove cap, and crush flat.',
-    ),
-    const MaterialItem(
-      id: 2,
-      name: 'Rigid Plastics (HDPE #2, PP #5)',
-      category: 'Plastics',
-      description: 'Detergent jugs, milk bottles, and shampoo containers',
-      imageUrl: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=300',
-      binColor: '#F59E0B',
-      isRecyclable: true,
-      preparationTips: 'Empty completely and rinse out chemical residue.',
-    ),
-    const MaterialItem(
-      id: 3,
-      name: 'Cardboard & Office Paper',
-      category: 'Paper & Cardboard',
-      description: 'Corrugated boxes, plain writing paper, and notebooks',
-      imageUrl: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=300',
-      binColor: '#3B82F6',
-      isRecyclable: true,
-      preparationTips: 'Flatten all boxes and keep dry.',
-    ),
-    const MaterialItem(
-      id: 4,
-      name: 'Newspapers & Magazines',
-      category: 'Paper & Cardboard',
-      description: 'Daily newspapers, printed magazines, and flyers',
-      imageUrl: 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=300',
-      binColor: '#3B82F6',
-      isRecyclable: true,
-      preparationTips: 'Bundle securely with natural string or place in paper bags.',
-    ),
-    const MaterialItem(
-      id: 5,
-      name: 'Aluminum Beverage Cans',
-      category: 'Metals',
-      description: 'Clean soda, juice, and energy drink cans',
-      imageUrl: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=300',
-      binColor: '#64748B',
-      isRecyclable: true,
-      preparationTips: 'Rinse out liquid residue and crush to save space.',
-    ),
-    const MaterialItem(
-      id: 6,
-      name: 'Steel & Tin Food Cans',
-      category: 'Metals',
-      description: 'Canned vegetables, soup, and fish tins',
-      imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=300',
-      binColor: '#64748B',
-      isRecyclable: true,
-      preparationTips: 'Rinse clean and push the metal lid safely inside.',
-    ),
-    const MaterialItem(
-      id: 7,
-      name: 'Glass Bottles & Jars',
-      category: 'Glass',
-      description: 'Clear, amber, and green glass condiment bottles & jars',
-      imageUrl: 'https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?w=300',
-      binColor: '#10B981',
-      isRecyclable: true,
-      preparationTips: 'Rinse clean. Do not include window glass or mirrors.',
-    ),
-    const MaterialItem(
-      id: 8,
-      name: 'Mobile Phones & Tablets',
-      category: 'E-Waste',
-      description: 'Old handheld smartphones, feature phones, and tablets',
-      imageUrl: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300',
-      binColor: '#8B5CF6',
-      isRecyclable: true,
-      preparationTips: 'Perform a factory reset to erase personal data.',
-    ),
-    const MaterialItem(
-      id: 9,
-      name: 'Computers & Laptops',
-      category: 'E-Waste',
-      description: 'Desktops, monitors, laptops, and hard drives',
-      imageUrl: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300',
-      binColor: '#8B5CF6',
-      isRecyclable: true,
-      preparationTips: 'Bundle cords and cables neatly with ties.',
-    ),
-    const MaterialItem(
-      id: 10,
-      name: 'Batteries & Power Banks',
-      category: 'E-Waste',
-      description: 'Rechargeable power packs, lithium-ion laptop batteries',
-      imageUrl: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=300',
-      binColor: '#8B5CF6',
-      isRecyclable: true,
-      preparationTips: 'Tape positive/negative terminals with electrical tape.',
-    ),
-    const MaterialItem(
-      id: 11,
-      name: 'Cables & Small Appliances',
-      category: 'E-Waste',
-      description: 'Kettles, toasters, chargers, and power adapters',
-      imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300',
-      binColor: '#8B5CF6',
-      isRecyclable: true,
-      preparationTips: 'Unplug from wall and bundle cords securely.',
-    ),
-    const MaterialItem(
-      id: 12,
-      name: 'Fruit & Vegetable Scraps',
-      category: 'Organic',
-      description: 'Kitchen peels, vegetable cuttings, and fruit cores',
-      imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=300',
-      binColor: '#22C55E',
-      isRecyclable: true,
-      preparationTips: 'Separate from plastic packaging before depositing.',
-    ),
-    const MaterialItem(
-      id: 13,
-      name: 'Garden Leaves & Grass Clippings',
-      category: 'Organic',
-      description: 'Dry garden leaves, pruned branches, and grass cuttings',
-      imageUrl: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=300',
-      binColor: '#22C55E',
-      isRecyclable: true,
-      preparationTips: 'Ensure free of stones, plastics, and non-biodegradable trash.',
-    ),
-    const MaterialItem(
-      id: 14,
-      name: 'Copper Wires & Brass Fittings',
-      category: 'Scrap Metal',
-      description: 'Household electrical wiring and plumbing brass scrap',
-      imageUrl: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?w=300',
-      binColor: '#D97706',
-      isRecyclable: true,
-      preparationTips: 'Strip thick outer rubber insulation if requested by Center.',
-    ),
-    const MaterialItem(
-      id: 15,
-      name: 'Old Metal Cookware',
-      category: 'Scrap Metal',
-      description: 'Worn aluminum pots, cast iron pans, and steel trays',
-      imageUrl: 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=300',
-      binColor: '#D97706',
-      isRecyclable: true,
-      preparationTips: 'Scrape off food grease before drop-off.',
-    ),
-  ];
+  static final List<MaterialItem> _masterMaterials = [];
 
   List<WasteCategory> _categories = [];
 
-  static final List<RecyclingCenter> _Centers = [
-    const RecyclingCenter(
-      id: '1',
-      officerId: 14,
-      officerEmail: 'stharanga.rog@gmail.com',
-      name: 'GreenCycle Central Center',
-      address: 'No. 45 Baseline Road, Colombo 09',
-      city: 'Colombo',
-      distanceKm: 1.2,
-      contactNumber: '+94 11 268 4590',
-      email: 'contact@greencyclecenter.lk',
-      operatingHours: 'Mon - Sat: 8:00 AM - 5:30 PM',
-      isOpen: true,
-      acceptedMaterials: [
-        'Plastic Bottles (PET #1)',
-        'Rigid Plastics (HDPE #2, PP #5)',
-        'Cardboard & Office Paper',
-        'Aluminum Beverage Cans',
-        'Glass Bottles & Jars',
-      ],
-      unsupportedMaterials: [
-        'Newspapers & Magazines',
-        'Steel & Tin Food Cans',
-        'Mobile Phones & Tablets',
-        'Computers & Laptops',
-        'Batteries & Power Banks',
-        'Cables & Small Appliances',
-        'Fruit & Vegetable Scraps',
-        'Garden Leaves & Grass Clippings',
-        'Copper Wires & Brass Fittings',
-        'Old Metal Cookware',
-      ],
-      notes:
-          'Offers drop-off points for bulk recyclables. Weight-based incentives provided.',
-    ),
-    const RecyclingCenter(
-      id: '2',
-      officerId: 4,
-      officerEmail: 'sumudu@gmail.com',
-      name: 'BioRecycle Organic Composting Plant',
-      address: '88 Temple Road, Nawala, Rajagiriya',
-      city: 'Rajagiriya',
-      distanceKm: 4.5,
-      contactNumber: '+94 11 442 1102',
-      email: 'support@biorecycle.org',
-      operatingHours: 'Mon - Fri: 7:30 AM - 4:00 PM',
-      isOpen: true,
-      acceptedMaterials: [
-        'Fruit & Vegetable Scraps',
-        'Garden Leaves & Grass Clippings',
-        'Cardboard & Office Paper',
-      ],
-      unsupportedMaterials: [
-        'Plastic Bottles (PET #1)',
-        'Rigid Plastics (HDPE #2, PP #5)',
-        'Aluminum Beverage Cans',
-        'Glass Bottles & Jars',
-        'Mobile Phones & Tablets',
-      ],
-      notes:
-          'Free organic compost bag exchange for every 10kg of kitchen waste delivered.',
-    ),
-    const RecyclingCenter(
-      id: '3',
-      officerId: 7,
-      officerEmail: 'peterparkerr@gmail.com',
-      name: 'EcoTech E-Waste Recovery Center',
-      address: '120 High Level Road, Maharagama',
-      city: 'Maharagama',
-      distanceKm: 3.8,
-      contactNumber: '+94 11 285 9940',
-      email: 'info@ecotech-recovery.lk',
-      operatingHours: 'Tue - Sun: 9:00 AM - 6:00 PM',
-      isOpen: true,
-      acceptedMaterials: [
-        'Mobile Phones & Tablets',
-        'Computers & Laptops',
-        'Batteries & Power Banks',
-        'Cables & Small Appliances',
-      ],
-      unsupportedMaterials: [
-        'Plastic Bottles (PET #1)',
-        'Cardboard & Office Paper',
-        'Fruit & Vegetable Scraps',
-        'Glass Bottles & Jars',
-      ],
-      notes:
-          'Specialized authorized e-waste facility. Free certified data wiping on computer drives.',
-    ),
-  ];
+  static final List<RecyclingCenter> _centers = [];
 
     String _iconToStr(IconData icon) {
     if (icon == Icons.local_drink_rounded) return 'local_drink_rounded';
@@ -366,13 +126,13 @@ class RecyclingService {
     return _masterMaterials;
   }
 
-  // Get master materials with is_active flag for the Center
+  // Get master materials with is_active flag for the center
   Future<List<MaterialItem>> getCenterMaterialsForOfficer(String? officerEmail) async {
     final token = await _authService.getToken();
     if (token != null && token.isNotEmpty) {
       try {
         final response = await http.get(
-          Uri.parse('$baseUrl/api/recycling/my-Center/materials'),
+          Uri.parse('$baseUrl/api/recycling/my-center/materials'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -389,11 +149,11 @@ class RecyclingService {
     }
 
     // Local fallback
-    final Center = getCenterForOfficerLocal(officerEmail);
-    if (Center == null) return _masterMaterials;
+    final center = getCenterForOfficerLocal(officerEmail);
+    if (center == null) return _masterMaterials;
 
     return _masterMaterials.map((mat) {
-      final isAccepted = Center.acceptedMaterials.contains(mat.name);
+      final isAccepted = center.acceptedMaterials.contains(mat.name);
       return mat.copyWith(isActive: isAccepted);
     }).toList();
   }
@@ -404,7 +164,7 @@ class RecyclingService {
     if (token != null && token.isNotEmpty) {
       try {
         await http.put(
-          Uri.parse('$baseUrl/api/recycling/my-Center/materials/toggle'),
+          Uri.parse('$baseUrl/api/recycling/my-center/materials/toggle'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -427,7 +187,7 @@ class RecyclingService {
     if (token != null && token.isNotEmpty) {
       try {
         final response = await http.get(
-          Uri.parse('$baseUrl/api/recycling/my-Center'),
+          Uri.parse('$baseUrl/api/recycling/my-center'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -436,14 +196,14 @@ class RecyclingService {
 
         if (response.statusCode == 200 && response.body.isNotEmpty) {
           final data = jsonDecode(response.body) as Map<String, dynamic>;
-          final Center = RecyclingCenter.fromJson(data);
-          final idx = _Centers.indexWhere((c) => c.id == Center.id || c.officerEmail == email);
+          final center = RecyclingCenter.fromJson(data);
+          final idx = _centers.indexWhere((c) => c.id == center.id || c.officerEmail == email);
           if (idx >= 0) {
-            _Centers[idx] = Center;
+            _centers[idx] = center;
           } else {
-            _Centers.add(Center);
+            _centers.add(center);
           }
-          return Center;
+          return center;
         }
       } catch (_) {
         // Backend offline fallback
@@ -456,7 +216,7 @@ class RecyclingService {
   RecyclingCenter? getCenterForOfficerLocal(String? email) {
     if (email == null || email.isEmpty) return null;
     try {
-      return _Centers.firstWhere(
+      return _centers.firstWhere(
         (c) => c.officerEmail?.toLowerCase() == email.trim().toLowerCase(),
       );
     } catch (_) {
@@ -464,37 +224,37 @@ class RecyclingService {
     }
   }
 
-  Future<void> saveOrUpdateCenter(RecyclingCenter Center) async {
+  Future<void> saveOrUpdateCenter(RecyclingCenter center) async {
     final token = await _authService.getToken();
     if (token != null && token.isNotEmpty) {
       try {
         await http.put(
-          Uri.parse('$baseUrl/api/recycling/my-Center'),
+          Uri.parse('$baseUrl/api/recycling/my-center'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
-          body: jsonEncode(Center.toJson()),
+          body: jsonEncode(center.toJson()),
         );
       } catch (_) {
         // Local fallback
       }
     }
 
-    final index = _Centers.indexWhere((c) => c.id == Center.id);
+    final index = _centers.indexWhere((c) => c.id == center.id);
     if (index >= 0) {
-      _Centers[index] = Center;
+      _centers[index] = center;
     } else {
-      _Centers.add(Center);
+      _centers.add(center);
     }
   }
 
-  Future<void> toggleCenterStatus(String CenterId, bool isOpen) async {
+  Future<void> toggleCenterStatus(String centerId, bool isOpen) async {
     final token = await _authService.getToken();
     if (token != null && token.isNotEmpty) {
       try {
         await http.patch(
-          Uri.parse('$baseUrl/api/recycling/my-Center/status'),
+          Uri.parse('$baseUrl/api/recycling/my-center/status'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -506,9 +266,9 @@ class RecyclingService {
       }
     }
 
-    final index = _Centers.indexWhere((c) => c.id == CenterId);
+    final index = _centers.indexWhere((c) => c.id == centerId);
     if (index >= 0) {
-      _Centers[index] = _Centers[index].copyWith(isOpen: isOpen);
+      _centers[index] = _centers[index].copyWith(isOpen: isOpen);
     }
   }
 
@@ -516,15 +276,15 @@ class RecyclingService {
     String? query,
     String? materialFilter,
   }) {
-    List<RecyclingCenter> list = List.from(_Centers);
+    List<RecyclingCenter> list = List.from(_centers);
 
     if (query != null && query.trim().isNotEmpty) {
       final cleanQuery = query.trim().toLowerCase();
-      list = list.where((Center) {
-        final matchesName = Center.name.toLowerCase().contains(cleanQuery);
-        final matchesCity = Center.city.toLowerCase().contains(cleanQuery);
-        final matchesAddr = Center.address.toLowerCase().contains(cleanQuery);
-        final matchesMat = Center.acceptedMaterials.any(
+      list = list.where((center) {
+        final matchesName = center.name.toLowerCase().contains(cleanQuery);
+        final matchesCity = center.city.toLowerCase().contains(cleanQuery);
+        final matchesAddr = center.address.toLowerCase().contains(cleanQuery);
+        final matchesMat = center.acceptedMaterials.any(
           (m) => m.toLowerCase().contains(cleanQuery),
         );
         return matchesName || matchesCity || matchesAddr || matchesMat;
@@ -533,8 +293,8 @@ class RecyclingService {
 
     if (materialFilter != null && materialFilter.isNotEmpty && materialFilter != 'All') {
       final filterLower = materialFilter.toLowerCase();
-      list = list.where((Center) {
-        return Center.acceptedMaterials.any(
+      list = list.where((center) {
+        return center.acceptedMaterials.any(
           (mat) => mat.toLowerCase().contains(filterLower),
         );
       }).toList();
@@ -555,7 +315,7 @@ class RecyclingService {
       queryParams['material'] = materialFilter;
     }
 
-    final uri = Uri.parse('$baseUrl/api/recycling/public/Centers').replace(
+    final uri = Uri.parse('$baseUrl/api/recycling/public/centers').replace(
       queryParameters: queryParams.isNotEmpty ? queryParams : null,
     );
 
@@ -568,11 +328,11 @@ class RecyclingService {
             .toList();
         if (fetchedCenters.isNotEmpty) {
           for (final c in fetchedCenters) {
-            final idx = _Centers.indexWhere((existing) => existing.id == c.id);
+            final idx = _centers.indexWhere((existing) => existing.id == c.id);
             if (idx >= 0) {
-              _Centers[idx] = c;
+              _centers[idx] = c;
             } else {
-              _Centers.add(c);
+              _centers.add(c);
             }
           }
           return fetchedCenters;
@@ -585,31 +345,31 @@ class RecyclingService {
     return getRecyclingCenters(query: query, materialFilter: materialFilter);
   }
 
-  Future<RecyclingCenter?> createCenter(RecyclingCenter Center) async {
+  Future<RecyclingCenter?> createCenter(RecyclingCenter center) async {
     final token = await _authService.getToken();
     if (token != null && token.isNotEmpty) {
       try {
         final response = await http.post(
-          Uri.parse('$baseUrl/api/recycling/Centers'),
+          Uri.parse('$baseUrl/api/recycling/centers'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
-          body: jsonEncode(Center.toJson()),
+          body: jsonEncode(center.toJson()),
         );
 
         if (response.statusCode == 200 && response.body.isNotEmpty) {
           final data = jsonDecode(response.body) as Map<String, dynamic>;
           final created = RecyclingCenter.fromJson(data);
-          _Centers.add(created);
+          _centers.add(created);
           return created;
         }
       } catch (_) {
         // Fallback
       }
     }
-    _Centers.add(Center);
-    return Center;
+    _centers.add(center);
+    return center;
   }
 
   Future<bool> deleteCenter(String id) async {
@@ -617,26 +377,26 @@ class RecyclingService {
     if (token != null && token.isNotEmpty) {
       try {
         final response = await http.delete(
-          Uri.parse('$baseUrl/api/recycling/Centers/$id'),
+          Uri.parse('$baseUrl/api/recycling/centers/$id'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
         );
         if (response.statusCode == 200 || response.statusCode == 204) {
-          _Centers.removeWhere((c) => c.id == id);
+          _centers.removeWhere((c) => c.id == id);
           return true;
         }
       } catch (_) {}
     }
-    _Centers.removeWhere((c) => c.id == id);
+    _centers.removeWhere((c) => c.id == id);
     return true;
   }
 
-  Future<List<WasteDeliveryRecord>> fetchDeliveries({String? CenterId}) async {
+  Future<List<WasteDeliveryRecord>> fetchDeliveries({String? centerId}) async {
     final token = await _authService.getToken();
-    final url = CenterId != null
-        ? '$baseUrl/api/recycling/deliveries?CenterId=$CenterId'
+    final url = centerId != null
+        ? '$baseUrl/api/recycling/deliveries?centerId=$centerId'
         : '$baseUrl/api/recycling/deliveries';
 
     if (token != null && token.isNotEmpty) {
@@ -713,8 +473,8 @@ class RecyclingService {
     return [
       WasteDeliveryRecord(
         id: 'DEL-101',
-        RecyclingCenterId: '1',
-        RecyclingCenterName: 'GreenCycle Central Center',
+        recyclingCenterId: '1',
+        recyclingCenterName: 'GreenCycle Central center',
         materialType: 'Plastic Bottles (PET #1)',
         weightKg: 2.5,
         deliveredBy: 'Resident User',
@@ -724,8 +484,8 @@ class RecyclingService {
       ),
       WasteDeliveryRecord(
         id: 'DEL-102',
-        RecyclingCenterId: '2',
-        RecyclingCenterName: 'BioRecycle Organic Composting Plant',
+        recyclingCenterId: '2',
+        recyclingCenterName: 'BioRecycle Organic Composting Plant',
         materialType: 'Organic',
         weightKg: 5.0,
         deliveredBy: 'Resident User',
@@ -735,8 +495,8 @@ class RecyclingService {
       ),
       WasteDeliveryRecord(
         id: 'DEL-103',
-        RecyclingCenterId: '1',
-        RecyclingCenterName: 'GreenCycle Central Center',
+        recyclingCenterId: '1',
+        recyclingCenterName: 'GreenCycle Central center',
         materialType: 'Cardboard',
         weightKg: 1.2,
         deliveredBy: 'Resident User',
@@ -749,7 +509,7 @@ class RecyclingService {
 
   RecyclingCenter? getCenterById(String id) {
     try {
-      return _Centers.firstWhere((c) => c.id == id);
+      return _centers.firstWhere((c) => c.id == id);
     } catch (_) {
       return null;
     }
@@ -781,6 +541,16 @@ class RecyclingService {
     return true;
   }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

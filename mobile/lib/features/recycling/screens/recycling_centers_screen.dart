@@ -43,13 +43,13 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
 
   Future<void> _fetchCenters() async {
     setState(() => _isLoading = true);
-    final Centers = await _recyclingService.fetchRecyclingCenters(
+    final centers = await _recyclingService.fetchRecyclingCenters(
       query: _searchController.text,
       materialFilter: _selectedMaterial,
     );
     if (mounted) {
       setState(() {
-        _displayedCenters = Centers;
+        _displayedCenters = centers;
         _isLoading = false;
       });
     }
@@ -216,8 +216,8 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
                               padding: const EdgeInsets.all(20),
                               itemCount: _displayedCenters.length,
                               itemBuilder: (context, index) {
-                                final Center = _displayedCenters[index];
-                                return _buildCenterCard(Center);
+                                final center = _displayedCenters[index];
+                                return _buildCenterCard(center);
                               },
                             ),
                 ),
@@ -229,7 +229,7 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
     );
   }
 
-  Widget _buildCenterCard(RecyclingCenter Center) {
+  Widget _buildCenterCard(RecyclingCenter center) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -252,7 +252,7 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => CenterDetailScreen(Center: Center),
+                builder: (_) => CenterDetailScreen(center: center),
               ),
             );
           },
@@ -283,7 +283,7 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            Center.name,
+                            center.name,
                             style: const TextStyle(
                               color: RecyclingColors.deepForestGreen,
                               fontSize: 17,
@@ -292,7 +292,7 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            Center.address,
+                            center.address,
                             style: const TextStyle(
                               color: RecyclingColors.earthyBrown,
                               fontSize: 13,
@@ -310,15 +310,15 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: Center.isOpen
+                            color: center.isOpen
                                 ? const Color(0xFFE5E9DD)
                                 : const Color(0xFFFFEBEE),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            Center.isOpen ? 'OPEN' : 'CLOSED',
+                            center.isOpen ? 'OPEN' : 'CLOSED',
                             style: TextStyle(
-                              color: Center.isOpen
+                              color: center.isOpen
                                   ? RecyclingColors.forestGreen
                                   : const Color(0xFFC62828),
                               fontSize: 11,
@@ -336,7 +336,7 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
                             ),
                             const SizedBox(width: 2),
                             Text(
-                              '${Center.distanceKm} km',
+                              '${center.distanceKm} km',
                               style: const TextStyle(
                                 color: Color(0xFF1976D2),
                                 fontSize: 12,
@@ -362,7 +362,7 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      Center.operatingHours,
+                      center.operatingHours,
                       style: const TextStyle(
                         color: RecyclingColors.earthyBrown,
                         fontSize: 12,
@@ -386,7 +386,7 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
                 Wrap(
                   spacing: 6,
                   runSpacing: 6,
-                  children: Center.acceptedMaterials.take(4).map((mat) {
+                  children: center.acceptedMaterials.take(4).map((mat) {
                     return Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -415,4 +415,13 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
 

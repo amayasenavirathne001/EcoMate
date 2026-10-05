@@ -141,9 +141,9 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
       _isCentersLoading = true;
     });
     try {
-      final Centers = await _scheduleService.getCompatibleCenters(categoryId);
+      final centers = await _scheduleService.getCompatibleCenters(categoryId);
       setState(() {
-        _compatibleCenters = Centers;
+        _compatibleCenters = centers;
         _isCentersLoading = false;
       });
     } catch (e) {
@@ -154,7 +154,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
     }
   }
 
-  void _showCenterDetails(RecyclingCenter Center) {
+  void _showCenterDetails(RecyclingCenter center) {
     showDialog(
       context: context,
       builder: (context) {
@@ -162,7 +162,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
           backgroundColor: MunicipalColors.pageBg,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
-            Center.name,
+            center.name,
             style: const TextStyle(fontWeight: FontWeight.bold, color: MunicipalColors.primaryText),
           ),
           content: SingleChildScrollView(
@@ -170,29 +170,29 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                _detailRow(Icons.location_on, 'Address', Center.address),
-                _detailRow(Icons.location_city, 'City', Center.city),
-                _detailRow(Icons.phone, 'Contact', Center.contactNumber),
-                _detailRow(Icons.email, 'Email', Center.email),
-                _detailRow(Icons.access_time, 'Hours', Center.operatingHours),
-                _detailRow(Icons.check_circle_outline, 'Status', Center.isOpen ? 'Open' : 'Closed'),
+                _detailRow(Icons.location_on, 'Address', center.address),
+                _detailRow(Icons.location_city, 'City', center.city),
+                _detailRow(Icons.phone, 'Contact', center.contactNumber),
+                _detailRow(Icons.email, 'Email', center.email),
+                _detailRow(Icons.access_time, 'Hours', center.operatingHours),
+                _detailRow(Icons.check_circle_outline, 'Status', center.isOpen ? 'Open' : 'Closed'),
                 const SizedBox(height: 12),
                 const Text('Accepted Materials:', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 Wrap(
                   spacing: 6,
                   runSpacing: 4,
-                  children: Center.acceptedMaterials.map((mat) {
+                  children: center.acceptedMaterials.map((mat) {
                     return Chip(
                       label: Text(mat, style: const TextStyle(fontSize: 11)),
                       backgroundColor: MunicipalColors.primaryBg,
                     );
                   }).toList(),
                 ),
-                if (Center.notes.isNotEmpty) ...[
+                if (center.notes.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   const Text('Notes:', style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(Center.notes, style: const TextStyle(color: MunicipalColors.secondaryText)),
+                  Text(center.notes, style: const TextStyle(color: MunicipalColors.secondaryText)),
                 ]
               ],
             ),
@@ -637,8 +637,8 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: _compatibleCenters.length,
                           itemBuilder: (context, index) {
-                            final Center = _compatibleCenters[index];
-                            final isSelected = _selectedCenter?.id == Center.id;
+                            final center = _compatibleCenters[index];
+                            final isSelected = _selectedCenter?.id == center.id;
 
                             return Card(
                               elevation: 0,
@@ -656,20 +656,20 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                                   color: isSelected ? MunicipalColors.secondaryGreen : MunicipalColors.secondaryText,
                                 ),
                                 title: Text(
-                                  Center.name,
+                                  center.name,
                                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                 ),
                                 subtitle: Text(
-                                  '${Center.address}, ${Center.city}\nAccepted: ${Center.acceptedMaterials.take(2).join(", ")}...',
+                                  '${center.address}, ${center.city}\nAccepted: ${center.acceptedMaterials.take(2).join(", ")}...',
                                   style: const TextStyle(fontSize: 12),
                                 ),
                                 trailing: IconButton(
                                   icon: const Icon(Icons.info_outline, color: MunicipalColors.secondaryGreen),
-                                  onPressed: () => _showCenterDetails(Center),
+                                  onPressed: () => _showCenterDetails(center),
                                 ),
                                 onTap: () {
                                   setState(() {
-                                    _selectedCenter = Center;
+                                    _selectedCenter = center;
                                   });
                                 },
                               ),
@@ -754,5 +754,11 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
     );
   }
 }
+
+
+
+
+
+
 
 
