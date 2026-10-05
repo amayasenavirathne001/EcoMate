@@ -14,7 +14,7 @@ public class CollectionScheduleDto {
     private String frequency;
     private String destinationType;
     private Long recyclingCenterId;
-    private RecyclingCentreResponse recyclingCenter;
+    private RecyclingCenterResponse recyclingCenter;
     private String status;
     private String resourceStatus;
 
@@ -125,11 +125,11 @@ public class CollectionScheduleDto {
         this.recyclingCenterId = recyclingCenterId;
     }
 
-    public RecyclingCentreResponse getRecyclingCenter() {
+    public RecyclingCenterResponse getRecyclingCenter() {
         return recyclingCenter;
     }
 
-    public void setRecyclingCenter(RecyclingCentreResponse recyclingCenter) {
+    public void setRecyclingCenter(RecyclingCenterResponse recyclingCenter) {
         this.recyclingCenter = recyclingCenter;
     }
 
@@ -149,5 +149,6 @@ public class CollectionScheduleDto {
         this.resourceStatus = resourceStatus;
     }
 }
+
 
 

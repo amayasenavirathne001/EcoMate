@@ -15,19 +15,19 @@ public class CollectionScheduleService {
     private final CollectionScheduleRepository scheduleRepository;
     private final RouteRepository routeRepository;
     private final WasteCategoryRepository wasteCategoryRepository;
-    private final RecyclingCentreRepository recyclingCentreRepository;
-    private final RecyclingCentreService recyclingCentreService;
+    private final RecyclingCenterRepository RecyclingCenterRepository;
+    private final RecyclingCenterService RecyclingCenterService;
 
     public CollectionScheduleService(CollectionScheduleRepository scheduleRepository,
                                      RouteRepository routeRepository,
                                      WasteCategoryRepository wasteCategoryRepository,
-                                     RecyclingCentreRepository recyclingCentreRepository,
-                                     RecyclingCentreService recyclingCentreService) {
+                                     RecyclingCenterRepository RecyclingCenterRepository,
+                                     RecyclingCenterService RecyclingCenterService) {
         this.scheduleRepository = scheduleRepository;
         this.routeRepository = routeRepository;
         this.wasteCategoryRepository = wasteCategoryRepository;
-        this.recyclingCentreRepository = recyclingCentreRepository;
-        this.recyclingCentreService = recyclingCentreService;
+        this.RecyclingCenterRepository = RecyclingCenterRepository;
+        this.RecyclingCenterService = RecyclingCenterService;
     }
 
     public List<CollectionScheduleDto> getAllSchedules() {
@@ -92,8 +92,8 @@ public class CollectionScheduleService {
                 .orElseThrow(() -> new RuntimeException("Waste category not found with ID: " + dto.getWasteCategoryId()));
         schedule.setWasteCategory(category);
 
-        if ("Recycling Centre".equalsIgnoreCase(dto.getDestinationType()) && dto.getRecyclingCenterId() != null) {
-            RecyclingCentre center = recyclingCentreRepository.findById(dto.getRecyclingCenterId())
+        if ("Recycling Center".equalsIgnoreCase(dto.getDestinationType()) && dto.getRecyclingCenterId() != null) {
+            RecyclingCenter center = RecyclingCenterRepository.findById(dto.getRecyclingCenterId())
                     .orElseThrow(() -> new RuntimeException("Recycling Center not found with ID: " + dto.getRecyclingCenterId()));
             schedule.setRecyclingCenter(center);
         } else {
@@ -133,12 +133,13 @@ public class CollectionScheduleService {
 
         if (schedule.getRecyclingCenter() != null) {
             dto.setRecyclingCenterId(schedule.getRecyclingCenter().getId());
-            dto.setRecyclingCenter(com.ecomate.backend.dto.RecyclingCentreResponse.fromEntity(schedule.getRecyclingCenter()));
+            dto.setRecyclingCenter(com.ecomate.backend.dto.RecyclingCenterResponse.fromEntity(schedule.getRecyclingCenter()));
         }
 
         return dto;
     }
 }
+
 
 
 

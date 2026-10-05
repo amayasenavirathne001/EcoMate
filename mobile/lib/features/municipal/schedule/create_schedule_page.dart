@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../models/schedule_models.dart';
-import '../../recycling/models/recycling_centre.dart';
+import '../../recycling/models/recycling_center.dart';
 import '../../../models/waste_category.dart';
 import '../../../services/schedule_service.dart';
 import '../../recycling/services/recycling_service.dart';
@@ -39,12 +39,12 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
   String _destinationType = 'Municipal Disposal Site';
   final List<String> _destinationTypes = ['Municipal Disposal Site', 'Recycling Center'];
 
-  List<RecyclingCentre> _compatibleCentres = [];
-  RecyclingCentre? _selectedCentre;
+  List<RecyclingCenter> _compatibleCenters = [];
+  RecyclingCenter? _selectedCenter;
 
   String _status = 'ACTIVE';
   bool _isLoading = true;
-  bool _isCentresLoading = false;
+  bool _isCentersLoading = false;
   String? _errorMessage;
 
   @override
@@ -93,11 +93,11 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
           _endTime = _parseTimeOfDay(edit.endTime);
         } catch (_) {}
 
-        // Fetch compatible centers if recycling centre is destination
+        // Fetch compatible centers if recycling Center is destination
         if (_selectedCategory != null && _destinationType == 'Recycling Center') {
-          await _loadCompatibleCentres(_selectedCategory!.id);
-          if (edit.recyclingCenterId != null && _compatibleCentres.any((rc) => rc.id == edit.recyclingCenterId)) {
-            _selectedCentre = _compatibleCentres.firstWhere((rc) => rc.id == edit.recyclingCenterId);
+          await _loadCompatibleCenters(_selectedCategory!.id);
+          if (edit.recyclingCenterId != null && _compatibleCenters.any((rc) => rc.id == edit.recyclingCenterId)) {
+            _selectedCenter = _compatibleCenters.firstWhere((rc) => rc.id == edit.recyclingCenterId);
           }
         }
       }
@@ -136,25 +136,25 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
     return '$hourStr:$minuteStr $period';
   }
 
-  Future<void> _loadCompatibleCentres(String categoryId) async {
+  Future<void> _loadCompatibleCenters(String categoryId) async {
     setState(() {
-      _isCentresLoading = true;
+      _isCentersLoading = true;
     });
     try {
-      final centres = await _scheduleService.getCompatibleCentres(categoryId);
+      final Centers = await _scheduleService.getCompatibleCenters(categoryId);
       setState(() {
-        _compatibleCentres = centres;
-        _isCentresLoading = false;
+        _compatibleCenters = Centers;
+        _isCentersLoading = false;
       });
     } catch (e) {
       setState(() {
-        _compatibleCentres = [];
-        _isCentresLoading = false;
+        _compatibleCenters = [];
+        _isCentersLoading = false;
       });
     }
   }
 
-  void _showCentreDetails(RecyclingCentre centre) {
+  void _showCenterDetails(RecyclingCenter Center) {
     showDialog(
       context: context,
       builder: (context) {
@@ -162,7 +162,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
           backgroundColor: MunicipalColors.pageBg,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
-            centre.name,
+            Center.name,
             style: const TextStyle(fontWeight: FontWeight.bold, color: MunicipalColors.primaryText),
           ),
           content: SingleChildScrollView(
@@ -170,29 +170,29 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                _detailRow(Icons.location_on, 'Address', centre.address),
-                _detailRow(Icons.location_city, 'City', centre.city),
-                _detailRow(Icons.phone, 'Contact', centre.contactNumber),
-                _detailRow(Icons.email, 'Email', centre.email),
-                _detailRow(Icons.access_time, 'Hours', centre.operatingHours),
-                _detailRow(Icons.check_circle_outline, 'Status', centre.isOpen ? 'Open' : 'Closed'),
+                _detailRow(Icons.location_on, 'Address', Center.address),
+                _detailRow(Icons.location_city, 'City', Center.city),
+                _detailRow(Icons.phone, 'Contact', Center.contactNumber),
+                _detailRow(Icons.email, 'Email', Center.email),
+                _detailRow(Icons.access_time, 'Hours', Center.operatingHours),
+                _detailRow(Icons.check_circle_outline, 'Status', Center.isOpen ? 'Open' : 'Closed'),
                 const SizedBox(height: 12),
                 const Text('Accepted Materials:', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 Wrap(
                   spacing: 6,
                   runSpacing: 4,
-                  children: centre.acceptedMaterials.map((mat) {
+                  children: Center.acceptedMaterials.map((mat) {
                     return Chip(
                       label: Text(mat, style: const TextStyle(fontSize: 11)),
                       backgroundColor: MunicipalColors.primaryBg,
                     );
                   }).toList(),
                 ),
-                if (centre.notes.isNotEmpty) ...[
+                if (Center.notes.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   const Text('Notes:', style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(centre.notes, style: const TextStyle(color: MunicipalColors.secondaryText)),
+                  Text(Center.notes, style: const TextStyle(color: MunicipalColors.secondaryText)),
                 ]
               ],
             ),
@@ -301,7 +301,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
       return;
     }
 
-    if (_destinationType == 'Recycling Center' && _selectedCentre == null) {
+    if (_destinationType == 'Recycling Center' && _selectedCenter == null) {
       _showError('Please select a Recycling Center');
       return;
     }
@@ -317,7 +317,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
       endTime: _formatTimeOfDay(_endTime!),
       frequency: _frequency,
       destinationType: _destinationType,
-      recyclingCenterId: _destinationType == 'Recycling Center' ? _selectedCentre!.id : null,
+      recyclingCenterId: _destinationType == 'Recycling Center' ? _selectedCenter!.id : null,
       status: _status,
       resourceStatus: widget.scheduleToEdit?.resourceStatus ?? 'Not Assigned',
     );
@@ -459,10 +459,10 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                       onChanged: (val) {
                         setState(() {
                           _selectedCategory = val;
-                          _selectedCentre = null;
+                          _selectedCenter = null;
                         });
                         if (val != null) {
-                          _loadCompatibleCentres(val.id);
+                          _loadCompatibleCenters(val.id);
                         }
                       },
                       validator: (value) => value == null ? 'Required' : null,
@@ -593,9 +593,9 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                         if (val != null) {
                           setState(() {
                             _destinationType = val;
-                            _selectedCentre = null;
+                            _selectedCenter = null;
                             if (val == 'Recycling Center' && _selectedCategory != null) {
-                              _loadCompatibleCentres(_selectedCategory!.id);
+                              _loadCompatibleCenters(_selectedCategory!.id);
                             }
                           });
                         }
@@ -610,14 +610,14 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                         style: TextStyle(fontWeight: FontWeight.bold, color: MunicipalColors.primaryText),
                       ),
                       const SizedBox(height: 8),
-                      if (_isCentresLoading)
+                      if (_isCentersLoading)
                         const Center(child: CircularProgressIndicator(color: MunicipalColors.secondaryGreen))
                       else if (_selectedCategory == null)
                         const Text(
                           'Please select a waste category first to load matching centers.',
                           style: TextStyle(color: MunicipalColors.secondaryText),
                         )
-                      else if (_compatibleCentres.isEmpty)
+                      else if (_compatibleCenters.isEmpty)
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(12),
@@ -635,10 +635,10 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: _compatibleCentres.length,
+                          itemCount: _compatibleCenters.length,
                           itemBuilder: (context, index) {
-                            final centre = _compatibleCentres[index];
-                            final isSelected = _selectedCentre?.id == centre.id;
+                            final Center = _compatibleCenters[index];
+                            final isSelected = _selectedCenter?.id == Center.id;
 
                             return Card(
                               elevation: 0,
@@ -656,20 +656,20 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                                   color: isSelected ? MunicipalColors.secondaryGreen : MunicipalColors.secondaryText,
                                 ),
                                 title: Text(
-                                  centre.name,
+                                  Center.name,
                                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                 ),
                                 subtitle: Text(
-                                  '${centre.address}, ${centre.city}\nAccepted: ${centre.acceptedMaterials.take(2).join(", ")}...',
+                                  '${Center.address}, ${Center.city}\nAccepted: ${Center.acceptedMaterials.take(2).join(", ")}...',
                                   style: const TextStyle(fontSize: 12),
                                 ),
                                 trailing: IconButton(
                                   icon: const Icon(Icons.info_outline, color: MunicipalColors.secondaryGreen),
-                                  onPressed: () => _showCentreDetails(centre),
+                                  onPressed: () => _showCenterDetails(Center),
                                 ),
                                 onTap: () {
                                   setState(() {
-                                    _selectedCentre = centre;
+                                    _selectedCenter = Center;
                                   });
                                 },
                               ),
@@ -754,4 +754,5 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
     );
   }
 }
+
 

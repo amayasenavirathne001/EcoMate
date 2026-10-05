@@ -2,9 +2,9 @@ package com.ecomate.backend.service;
 
 import com.ecomate.backend.dto.CreateWasteDeliveryRequest;
 import com.ecomate.backend.dto.WasteDeliveryDto;
-import com.ecomate.backend.entity.RecyclingCentre;
+import com.ecomate.backend.entity.RecyclingCenter;
 import com.ecomate.backend.entity.WasteDelivery;
-import com.ecomate.backend.repository.RecyclingCentreRepository;
+import com.ecomate.backend.repository.RecyclingCenterRepository;
 import com.ecomate.backend.repository.WasteDeliveryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,28 +18,28 @@ import java.util.stream.Collectors;
 public class WasteDeliveryService {
 
     private final WasteDeliveryRepository wasteDeliveryRepository;
-    private final RecyclingCentreRepository recyclingCentreRepository;
+    private final RecyclingCenterRepository RecyclingCenterRepository;
 
     public WasteDeliveryService(WasteDeliveryRepository wasteDeliveryRepository,
-                                RecyclingCentreRepository recyclingCentreRepository) {
+                                RecyclingCenterRepository RecyclingCenterRepository) {
         this.wasteDeliveryRepository = wasteDeliveryRepository;
-        this.recyclingCentreRepository = recyclingCentreRepository;
+        this.RecyclingCenterRepository = RecyclingCenterRepository;
     }
 
     @Transactional
     public WasteDeliveryDto recordDelivery(String userEmail, CreateWasteDeliveryRequest request) {
-        RecyclingCentre centre = null;
+        RecyclingCenter Center = null;
 
-        if (request.getRecyclingCentreId() != null) {
-            centre = recyclingCentreRepository.findById(request.getRecyclingCentreId()).orElse(null);
+        if (request.getRecyclingCenterId() != null) {
+            Center = RecyclingCenterRepository.findById(request.getRecyclingCenterId()).orElse(null);
         }
 
-        if (centre == null && userEmail != null && !userEmail.isBlank()) {
-            centre = recyclingCentreRepository.findByOfficerEmailIgnoreCase(userEmail).orElse(null);
+        if (Center == null && userEmail != null && !userEmail.isBlank()) {
+            Center = RecyclingCenterRepository.findByOfficerEmailIgnoreCase(userEmail).orElse(null);
         }
 
         WasteDelivery delivery = new WasteDelivery();
-        delivery.setRecyclingCentre(centre);
+        delivery.setRecyclingCenter(Center);
         delivery.setMaterialType(request.getMaterialType());
         delivery.setWeightKg(request.getWeightKg());
         delivery.setDeliveredBy(request.getDeliveredBy());
@@ -53,9 +53,9 @@ public class WasteDeliveryService {
 
     @Transactional(readOnly = true)
     public List<WasteDeliveryDto> getDeliveriesForUser(String userEmail) {
-        Optional<RecyclingCentre> centreOpt = recyclingCentreRepository.findByOfficerEmailIgnoreCase(userEmail);
-        if (centreOpt.isPresent()) {
-            return wasteDeliveryRepository.findByRecyclingCentreIdOrderByDateTimeDesc(centreOpt.get().getId())
+        Optional<RecyclingCenter> CenterOpt = RecyclingCenterRepository.findByOfficerEmailIgnoreCase(userEmail);
+        if (CenterOpt.isPresent()) {
+            return wasteDeliveryRepository.findByRecyclingCenterIdOrderByDateTimeDesc(CenterOpt.get().getId())
                     .stream()
                     .map(WasteDeliveryDto::fromEntity)
                     .collect(Collectors.toList());
@@ -67,8 +67,8 @@ public class WasteDeliveryService {
     }
 
     @Transactional(readOnly = true)
-    public List<WasteDeliveryDto> getDeliveriesForCentre(Long centreId) {
-        return wasteDeliveryRepository.findByRecyclingCentreIdOrderByDateTimeDesc(centreId)
+    public List<WasteDeliveryDto> getDeliveriesForCenter(Long CenterId) {
+        return wasteDeliveryRepository.findByRecyclingCenterIdOrderByDateTimeDesc(CenterId)
                 .stream()
                 .map(WasteDeliveryDto::fromEntity)
                 .collect(Collectors.toList());
@@ -88,3 +88,4 @@ public class WasteDeliveryService {
         wasteDeliveryRepository.save(delivery);
     }
 }
+

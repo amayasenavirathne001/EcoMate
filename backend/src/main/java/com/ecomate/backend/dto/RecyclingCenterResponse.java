@@ -1,10 +1,10 @@
 package com.ecomate.backend.dto;
 
-import com.ecomate.backend.entity.RecyclingCentre;
+import com.ecomate.backend.entity.RecyclingCenter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecyclingCentreResponse {
+public class RecyclingCenterResponse {
 
     private Long id;
     private Long officerId;
@@ -24,11 +24,11 @@ public class RecyclingCentreResponse {
     private List<String> unsupportedMaterials = new ArrayList<>();
     private List<MaterialDto> materials = new ArrayList<>();
 
-    public RecyclingCentreResponse() {
+    public RecyclingCenterResponse() {
     }
 
-    public static RecyclingCentreResponse fromEntity(RecyclingCentre entity) {
-        RecyclingCentreResponse response = new RecyclingCentreResponse();
+    public static RecyclingCenterResponse fromEntity(RecyclingCenter entity) {
+        RecyclingCenterResponse response = new RecyclingCenterResponse();
         response.setId(entity.getId());
         if (entity.getOfficer() != null) {
             response.setOfficerId(entity.getOfficer().getId());
@@ -46,8 +46,8 @@ public class RecyclingCentreResponse {
         response.setIsOpen(entity.getIsOpen());
         response.setNotes(entity.getNotes());
 
-        if (entity.getCentreMaterials() != null) {
-            entity.getCentreMaterials().forEach(cm -> {
+        if (entity.getCenterMaterials() != null) {
+            entity.getCenterMaterials().forEach(cm -> {
                 MaterialDto mdto = MaterialDto.fromEntityWithStatus(cm.getMaterial(), cm.getIsActive());
                 response.getMaterials().add(mdto);
                 if (Boolean.TRUE.equals(cm.getIsActive())) {

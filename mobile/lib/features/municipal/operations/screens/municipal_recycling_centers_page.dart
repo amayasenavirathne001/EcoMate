@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/municipal_colors.dart';
-import '../../../recycling/models/recycling_centre.dart';
+import '../../../recycling/models/recycling_center.dart';
 import '../../../recycling/models/material_item.dart';
 import '../../../recycling/services/recycling_service.dart';
 
@@ -16,14 +16,14 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
   final TextEditingController _searchController = TextEditingController();
   List<MaterialItem> _materialsList = [];
 
-  List<RecyclingCentre> _allCentres = [];
-  List<RecyclingCentre> _filteredCentres = [];
+  List<RecyclingCenter> _allCenters = [];
+  List<RecyclingCenter> _filteredCenters = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadCentres();
+    _loadCenters();
   }
 
   @override
@@ -32,26 +32,26 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
     super.dispose();
   }
 
-  Future<void> _loadCentres() async {
+  Future<void> _loadCenters() async {
     setState(() => _isLoading = true);
-    final list = await _recyclingService.fetchRecyclingCentres();
+    final list = await _recyclingService.fetchRecyclingCenters();
     final mats = await _recyclingService.fetchAllMaterials();
     if (mounted) {
       setState(() {
-        _allCentres = list;
+        _allCenters = list;
         _materialsList = mats;
-        _filterCentres();
+        _filterCenters();
         _isLoading = false;
       });
     }
   }
 
-  void _filterCentres() {
+  void _filterCenters() {
     final query = _searchController.text.trim().toLowerCase();
     if (query.isEmpty) {
-      _filteredCentres = List.from(_allCentres);
+      _filteredCenters = List.from(_allCenters);
     } else {
-      _filteredCentres = _allCentres.where((c) {
+      _filteredCenters = _allCenters.where((c) {
         return c.name.toLowerCase().contains(query) ||
             c.city.toLowerCase().contains(query) ||
             c.address.toLowerCase().contains(query);
@@ -203,7 +203,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
 
                               setModalState(() => isSubmitting = true);
 
-                              final newCentre = RecyclingCentre(
+                              final newCenter = RecyclingCenter(
                                 id: '',
                                 officerEmail: officerEmail,
                                 name: name,
@@ -223,7 +223,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                                 notes: notesController.text.trim(),
                               );
 
-                              final created = await _recyclingService.createCentre(newCentre);
+                              final created = await _recyclingService.createCenter(newCenter);
 
                               if (!context.mounted) return;
                               Navigator.pop(context);
@@ -235,7 +235,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                                     backgroundColor: MunicipalColors.secondaryGreen,
                                   ),
                                 );
-                                _loadCentres();
+                                _loadCenters();
                               }
                             },
                       style: ElevatedButton.styleFrom(
@@ -341,7 +341,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                     controller: _searchController,
                     onChanged: (_) {
                       setState(() {
-                        _filterCentres();
+                        _filterCenters();
                       });
                     },
                     decoration: InputDecoration(
@@ -354,7 +354,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                               onPressed: () {
                                 _searchController.clear();
                                 setState(() {
-                                  _filterCentres();
+                                  _filterCenters();
                                 });
                               },
                             )
@@ -381,7 +381,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Total Centers: ${_filteredCentres.length}',
+                        'Total Centers: ${_filteredCenters.length}',
                         style: const TextStyle(
                           color: MunicipalColors.secondaryText,
                           fontSize: 13,
@@ -408,13 +408,13 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
 
             const Divider(height: 1, color: MunicipalColors.border),
 
-            // Centres List
+            // Centers List
             Expanded(
               child: _isLoading
                   ? const Center(
                       child: CircularProgressIndicator(color: MunicipalColors.secondaryGreen),
                     )
-                  : _filteredCentres.isEmpty
+                  : _filteredCenters.isEmpty
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -447,10 +447,10 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                         )
                       : ListView.builder(
                           padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
-                          itemCount: _filteredCentres.length,
+                          itemCount: _filteredCenters.length,
                           itemBuilder: (context, index) {
-                            final centre = _filteredCentres[index];
-                            return _buildCentreCard(centre);
+                            final Center = _filteredCenters[index];
+                            return _buildCenterCard(Center);
                           },
                         ),
             ),
@@ -460,7 +460,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
     );
   }
 
-  Widget _buildCentreCard(RecyclingCentre centre) {
+  Widget _buildCenterCard(RecyclingCenter Center) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
@@ -498,7 +498,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        centre.name,
+                        Center.name,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -511,7 +511,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                           const Icon(Icons.location_city_rounded, size: 14, color: MunicipalColors.secondaryText),
                           const SizedBox(width: 4),
                           Text(
-                            centre.city,
+                            Center.city,
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -526,17 +526,17 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: centre.isOpen
+                    color: Center.isOpen
                         ? MunicipalColors.success.withValues(alpha: 0.12)
                         : MunicipalColors.error.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    centre.isOpen ? 'OPEN' : 'CLOSED',
+                    Center.isOpen ? 'OPEN' : 'CLOSED',
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: centre.isOpen ? MunicipalColors.darkGreen : MunicipalColors.error,
+                      color: Center.isOpen ? MunicipalColors.darkGreen : MunicipalColors.error,
                     ),
                   ),
                 ),
@@ -550,7 +550,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                       context: context,
                       builder: (ctx) => AlertDialog(
                         title: const Text('Delete Center'),
-                        content: Text('Are you sure you want to delete "${centre.name}"?'),
+                        content: Text('Are you sure you want to delete "${Center.name}"?'),
                         actions: [
                           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
                           TextButton(
@@ -561,22 +561,22 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                       ),
                     );
                     if (confirm == true) {
-                      await _recyclingService.deleteCentre(centre.id);
-                      _loadCentres();
+                      await _recyclingService.deleteCenter(Center.id);
+                      _loadCenters();
                     }
                   },
                 ),
               ],
             ),
 
-            if (centre.officerEmail != null && centre.officerEmail!.isNotEmpty) ...[
+            if (Center.officerEmail != null && Center.officerEmail!.isNotEmpty) ...[
               const SizedBox(height: 6),
               Row(
                 children: [
                   const Icon(Icons.badge_outlined, size: 14, color: MunicipalColors.secondaryGreen),
                   const SizedBox(width: 4),
                   Text(
-                    'Officer: ${centre.officerEmail}',
+                    'Officer: ${Center.officerEmail}',
                     style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MunicipalColors.secondaryGreen),
                   ),
                 ],
@@ -595,7 +595,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    centre.address,
+                    Center.address,
                     style: const TextStyle(fontSize: 13, color: MunicipalColors.secondaryText),
                   ),
                 ),
@@ -609,7 +609,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                 const Icon(Icons.phone_outlined, size: 16, color: MunicipalColors.secondaryText),
                 const SizedBox(width: 6),
                 Text(
-                  centre.contactNumber,
+                  Center.contactNumber,
                   style: const TextStyle(fontSize: 13, color: MunicipalColors.secondaryText),
                 ),
               ],
@@ -622,18 +622,18 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
                 const Icon(Icons.access_time_rounded, size: 16, color: MunicipalColors.secondaryText),
                 const SizedBox(width: 6),
                 Text(
-                  centre.operatingHours,
+                  Center.operatingHours,
                   style: const TextStyle(fontSize: 12, color: MunicipalColors.secondaryText),
                 ),
               ],
             ),
 
-            if (centre.acceptedMaterials.isNotEmpty) ...[
+            if (Center.acceptedMaterials.isNotEmpty) ...[
               const SizedBox(height: 10),
               Wrap(
                 spacing: 6,
                 runSpacing: 6,
-                children: centre.acceptedMaterials.take(4).map((mat) {
+                children: Center.acceptedMaterials.take(4).map((mat) {
                   return Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
@@ -655,6 +655,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
     );
   }
 }
+
 
 
 

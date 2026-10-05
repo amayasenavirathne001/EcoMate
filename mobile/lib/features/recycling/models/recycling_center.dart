@@ -1,4 +1,4 @@
-class RecyclingCentre {
+class RecyclingCenter {
   final String id;
   final String? officerEmail;
   final int? officerId;
@@ -14,7 +14,7 @@ class RecyclingCentre {
   final List<String> unsupportedMaterials;
   final String notes;
 
-  const RecyclingCentre({
+  const RecyclingCenter({
     required this.id,
     this.officerEmail,
     this.officerId,
@@ -31,7 +31,7 @@ class RecyclingCentre {
     required this.notes,
   });
 
-  RecyclingCentre copyWith({
+  RecyclingCenter copyWith({
     String? id,
     String? officerEmail,
     int? officerId,
@@ -47,7 +47,7 @@ class RecyclingCentre {
     List<String>? unsupportedMaterials,
     String? notes,
   }) {
-    return RecyclingCentre(
+    return RecyclingCenter(
       id: id ?? this.id,
       officerEmail: officerEmail ?? this.officerEmail,
       officerId: officerId ?? this.officerId,
@@ -65,8 +65,8 @@ class RecyclingCentre {
     );
   }
 
-  factory RecyclingCentre.fromJson(Map<String, dynamic> json) {
-    return RecyclingCentre(
+  factory RecyclingCenter.fromJson(Map<String, dynamic> json) {
+    return RecyclingCenter(
       id: json['id']?.toString() ?? '',
       officerEmail: json['officerEmail'] as String?,
       officerId: json['officerId'] is int ? json['officerId'] as int : null,
@@ -105,4 +105,5 @@ class RecyclingCentre {
     };
   }
 }
+
 

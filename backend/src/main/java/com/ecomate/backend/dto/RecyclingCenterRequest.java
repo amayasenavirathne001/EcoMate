@@ -3,9 +3,9 @@ package com.ecomate.backend.dto;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
-public class RecyclingCentreRequest {
+public class RecyclingCenterRequest {
 
-    @NotBlank(message = "Centre name is required")
+    @NotBlank(message = "Center name is required")
     private String name;
 
     @NotBlank(message = "Address is required")
@@ -26,7 +26,7 @@ public class RecyclingCentreRequest {
     private List<String> unsupportedMaterials;
     private String notes;
 
-    public RecyclingCentreRequest() {
+    public RecyclingCenterRequest() {
     }
 
     public String getName() {

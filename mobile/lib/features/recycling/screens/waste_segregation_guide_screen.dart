@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../models/waste_category.dart';
 import '../services/recycling_service.dart';
 import 'category_detail_screen.dart';
-import 'recycling_centres_screen.dart';
+import 'recycling_centers_screen.dart';
 
 class WasteSegregationGuideScreen extends StatefulWidget {
   const WasteSegregationGuideScreen({super.key});
@@ -91,7 +91,7 @@ class _WasteSegregationGuideScreenState
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const RecyclingCentresScreen(),
+                  builder: (_) => const RecyclingCentersScreen(),
                 ),
               );
             },
@@ -416,6 +416,7 @@ class _WasteSegregationGuideScreenState
     );
   }
 }
+
 
 
 

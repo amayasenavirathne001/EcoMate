@@ -1,4 +1,4 @@
-import '../features/recycling/models/recycling_centre.dart';
+import '../features/recycling/models/recycling_center.dart';
 
 class RouteModel {
   final int id;
@@ -53,7 +53,7 @@ class CollectionScheduleModel {
   final String frequency;
   final String destinationType;
   final String? recyclingCenterId;
-  final RecyclingCentre? recyclingCenter;
+  final RecyclingCenter? recyclingCenter;
   final String status;
   final String resourceStatus;
 
@@ -76,11 +76,11 @@ class CollectionScheduleModel {
   });
 
   factory CollectionScheduleModel.fromJson(Map<String, dynamic> json) {
-    // Map RecyclingCentre from backend structure if present
-    RecyclingCentre? center;
+    // Map RecyclingCenter from backend structure if present
+    RecyclingCenter? center;
     if (json['recyclingCenter'] != null) {
       final rc = json['recyclingCenter'];
-      center = RecyclingCentre(
+      center = RecyclingCenter(
         id: rc['id'] as String,
         name: rc['name'] as String? ?? '',
         address: rc['address'] as String? ?? '',
@@ -133,3 +133,4 @@ class CollectionScheduleModel {
     };
   }
 }
+

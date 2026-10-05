@@ -38,11 +38,11 @@ public class CollectionSchedule {
     private String frequency; // One Time, Daily, Weekly, Custom
 
     @Column(nullable = false)
-    private String destinationType; // Municipal Disposal Site, Recycling Centre
+    private String destinationType; // Municipal Disposal Site, Recycling Center
 
     @ManyToOne
     @JoinColumn(name = "recycling_center_id", nullable = true)
-    private RecyclingCentre recyclingCenter;
+    private RecyclingCenter recyclingCenter;
 
     @Column(nullable = false)
     private String status = "ACTIVE"; // ACTIVE, INACTIVE
@@ -147,11 +147,11 @@ public class CollectionSchedule {
         this.destinationType = destinationType;
     }
 
-    public RecyclingCentre getRecyclingCenter() {
+    public RecyclingCenter getRecyclingCenter() {
         return recyclingCenter;
     }
 
-    public void setRecyclingCenter(RecyclingCentre recyclingCenter) {
+    public void setRecyclingCenter(RecyclingCenter recyclingCenter) {
         this.recyclingCenter = recyclingCenter;
     }
 
@@ -187,5 +187,6 @@ public class CollectionSchedule {
         this.updatedAt = updatedAt;
     }
 }
+
 
 

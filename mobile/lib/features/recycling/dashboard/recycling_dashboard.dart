@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/material_item.dart';
-import '../models/recycling_centre.dart';
+import '../models/recycling_center.dart';
 import '../models/waste_delivery_record.dart';
 import '../theme/recycling_colors.dart';
 import '../../../services/auth_service.dart';
@@ -21,8 +21,8 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   int _selectedTab = 0;
   String _officerName = 'Officer';
   String _officerEmail = 'trash@gmail.com';
-  RecyclingCentre? _myCentre;
-  List<MaterialItem> _centreMaterials = [];
+  RecyclingCenter? _myCenter;
+  List<MaterialItem> _CenterMaterials = [];
   bool _isLoading = true;
 
   // Waste Deliveries
@@ -59,16 +59,16 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
         ? storedName
         : 'Officer';
 
-        final centre = await _recyclingService.getCentreForOfficer(activeEmail);
-    final materials = await _recyclingService.getCentreMaterialsForOfficer(activeEmail);
-    final deliveries = centre != null ? await _recyclingService.fetchDeliveries(centreId: centre.id) : <WasteDeliveryRecord>[];
+        final Center = await _recyclingService.getCenterForOfficer(activeEmail);
+    final materials = await _recyclingService.getCenterMaterialsForOfficer(activeEmail);
+    final deliveries = Center != null ? await _recyclingService.fetchDeliveries(CenterId: Center.id) : <WasteDeliveryRecord>[];
 
     if (mounted) {
       setState(() {
         _officerEmail = activeEmail;
         _officerName = activeName;
-        _myCentre = centre;
-        _centreMaterials = materials;
+        _myCenter = Center;
+        _CenterMaterials = materials;
         _deliveryRecords = deliveries;
         _isLoading = false;
       });
@@ -120,10 +120,10 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   }
 
   Future<void> _toggleStatus(bool isOpen) async {
-    if (_myCentre == null) return;
-    await _recyclingService.toggleCentreStatus(_myCentre!.id, isOpen);
+    if (_myCenter == null) return;
+    await _recyclingService.toggleCenterStatus(_myCenter!.id, isOpen);
     setState(() {
-      _myCentre = _myCentre!.copyWith(isOpen: isOpen);
+      _myCenter = _myCenter!.copyWith(isOpen: isOpen);
     });
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -300,16 +300,16 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 
-  void _openEditCentreModal() {
-    if (_myCentre == null) return;
+  void _openEditCenterModal() {
+    if (_myCenter == null) return;
 
-    final nameController = TextEditingController(text: _myCentre!.name);
-    final addressController = TextEditingController(text: _myCentre!.address);
-    final cityController = TextEditingController(text: _myCentre!.city);
-    final phoneController = TextEditingController(text: _myCentre!.contactNumber);
-    final emailController = TextEditingController(text: _myCentre!.email);
-    final hoursController = TextEditingController(text: _myCentre!.operatingHours);
-    final notesController = TextEditingController(text: _myCentre!.notes);
+    final nameController = TextEditingController(text: _myCenter!.name);
+    final addressController = TextEditingController(text: _myCenter!.address);
+    final cityController = TextEditingController(text: _myCenter!.city);
+    final phoneController = TextEditingController(text: _myCenter!.contactNumber);
+    final emailController = TextEditingController(text: _myCenter!.email);
+    final hoursController = TextEditingController(text: _myCenter!.operatingHours);
+    final notesController = TextEditingController(text: _myCenter!.notes);
 
     showModalBottomSheet(
       context: context,
@@ -366,7 +366,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    final updated = _myCentre!.copyWith(
+                    final updated = _myCenter!.copyWith(
                       name: nameController.text.trim(),
                       address: addressController.text.trim(),
                       city: cityController.text.trim(),
@@ -375,8 +375,8 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                       operatingHours: hoursController.text.trim(),
                       notes: notesController.text.trim(),
                     );
-                    await _recyclingService.saveOrUpdateCentre(updated);
-                    setState(() => _myCentre = updated);
+                    await _recyclingService.saveOrUpdateCenter(updated);
+                    setState(() => _myCenter = updated);
                     if (!context.mounted) return;
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -407,15 +407,15 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   }
 
   void _openManageMaterialsModal() {
-    if (_myCentre == null) {
+    if (_myCenter == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please wait until an admin assigns a Recycling Center to you.')),
       );
       return;
     }
-    if (_myCentre == null) return;
+    if (_myCenter == null) return;
 
-    List<MaterialItem> tempMaterials = List.from(_centreMaterials);
+    List<MaterialItem> tempMaterials = List.from(_CenterMaterials);
 
     showDialog(
       context: context,
@@ -504,16 +504,16 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                         .map((m) => m.name)
                         .toList();
 
-                    final updatedCentre = _myCentre!.copyWith(
+                    final updatedCenter = _myCenter!.copyWith(
                       acceptedMaterials: acceptedNames,
                       unsupportedMaterials: unsupportedNames,
                     );
 
-                    await _recyclingService.saveOrUpdateCentre(updatedCentre);
+                    await _recyclingService.saveOrUpdateCenter(updatedCenter);
 
                     setState(() {
-                      _centreMaterials = tempMaterials;
-                      _myCentre = updatedCentre;
+                      _CenterMaterials = tempMaterials;
+                      _myCenter = updatedCenter;
                     });
 
                     if (!context.mounted) return;
@@ -542,7 +542,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   }
 
   void _openRecordDeliveryModal() {
-    if (_myCentre == null) {
+    if (_myCenter == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please wait until an admin assigns a Recycling Center to you.')),
       );
@@ -795,8 +795,8 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
 
                         final newRecord = WasteDeliveryRecord(
                           id: '',
-                          recyclingCentreId: _myCentre?.id,
-                          recyclingCentreName: _myCentre?.name,
+                          RecyclingCenterId: _myCenter?.id,
+                          RecyclingCenterName: _myCenter?.name,
                           materialType: selectedMaterial,
                           weightKg: weight,
                           deliveredBy: deliverer,
@@ -1119,7 +1119,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
 
   Widget _buildHomeTab() {
     final totalWeight = _deliveryRecords.fold<double>(0.0, (sum, r) => sum + r.weightKg);
-    final acceptedList = _centreMaterials.where((m) => m.isActive).toList();
+    final acceptedList = _CenterMaterials.where((m) => m.isActive).toList();
 
     return RefreshIndicator(
       color: RecyclingColors.primaryGreen,
@@ -1385,12 +1385,12 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: (_myCentre?.isOpen ?? false)
+                        color: (_myCenter?.isOpen ?? false)
                             ? RecyclingColors.softGreen
                             : const Color(0xFFFFEBEE),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                          color: (_myCentre?.isOpen ?? false)
+                          color: (_myCenter?.isOpen ?? false)
                               ? RecyclingColors.cardBorder
                               : const Color(0xFFFFCDD2),
                         ),
@@ -1403,16 +1403,16 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                             height: 6,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: (_myCentre?.isOpen ?? false)
+                              color: (_myCenter?.isOpen ?? false)
                                   ? RecyclingColors.primaryGreen
                                   : RecyclingColors.error,
                             ),
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            (_myCentre?.isOpen ?? false) ? 'OPEN FOR DROP-OFFS' : 'CLOSED',
+                            (_myCenter?.isOpen ?? false) ? 'OPEN FOR DROP-OFFS' : 'CLOSED',
                             style: TextStyle(
-                              color: (_myCentre?.isOpen ?? false)
+                              color: (_myCenter?.isOpen ?? false)
                                   ? RecyclingColors.primaryGreen
                                   : RecyclingColors.error,
                               fontSize: 10.5,
@@ -1559,7 +1559,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      _myCentre?.name ?? 'No Center Assigned',
+                      _myCenter?.name ?? 'No Center Assigned',
                       style: const TextStyle(
                         color: RecyclingColors.darkText,
                         fontSize: 16,
@@ -1570,7 +1570,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      _myCentre?.address ?? 'Contact Council Admin',
+                      _myCenter?.address ?? 'Contact Council Admin',
                       style: const TextStyle(color: RecyclingColors.secondaryText, fontSize: 12),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -1581,7 +1581,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
             ],
           ),
 
-          if (_myCentre != null) ...[
+          if (_myCenter != null) ...[
             const SizedBox(height: 12),
             const Divider(height: 1, color: RecyclingColors.cardBorder),
             const SizedBox(height: 10),
@@ -1595,7 +1595,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
-                          _myCentre!.operatingHours,
+                          _myCenter!.operatingHours,
                           style: const TextStyle(color: RecyclingColors.secondaryText, fontSize: 12),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -1607,16 +1607,16 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      _myCentre!.isOpen ? 'Open' : 'Closed',
+                      _myCenter!.isOpen ? 'Open' : 'Closed',
                       style: TextStyle(
-                        color: _myCentre!.isOpen ? RecyclingColors.primaryGreen : RecyclingColors.error,
+                        color: _myCenter!.isOpen ? RecyclingColors.primaryGreen : RecyclingColors.error,
                         fontWeight: FontWeight.bold,
                         fontSize: 12.5,
                       ),
                     ),
                     const SizedBox(width: 4),
                     Switch(
-                      value: _myCentre!.isOpen,
+                      value: _myCenter!.isOpen,
                       activeThumbColor: RecyclingColors.primaryGreen,
                       activeTrackColor: RecyclingColors.softGreen,
                       onChanged: _toggleStatus,
@@ -2316,8 +2316,8 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
   // =========================================================================
 
   Widget _buildCenterTab() {
-    final acceptedList = _centreMaterials.where((m) => m.isActive).toList();
-    final unsupportedList = _centreMaterials.where((m) => !m.isActive).toList();
+    final acceptedList = _CenterMaterials.where((m) => m.isActive).toList();
+    final unsupportedList = _CenterMaterials.where((m) => !m.isActive).toList();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 30),
@@ -2327,7 +2327,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (_myCentre == null) ...[
+              if (_myCenter == null) ...[
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -2353,7 +2353,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                   ),
                 ),
               ] else ...[
-                // Centre Profile Details Card
+                // Center Profile Details Card
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
@@ -2376,7 +2376,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                         children: [
                           Expanded(
                             child: Text(
-                              _myCentre!.name,
+                              _myCenter!.name,
                               style: const TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
@@ -2385,7 +2385,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                             ),
                           ),
                           ElevatedButton.icon(
-                            onPressed: _openEditCentreModal,
+                            onPressed: _openEditCenterModal,
                             icon: const Icon(Icons.edit_outlined, size: 14),
                             label: const Text('Edit Details'),
                             style: ElevatedButton.styleFrom(
@@ -2401,18 +2401,18 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                       ),
                       const Divider(color: RecyclingColors.cardBorder),
                       const SizedBox(height: 6),
-                      _buildDetailRow(Icons.location_on_outlined, 'Address', _myCentre!.address),
+                      _buildDetailRow(Icons.location_on_outlined, 'Address', _myCenter!.address),
                       const SizedBox(height: 8),
-                      _buildDetailRow(Icons.location_city_outlined, 'City', _myCentre!.city),
+                      _buildDetailRow(Icons.location_city_outlined, 'City', _myCenter!.city),
                       const SizedBox(height: 8),
-                      _buildDetailRow(Icons.phone_outlined, 'Phone', _myCentre!.contactNumber),
+                      _buildDetailRow(Icons.phone_outlined, 'Phone', _myCenter!.contactNumber),
                       const SizedBox(height: 8),
-                      _buildDetailRow(Icons.email_outlined, 'Email', _myCentre!.email),
+                      _buildDetailRow(Icons.email_outlined, 'Email', _myCenter!.email),
                       const SizedBox(height: 8),
-                      _buildDetailRow(Icons.access_time_outlined, 'Hours', _myCentre!.operatingHours),
-                      if (_myCentre!.notes.isNotEmpty) ...[
+                      _buildDetailRow(Icons.access_time_outlined, 'Hours', _myCenter!.operatingHours),
+                      if (_myCenter!.notes.isNotEmpty) ...[
                         const SizedBox(height: 8),
-                        _buildDetailRow(Icons.notes_outlined, 'Notes', _myCentre!.notes),
+                        _buildDetailRow(Icons.notes_outlined, 'Notes', _myCenter!.notes),
                       ],
                     ],
                   ),
@@ -2438,7 +2438,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                             height: 10,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: _myCentre!.isOpen ? RecyclingColors.primaryGreen : RecyclingColors.error,
+                              color: _myCenter!.isOpen ? RecyclingColors.primaryGreen : RecyclingColors.error,
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -2450,11 +2450,11 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                                 style: TextStyle(fontSize: 11.5, color: RecyclingColors.secondaryText),
                               ),
                               Text(
-                                _myCentre!.isOpen ? 'OPEN FOR DROP-OFFS' : 'TEMPORARILY CLOSED',
+                                _myCenter!.isOpen ? 'OPEN FOR DROP-OFFS' : 'TEMPORARILY CLOSED',
                                 style: TextStyle(
                                   fontSize: 13.5,
                                   fontWeight: FontWeight.bold,
-                                  color: _myCentre!.isOpen ? RecyclingColors.primaryGreen : RecyclingColors.error,
+                                  color: _myCenter!.isOpen ? RecyclingColors.primaryGreen : RecyclingColors.error,
                                 ),
                               ),
                             ],
@@ -2462,7 +2462,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                         ],
                       ),
                       Switch(
-                        value: _myCentre!.isOpen,
+                        value: _myCenter!.isOpen,
                         activeThumbColor: RecyclingColors.primaryGreen,
                         activeTrackColor: RecyclingColors.softGreen,
                         onChanged: _toggleStatus,
@@ -2726,7 +2726,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                         children: [
                           const Text('Linked Center', style: TextStyle(fontSize: 11, color: RecyclingColors.secondaryText)),
                           Text(
-                            _myCentre?.name ?? 'Unassigned',
+                            _myCenter?.name ?? 'Unassigned',
                             style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.bold, color: RecyclingColors.darkText),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -2909,6 +2909,7 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
     );
   }
 }
+
 
 
 

@@ -1,13 +1,13 @@
 package com.ecomate.backend.dto;
 
-public class CentreMaterialToggleRequest {
+public class CenterMaterialToggleRequest {
     private Long materialId;
     private Boolean isActive;
 
-    public CentreMaterialToggleRequest() {
+    public CenterMaterialToggleRequest() {
     }
 
-    public CentreMaterialToggleRequest(Long materialId, Boolean isActive) {
+    public CenterMaterialToggleRequest(Long materialId, Boolean isActive) {
         this.materialId = materialId;
         this.isActive = isActive;
     }

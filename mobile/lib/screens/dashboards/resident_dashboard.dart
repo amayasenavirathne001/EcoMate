@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../login_screen.dart';
 import '../../features/recycling/screens/waste_segregation_guide_screen.dart';
-import '../../features/recycling/screens/recycling_centres_screen.dart';
+import '../../features/recycling/screens/recycling_centers_screen.dart';
 import '../../features/recycling/screens/resident_recycling_history_screen.dart';
 import '../collection_schedule_screen.dart';
 import '../report_issue_screen.dart';
 import '../my_reports_screen.dart';
 import '../resident_profile_screen.dart';
 import '../../features/recycling/screens/waste_segregation_guide_screen.dart';
-import '../../features/recycling/screens/recycling_centres_screen.dart';
+import '../../features/recycling/screens/recycling_centers_screen.dart';
 import '../../features/special_pickup/screens/pickup_requests_screen.dart';
 import '../../features/special_pickup/screens/pickup_request_details_screen.dart';
 import '../../features/special_pickup/data/pickup_mock_data.dart';
@@ -1526,7 +1526,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const RecyclingCentresScreen(),
+                  builder: (_) => const RecyclingCentersScreen(),
                 ),
               );
             }),
@@ -1666,6 +1666,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
     );
   }
 }
+
 
 
 

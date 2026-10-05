@@ -11,7 +11,7 @@ public class MaterialDto {
     private String binColor;
     private Boolean isRecyclable;
     private String preparationTips;
-    private Boolean isActive = true; // 1 or 0 for centre context
+    private Boolean isActive = true; // 1 or 0 for Center context
 
     public MaterialDto() {
     }

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'auth_service.dart';
 import '../models/schedule_models.dart';
-import '../features/recycling/models/recycling_centre.dart';
+import '../features/recycling/models/recycling_center.dart';
 
 class ScheduleService {
   final AuthService _authService = AuthService();
@@ -126,15 +126,15 @@ class ScheduleService {
   }
 
   // --- Recycling Centers Filtering ---
-  Future<List<RecyclingCentre>> getCompatibleCentres(String wasteCategoryId) async {
+  Future<List<RecyclingCenter>> getCompatibleCenters(String wasteCategoryId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/api/recycling/centres/by-material/$wasteCategoryId'),
+      Uri.parse('$baseUrl/api/recycling/Centers/by-material/$wasteCategoryId'),
       headers: await _getHeaders(),
     );
     if (response.statusCode == 200) {
       try {
         final List<dynamic> data = jsonDecode(response.body);
-        return data.map((rc) => RecyclingCentre(
+        return data.map((rc) => RecyclingCenter(
           id: rc['id'].toString(),
           name: rc['name'] as String? ?? '',
           address: rc['address'] as String? ?? '',
@@ -149,10 +149,11 @@ class ScheduleService {
           notes: rc['notes'] as String? ?? '',
         )).toList();
       } catch (e) {
-        print('JSON parsing error in getCompatibleCentres: $e');
+        print('JSON parsing error in getCompatibleCenters: $e');
         return [];
       }
     }
-    throw Exception('Failed to load compatible centres: ${response.statusCode}');
+    throw Exception('Failed to load compatible Centers: ${response.statusCode}');
   }
 }
+

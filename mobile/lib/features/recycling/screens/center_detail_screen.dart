@@ -1,13 +1,13 @@
 import '../theme/recycling_colors.dart';
 import 'package:flutter/material.dart';
-import '../models/recycling_centre.dart';
+import '../models/recycling_center.dart';
 
-class CentreDetailScreen extends StatelessWidget {
-  final RecyclingCentre centre;
+class CenterDetailScreen extends StatelessWidget {
+  final RecyclingCenter Center;
 
-  const CentreDetailScreen({
+  const CenterDetailScreen({
     super.key,
-    required this.centre,
+    required this.Center,
   });
 
   @override
@@ -22,7 +22,7 @@ class CentreDetailScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          centre.name,
+          Center.name,
           style: const TextStyle(
             color: RecyclingColors.deepForestGreen,
             fontWeight: FontWeight.bold,
@@ -38,7 +38,7 @@ class CentreDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Centre Overview Header Card
+                // Center Overview Header Card
                 Container(
                   padding: const EdgeInsets.all(22),
                   decoration: BoxDecoration(
@@ -77,7 +77,7 @@ class CentreDetailScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  centre.name,
+                                  Center.name,
                                   style: const TextStyle(
                                     color: RecyclingColors.deepForestGreen,
                                     fontSize: 20,
@@ -93,15 +93,15 @@ class CentreDetailScreen extends StatelessWidget {
                                         vertical: 3,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: centre.isOpen
+                                        color: Center.isOpen
                                             ? const Color(0xFFE5E9DD)
                                             : const Color(0xFFFFEBEE),
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Text(
-                                        centre.isOpen ? 'OPEN FOR DROP-OFFS' : 'CLOSED',
+                                        Center.isOpen ? 'OPEN FOR DROP-OFFS' : 'CLOSED',
                                         style: TextStyle(
-                                          color: centre.isOpen
+                                          color: Center.isOpen
                                               ? RecyclingColors.forestGreen
                                               : const Color(0xFFC62828),
                                           fontSize: 11,
@@ -119,7 +119,7 @@ class CentreDetailScreen extends StatelessWidget {
                                         ),
                                         const SizedBox(width: 2),
                                         Text(
-                                          '${centre.distanceKm} km away',
+                                          '${Center.distanceKm} km away',
                                           style: const TextStyle(
                                             color: Color(0xFF1976D2),
                                             fontSize: 12,
@@ -140,24 +140,24 @@ class CentreDetailScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       _buildContactRow(
                         Icons.location_on_outlined,
-                        '${centre.address}, ${centre.city}',
+                        '${Center.address}, ${Center.city}',
                       ),
                       const SizedBox(height: 8),
                       _buildContactRow(
                         Icons.access_time_outlined,
-                        centre.operatingHours,
+                        Center.operatingHours,
                       ),
                       const SizedBox(height: 8),
                       _buildContactRow(
                         Icons.phone_outlined,
-                        centre.contactNumber,
+                        Center.contactNumber,
                       ),
                       const SizedBox(height: 8),
                       _buildContactRow(
                         Icons.email_outlined,
-                        centre.email,
+                        Center.email,
                       ),
-                      if (centre.notes.isNotEmpty) ...[
+                      if (Center.notes.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Container(
                           padding: const EdgeInsets.all(12),
@@ -177,7 +177,7 @@ class CentreDetailScreen extends StatelessWidget {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  centre.notes,
+                                  Center.notes,
                                   style: const TextStyle(
                                     color: RecyclingColors.earthyBrown,
                                     fontSize: 12,
@@ -234,7 +234,7 @@ class CentreDetailScreen extends StatelessWidget {
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: centre.acceptedMaterials.map((mat) {
+                        children: Center.acceptedMaterials.map((mat) {
                           return Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
@@ -303,7 +303,7 @@ class CentreDetailScreen extends StatelessWidget {
                         ],
                       ),
                       const Divider(height: 24, color: Color(0xFFFFCDD2)),
-                      ...centre.unsupportedMaterials.map((mat) {
+                      ...Center.unsupportedMaterials.map((mat) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
@@ -356,3 +356,4 @@ class CentreDetailScreen extends StatelessWidget {
     );
   }
 }
+

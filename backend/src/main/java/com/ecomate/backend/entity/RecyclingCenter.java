@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "recycling_centres")
-public class RecyclingCentre {
+@Table(name = "recycling_centers")
+public class RecyclingCenter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,13 +52,13 @@ public class RecyclingCentre {
     @Column(length = 1000)
     private String notes = "";
 
-    @OneToMany(mappedBy = "recyclingCentre", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RecyclingCentreMaterial> centreMaterials = new ArrayList<>();
+    @OneToMany(mappedBy = "RecyclingCenter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecyclingCenterMaterial> CenterMaterials = new ArrayList<>();
 
-    public RecyclingCentre() {
+    public RecyclingCenter() {
     }
 
-    public RecyclingCentre(User officer, String officerEmail, String name, String address, String city,
+    public RecyclingCenter(User officer, String officerEmail, String name, String address, String city,
                            String contactNumber, String email, String operatingHours, Boolean isOpen, String notes) {
         this.officer = officer;
         this.officerEmail = officerEmail;
@@ -184,11 +184,11 @@ public class RecyclingCentre {
         this.notes = notes;
     }
 
-    public List<RecyclingCentreMaterial> getCentreMaterials() {
-        return centreMaterials;
+    public List<RecyclingCenterMaterial> getCenterMaterials() {
+        return CenterMaterials;
     }
 
-    public void setCentreMaterials(List<RecyclingCentreMaterial> centreMaterials) {
-        this.centreMaterials = centreMaterials;
+    public void setCenterMaterials(List<RecyclingCenterMaterial> CenterMaterials) {
+        this.CenterMaterials = CenterMaterials;
     }
 }

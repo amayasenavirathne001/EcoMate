@@ -6,8 +6,8 @@ import java.time.format.DateTimeFormatter;
 public class WasteDeliveryDto {
 
     private Long id;
-    private Long recyclingCentreId;
-    private String recyclingCentreName;
+    private Long RecyclingCenterId;
+    private String RecyclingCenterName;
     private String materialType;
     private Double weightKg;
     private String deliveredBy;
@@ -22,9 +22,9 @@ public class WasteDeliveryDto {
     public static WasteDeliveryDto fromEntity(WasteDelivery entity) {
         WasteDeliveryDto dto = new WasteDeliveryDto();
         dto.setId(entity.getId());
-        if (entity.getRecyclingCentre() != null) {
-            dto.setRecyclingCentreId(entity.getRecyclingCentre().getId());
-            dto.setRecyclingCentreName(entity.getRecyclingCentre().getName());
+        if (entity.getRecyclingCenter() != null) {
+            dto.setRecyclingCenterId(entity.getRecyclingCenter().getId());
+            dto.setRecyclingCenterName(entity.getRecyclingCenter().getName());
         }
         dto.setMaterialType(entity.getMaterialType());
         dto.setWeightKg(entity.getWeightKg());
@@ -46,20 +46,20 @@ public class WasteDeliveryDto {
         this.id = id;
     }
 
-    public Long getRecyclingCentreId() {
-        return recyclingCentreId;
+    public Long getRecyclingCenterId() {
+        return RecyclingCenterId;
     }
 
-    public void setRecyclingCentreId(Long recyclingCentreId) {
-        this.recyclingCentreId = recyclingCentreId;
+    public void setRecyclingCenterId(Long RecyclingCenterId) {
+        this.RecyclingCenterId = RecyclingCenterId;
     }
 
-    public String getRecyclingCentreName() {
-        return recyclingCentreName;
+    public String getRecyclingCenterName() {
+        return RecyclingCenterName;
     }
 
-    public void setRecyclingCentreName(String recyclingCentreName) {
-        this.recyclingCentreName = recyclingCentreName;
+    public void setRecyclingCenterName(String RecyclingCenterName) {
+        this.RecyclingCenterName = RecyclingCenterName;
     }
 
     public String getMaterialType() {
@@ -113,4 +113,5 @@ public class WasteDeliveryDto {
         this.notes = notes;
     }
 }
+
 

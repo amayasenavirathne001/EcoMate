@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/material_item.dart';
-import '../models/recycling_centre.dart';
+import '../models/recycling_center.dart';
 import '../models/waste_delivery_record.dart';
 import '../../../models/waste_category.dart';
 import '../../../services/auth_service.dart';
@@ -150,7 +150,7 @@ class RecyclingService {
       imageUrl: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?w=300',
       binColor: '#D97706',
       isRecyclable: true,
-      preparationTips: 'Strip thick outer rubber insulation if requested by centre.',
+      preparationTips: 'Strip thick outer rubber insulation if requested by Center.',
     ),
     const MaterialItem(
       id: 15,
@@ -166,8 +166,8 @@ class RecyclingService {
 
   List<WasteCategory> _categories = [];
 
-  static final List<RecyclingCentre> _centres = [
-    const RecyclingCentre(
+  static final List<RecyclingCenter> _Centers = [
+    const RecyclingCenter(
       id: '1',
       officerId: 14,
       officerEmail: 'stharanga.rog@gmail.com',
@@ -201,7 +201,7 @@ class RecyclingService {
       notes:
           'Offers drop-off points for bulk recyclables. Weight-based incentives provided.',
     ),
-    const RecyclingCentre(
+    const RecyclingCenter(
       id: '2',
       officerId: 4,
       officerEmail: 'sumudu@gmail.com',
@@ -228,7 +228,7 @@ class RecyclingService {
       notes:
           'Free organic compost bag exchange for every 10kg of kitchen waste delivered.',
     ),
-    const RecyclingCentre(
+    const RecyclingCenter(
       id: '3',
       officerId: 7,
       officerEmail: 'peterparkerr@gmail.com',
@@ -366,13 +366,13 @@ class RecyclingService {
     return _masterMaterials;
   }
 
-  // Get master materials with is_active flag for the centre
-  Future<List<MaterialItem>> getCentreMaterialsForOfficer(String? officerEmail) async {
+  // Get master materials with is_active flag for the Center
+  Future<List<MaterialItem>> getCenterMaterialsForOfficer(String? officerEmail) async {
     final token = await _authService.getToken();
     if (token != null && token.isNotEmpty) {
       try {
         final response = await http.get(
-          Uri.parse('$baseUrl/api/recycling/my-centre/materials'),
+          Uri.parse('$baseUrl/api/recycling/my-Center/materials'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -389,11 +389,11 @@ class RecyclingService {
     }
 
     // Local fallback
-    final centre = getCentreForOfficerLocal(officerEmail);
-    if (centre == null) return _masterMaterials;
+    final Center = getCenterForOfficerLocal(officerEmail);
+    if (Center == null) return _masterMaterials;
 
     return _masterMaterials.map((mat) {
-      final isAccepted = centre.acceptedMaterials.contains(mat.name);
+      final isAccepted = Center.acceptedMaterials.contains(mat.name);
       return mat.copyWith(isActive: isAccepted);
     }).toList();
   }
@@ -404,7 +404,7 @@ class RecyclingService {
     if (token != null && token.isNotEmpty) {
       try {
         await http.put(
-          Uri.parse('$baseUrl/api/recycling/my-centre/materials/toggle'),
+          Uri.parse('$baseUrl/api/recycling/my-Center/materials/toggle'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -420,14 +420,14 @@ class RecyclingService {
     }
   }
 
-  Future<RecyclingCentre?> getCentreForOfficer(String? email) async {
+  Future<RecyclingCenter?> getCenterForOfficer(String? email) async {
     if (email == null || email.isEmpty) return null;
 
     final token = await _authService.getToken();
     if (token != null && token.isNotEmpty) {
       try {
         final response = await http.get(
-          Uri.parse('$baseUrl/api/recycling/my-centre'),
+          Uri.parse('$baseUrl/api/recycling/my-Center'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -436,27 +436,27 @@ class RecyclingService {
 
         if (response.statusCode == 200 && response.body.isNotEmpty) {
           final data = jsonDecode(response.body) as Map<String, dynamic>;
-          final centre = RecyclingCentre.fromJson(data);
-          final idx = _centres.indexWhere((c) => c.id == centre.id || c.officerEmail == email);
+          final Center = RecyclingCenter.fromJson(data);
+          final idx = _Centers.indexWhere((c) => c.id == Center.id || c.officerEmail == email);
           if (idx >= 0) {
-            _centres[idx] = centre;
+            _Centers[idx] = Center;
           } else {
-            _centres.add(centre);
+            _Centers.add(Center);
           }
-          return centre;
+          return Center;
         }
       } catch (_) {
         // Backend offline fallback
       }
     }
 
-    return getCentreForOfficerLocal(email);
+    return getCenterForOfficerLocal(email);
   }
 
-  RecyclingCentre? getCentreForOfficerLocal(String? email) {
+  RecyclingCenter? getCenterForOfficerLocal(String? email) {
     if (email == null || email.isEmpty) return null;
     try {
-      return _centres.firstWhere(
+      return _Centers.firstWhere(
         (c) => c.officerEmail?.toLowerCase() == email.trim().toLowerCase(),
       );
     } catch (_) {
@@ -464,37 +464,37 @@ class RecyclingService {
     }
   }
 
-  Future<void> saveOrUpdateCentre(RecyclingCentre centre) async {
+  Future<void> saveOrUpdateCenter(RecyclingCenter Center) async {
     final token = await _authService.getToken();
     if (token != null && token.isNotEmpty) {
       try {
         await http.put(
-          Uri.parse('$baseUrl/api/recycling/my-centre'),
+          Uri.parse('$baseUrl/api/recycling/my-Center'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
-          body: jsonEncode(centre.toJson()),
+          body: jsonEncode(Center.toJson()),
         );
       } catch (_) {
         // Local fallback
       }
     }
 
-    final index = _centres.indexWhere((c) => c.id == centre.id);
+    final index = _Centers.indexWhere((c) => c.id == Center.id);
     if (index >= 0) {
-      _centres[index] = centre;
+      _Centers[index] = Center;
     } else {
-      _centres.add(centre);
+      _Centers.add(Center);
     }
   }
 
-  Future<void> toggleCentreStatus(String centreId, bool isOpen) async {
+  Future<void> toggleCenterStatus(String CenterId, bool isOpen) async {
     final token = await _authService.getToken();
     if (token != null && token.isNotEmpty) {
       try {
         await http.patch(
-          Uri.parse('$baseUrl/api/recycling/my-centre/status'),
+          Uri.parse('$baseUrl/api/recycling/my-Center/status'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -506,25 +506,25 @@ class RecyclingService {
       }
     }
 
-    final index = _centres.indexWhere((c) => c.id == centreId);
+    final index = _Centers.indexWhere((c) => c.id == CenterId);
     if (index >= 0) {
-      _centres[index] = _centres[index].copyWith(isOpen: isOpen);
+      _Centers[index] = _Centers[index].copyWith(isOpen: isOpen);
     }
   }
 
-  List<RecyclingCentre> getRecyclingCentres({
+  List<RecyclingCenter> getRecyclingCenters({
     String? query,
     String? materialFilter,
   }) {
-    List<RecyclingCentre> list = List.from(_centres);
+    List<RecyclingCenter> list = List.from(_Centers);
 
     if (query != null && query.trim().isNotEmpty) {
       final cleanQuery = query.trim().toLowerCase();
-      list = list.where((centre) {
-        final matchesName = centre.name.toLowerCase().contains(cleanQuery);
-        final matchesCity = centre.city.toLowerCase().contains(cleanQuery);
-        final matchesAddr = centre.address.toLowerCase().contains(cleanQuery);
-        final matchesMat = centre.acceptedMaterials.any(
+      list = list.where((Center) {
+        final matchesName = Center.name.toLowerCase().contains(cleanQuery);
+        final matchesCity = Center.city.toLowerCase().contains(cleanQuery);
+        final matchesAddr = Center.address.toLowerCase().contains(cleanQuery);
+        final matchesMat = Center.acceptedMaterials.any(
           (m) => m.toLowerCase().contains(cleanQuery),
         );
         return matchesName || matchesCity || matchesAddr || matchesMat;
@@ -533,8 +533,8 @@ class RecyclingService {
 
     if (materialFilter != null && materialFilter.isNotEmpty && materialFilter != 'All') {
       final filterLower = materialFilter.toLowerCase();
-      list = list.where((centre) {
-        return centre.acceptedMaterials.any(
+      list = list.where((Center) {
+        return Center.acceptedMaterials.any(
           (mat) => mat.toLowerCase().contains(filterLower),
         );
       }).toList();
@@ -543,7 +543,7 @@ class RecyclingService {
     return list;
   }
 
-  Future<List<RecyclingCentre>> fetchRecyclingCentres({
+  Future<List<RecyclingCenter>> fetchRecyclingCenters({
     String? query,
     String? materialFilter,
   }) async {
@@ -555,7 +555,7 @@ class RecyclingService {
       queryParams['material'] = materialFilter;
     }
 
-    final uri = Uri.parse('$baseUrl/api/recycling/public/centres').replace(
+    final uri = Uri.parse('$baseUrl/api/recycling/public/Centers').replace(
       queryParameters: queryParams.isNotEmpty ? queryParams : null,
     );
 
@@ -563,80 +563,80 @@ class RecyclingService {
       final response = await http.get(uri);
       if (response.statusCode == 200 && response.body.isNotEmpty) {
         final list = jsonDecode(response.body) as List<dynamic>;
-        final fetchedCentres = list
-            .map((item) => RecyclingCentre.fromJson(item as Map<String, dynamic>))
+        final fetchedCenters = list
+            .map((item) => RecyclingCenter.fromJson(item as Map<String, dynamic>))
             .toList();
-        if (fetchedCentres.isNotEmpty) {
-          for (final c in fetchedCentres) {
-            final idx = _centres.indexWhere((existing) => existing.id == c.id);
+        if (fetchedCenters.isNotEmpty) {
+          for (final c in fetchedCenters) {
+            final idx = _Centers.indexWhere((existing) => existing.id == c.id);
             if (idx >= 0) {
-              _centres[idx] = c;
+              _Centers[idx] = c;
             } else {
-              _centres.add(c);
+              _Centers.add(c);
             }
           }
-          return fetchedCentres;
+          return fetchedCenters;
         }
       }
     } catch (_) {
       // Fallback to local list on error
     }
 
-    return getRecyclingCentres(query: query, materialFilter: materialFilter);
+    return getRecyclingCenters(query: query, materialFilter: materialFilter);
   }
 
-  Future<RecyclingCentre?> createCentre(RecyclingCentre centre) async {
+  Future<RecyclingCenter?> createCenter(RecyclingCenter Center) async {
     final token = await _authService.getToken();
     if (token != null && token.isNotEmpty) {
       try {
         final response = await http.post(
-          Uri.parse('$baseUrl/api/recycling/centres'),
+          Uri.parse('$baseUrl/api/recycling/Centers'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
-          body: jsonEncode(centre.toJson()),
+          body: jsonEncode(Center.toJson()),
         );
 
         if (response.statusCode == 200 && response.body.isNotEmpty) {
           final data = jsonDecode(response.body) as Map<String, dynamic>;
-          final created = RecyclingCentre.fromJson(data);
-          _centres.add(created);
+          final created = RecyclingCenter.fromJson(data);
+          _Centers.add(created);
           return created;
         }
       } catch (_) {
         // Fallback
       }
     }
-    _centres.add(centre);
-    return centre;
+    _Centers.add(Center);
+    return Center;
   }
 
-  Future<bool> deleteCentre(String id) async {
+  Future<bool> deleteCenter(String id) async {
     final token = await _authService.getToken();
     if (token != null && token.isNotEmpty) {
       try {
         final response = await http.delete(
-          Uri.parse('$baseUrl/api/recycling/centres/$id'),
+          Uri.parse('$baseUrl/api/recycling/Centers/$id'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
         );
         if (response.statusCode == 200 || response.statusCode == 204) {
-          _centres.removeWhere((c) => c.id == id);
+          _Centers.removeWhere((c) => c.id == id);
           return true;
         }
       } catch (_) {}
     }
-    _centres.removeWhere((c) => c.id == id);
+    _Centers.removeWhere((c) => c.id == id);
     return true;
   }
 
-  Future<List<WasteDeliveryRecord>> fetchDeliveries({String? centreId}) async {
+  Future<List<WasteDeliveryRecord>> fetchDeliveries({String? CenterId}) async {
     final token = await _authService.getToken();
-    final url = centreId != null
-        ? '$baseUrl/api/recycling/deliveries?centreId=$centreId'
+    final url = CenterId != null
+        ? '$baseUrl/api/recycling/deliveries?CenterId=$CenterId'
         : '$baseUrl/api/recycling/deliveries';
 
     if (token != null && token.isNotEmpty) {
@@ -713,8 +713,8 @@ class RecyclingService {
     return [
       WasteDeliveryRecord(
         id: 'DEL-101',
-        recyclingCentreId: '1',
-        recyclingCentreName: 'GreenCycle Central Center',
+        RecyclingCenterId: '1',
+        RecyclingCenterName: 'GreenCycle Central Center',
         materialType: 'Plastic Bottles (PET #1)',
         weightKg: 2.5,
         deliveredBy: 'Resident User',
@@ -724,8 +724,8 @@ class RecyclingService {
       ),
       WasteDeliveryRecord(
         id: 'DEL-102',
-        recyclingCentreId: '2',
-        recyclingCentreName: 'BioRecycle Organic Composting Plant',
+        RecyclingCenterId: '2',
+        RecyclingCenterName: 'BioRecycle Organic Composting Plant',
         materialType: 'Organic',
         weightKg: 5.0,
         deliveredBy: 'Resident User',
@@ -735,8 +735,8 @@ class RecyclingService {
       ),
       WasteDeliveryRecord(
         id: 'DEL-103',
-        recyclingCentreId: '1',
-        recyclingCentreName: 'GreenCycle Central Center',
+        RecyclingCenterId: '1',
+        RecyclingCenterName: 'GreenCycle Central Center',
         materialType: 'Cardboard',
         weightKg: 1.2,
         deliveredBy: 'Resident User',
@@ -747,9 +747,9 @@ class RecyclingService {
     ];
   }
 
-  RecyclingCentre? getCentreById(String id) {
+  RecyclingCenter? getCenterById(String id) {
     try {
-      return _centres.firstWhere((c) => c.id == id);
+      return _Centers.firstWhere((c) => c.id == id);
     } catch (_) {
       return null;
     }
@@ -781,6 +781,7 @@ class RecyclingService {
     return true;
   }
 }
+
 
 
 

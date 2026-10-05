@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/collector/**")
                     .hasRole("COLLECTOR")
 
-                .requestMatchers("/api/recycling/my-centre/**")
+                .requestMatchers("/api/recycling/my-Center/**")
                     .hasRole("RECYCLING_OFFICER")
 
                 .requestMatchers("/api/recycling/**")
