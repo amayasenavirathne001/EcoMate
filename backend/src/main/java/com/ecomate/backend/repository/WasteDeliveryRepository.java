@@ -11,8 +11,7 @@ public interface WasteDeliveryRepository extends JpaRepository<WasteDelivery, Lo
 
     List<WasteDelivery> findByRecyclingCenterIdOrderByDateTimeDesc(Long recyclingcenterId);
 
+    List<WasteDelivery> findByDeliveredByContainingIgnoreCaseOrderByDateTimeDesc(String deliveredBy);
+
     List<WasteDelivery> findAllByOrderByDateTimeDesc();
 }
-
-
-

@@ -40,6 +40,11 @@ public class WasteDeliveryController {
         return ResponseEntity.ok(wasteDeliveryService.getDeliveriesForUser(email));
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<WasteDeliveryDto>> getAllDeliveries() {
+        return ResponseEntity.ok(wasteDeliveryService.getAllDeliveries());
+    }
+
     @GetMapping("/center/{centerId}")
     public ResponseEntity<List<WasteDeliveryDto>> getDeliveriesByCenter(@PathVariable Long centerId) {
         return ResponseEntity.ok(wasteDeliveryService.getDeliveriesForCenter(centerId));
@@ -55,5 +60,6 @@ public class WasteDeliveryController {
         return ResponseEntity.ok().build();
     }
 }
+
 
 

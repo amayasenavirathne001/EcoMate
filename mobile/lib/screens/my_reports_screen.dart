@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../features/recycling/screens/resident_recycling_history_screen.dart';
 
 import '../services/report_filters.dart';
 import '../services/waste_report_service.dart';
@@ -107,12 +108,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
         body: TabBarView(
           children: [
             _buildReportsTab(),
-            const Center(
-              child: Text(
-                'Coming Soon...',
-                style: TextStyle(color: secondaryText, fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
+            const ResidentRecyclingHistoryScreen(showAppBar: false),
           ],
         ),
       ),
