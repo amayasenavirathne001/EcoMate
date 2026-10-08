@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/material_item.dart';
@@ -439,6 +439,26 @@ class RecyclingService {
     return true;
   }
 
+    // Get Total Eco Points (SCRUM-59)
+  Future<int> fetchMyTotalPoints() async {
+    final token = await _authService.getToken();
+    if (token != null && token.isNotEmpty) {
+      try {
+        final response = await http.get(
+          Uri.parse('$baseUrl/api/eco-points/my-wallet'),
+          headers: {'Authorization': 'Bearer $token'},
+        );
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          return data['totalPoints'] ?? 0;
+        }
+      } catch (e) {
+        // Fallback below
+      }
+    }
+    return 0; // Fallback
+  }
+
   Future<List<WasteDeliveryRecord>> fetchDeliveries({String? centerId}) async {
     final token = await _authService.getToken();
     final url = centerId != null
@@ -492,12 +512,35 @@ class RecyclingService {
     return delivery;
   }
 
+  Future<List<WasteDeliveryRecord>> fetchAllDeliveries() async {
+    final token = await _authService.getToken();
+    if (token != null && token.isNotEmpty) {
+      try {
+        final response = await http.get(
+          Uri.parse('$baseUrl/api/recycling/deliveries/all'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (response.statusCode == 200 && response.body.isNotEmpty) {
+          final list = jsonDecode(response.body) as List<dynamic>;
+          return list
+              .map((item) => WasteDeliveryRecord.fromJson(item as Map<String, dynamic>))
+              .toList();
+        }
+      } catch (_) {}
+    }
+    return [];
+  }
+
   Future<List<WasteDeliveryRecord>> fetchMyRecyclingHistory() async {
     final token = await _authService.getToken();
     if (token != null && token.isNotEmpty) {
       try {
         final response = await http.get(
-          Uri.parse('$baseUrl/api/recycling/my-history'),
+          Uri.parse('$baseUrl/api/recycling/deliveries'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -586,3 +629,4 @@ class RecyclingService {
     return true;
   }
 }
+

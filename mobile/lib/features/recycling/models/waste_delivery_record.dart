@@ -9,6 +9,7 @@ class WasteDeliveryRecord {
   final DateTime dateTime;
   final String notes;
   final String processingStatus;
+  final int? awardedPoints;
 
   const WasteDeliveryRecord({
     required this.id,
@@ -21,6 +22,7 @@ class WasteDeliveryRecord {
     required this.dateTime,
     required this.notes,
     this.processingStatus = 'RECEIVED',
+    this.awardedPoints,
   });
 
   factory WasteDeliveryRecord.fromJson(Map<String, dynamic> json) {
@@ -36,7 +38,7 @@ class WasteDeliveryRecord {
     return WasteDeliveryRecord(
       id: json['id'] != null ? 'DEL-${json['id']}' : 'DEL-0',
       recyclingCenterId: json['recyclingCenterId']?.toString(),
-      recyclingCenterName: json['recyclingCenterName']?.toString(),
+      recyclingCenterName: (json['recyclingCenterName'] ?? json['RecyclingCenterName'])?.toString(),
       materialType: json['materialType']?.toString() ?? '',
       weightKg: (json['weightKg'] is num) ? (json['weightKg'] as num).toDouble() : 0.0,
       deliveredBy: json['deliveredBy']?.toString() ?? '',
@@ -44,12 +46,13 @@ class WasteDeliveryRecord {
       dateTime: parsedDate,
       notes: json['notes']?.toString() ?? '',
       processingStatus: json['processingStatus']?.toString() ?? 'RECEIVED',
+      awardedPoints: json['awardedPoints'] as int?,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'RecyclingCenterId': recyclingCenterId != null ? int.tryParse(recyclingCenterId!) : null,
+      'recyclingcenterId': recyclingCenterId != null ? int.tryParse(recyclingCenterId!) : null,
       'materialType': materialType,
       'weightKg': weightKg,
       'deliveredBy': deliveredBy,

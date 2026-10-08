@@ -324,7 +324,13 @@ class _RecyclingCentersScreenState extends State<RecyclingCentersScreen> {
                   const Spacer(),
                   const Icon(Icons.access_time_rounded, size: 16, color: Colors.grey),
                   const SizedBox(width: 4),
-                  Text(center.operatingHours, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                  Flexible(
+                    child: Text(
+                      center.operatingHours,
+                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ],
               ),
             ],

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import '../../features/recycling/services/recycling_service.dart';
 import '../login_screen.dart';
 import '../../features/recycling/screens/waste_segregation_guide_screen.dart';
 import '../../features/recycling/screens/recycling_centers_screen.dart';
@@ -26,6 +27,9 @@ class ResidentDashboard extends StatefulWidget {
 class _ResidentDashboardState extends State<ResidentDashboard> {
   final AuthService _authService = AuthService();
   final SpecialPickupService _specialPickupService = SpecialPickupService();
+  final RecyclingService _recyclingService = RecyclingService();
+  int _totalEcoPoints = 0;
+  int _totalItemsRecycled = 0;
 
   int _selectedIndex = 0;
   String _userName = 'Resident';
@@ -43,7 +47,21 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
     super.initState();
     _loadUserInfo();
     _loadSpecialPickup();
+    _loadDashboardStats();
   }
+  Future<void> _loadDashboardStats() async {
+    try {
+      final points = await _recyclingService.fetchMyTotalPoints();
+      final history = await _recyclingService.fetchMyRecyclingHistory();
+      if (mounted) {
+        setState(() {
+          _totalEcoPoints = points;
+          _totalItemsRecycled = history.length;
+        });
+      }
+    } catch (_) {}
+  }
+
   Future<void> _loadUserInfo() async {
     try {
       final user = await _authService.getCurrentUser();
@@ -548,13 +566,13 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
                 style: TextStyle(color: Colors.black54, fontSize: 11),
               ),
               const SizedBox(height: 2),
-              const Row(
+              Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.eco_rounded, color: primaryGreen, size: 19),
-                  SizedBox(width: 4),
+                  const Icon(Icons.eco_rounded, color: primaryGreen, size: 19),
+                  const SizedBox(width: 4),
                   Text(
-                    '1,250',
+                    _totalEcoPoints.toString(),
                     style: TextStyle(
                       color: primaryGreen,
                       fontSize: 24,
@@ -1240,16 +1258,11 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
         final cards = [
           _statCard(
             icon: Icons.recycling_rounded,
-            value: '45',
+            value: _totalItemsRecycled.toString(),
             title: 'Items Recycled',
             subtitle: 'This Month',
             footer: '? 12% vs last month',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ResidentRecyclingHistoryScreen()),
-              );
-            },
+            onTap: () {},
           ),
           _statCard(
             icon: Icons.local_shipping_rounded,
@@ -1267,7 +1280,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
           ),
           _statCard(
             icon: Icons.eco_rounded,
-            value: '1,250',
+            value: _totalEcoPoints.toString(),
             title: 'Community Score',
             subtitle: 'Great job!',
             footer: '? Top 20% in your area',

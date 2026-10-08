@@ -5,7 +5,9 @@ import '../models/material_item.dart';
 import '../services/recycling_service.dart';
 
 class ResidentRecyclingHistoryScreen extends StatefulWidget {
-  const ResidentRecyclingHistoryScreen({super.key});
+  final bool showAppBar;
+
+  const ResidentRecyclingHistoryScreen({super.key, this.showAppBar = true});
 
   @override
   State<ResidentRecyclingHistoryScreen> createState() => _ResidentRecyclingHistoryScreenState();
@@ -40,7 +42,7 @@ class _ResidentRecyclingHistoryScreenState extends State<ResidentRecyclingHistor
     
     for (var r in records) {
       totalKg += r.weightKg;
-      totalPts += r.ecoPoints;
+      totalPts += (r.awardedPoints ?? 0);
     }
     
     if (mounted) {
@@ -57,7 +59,7 @@ class _ResidentRecyclingHistoryScreenState extends State<ResidentRecyclingHistor
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: background,
-      appBar: AppBar(
+      appBar: widget.showAppBar ? AppBar(
         backgroundColor: Colors.white,
         foregroundColor: darkText,
         elevation: 0,
@@ -66,7 +68,7 @@ class _ResidentRecyclingHistoryScreenState extends State<ResidentRecyclingHistor
           'My Recycling History',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-      ),
+      ) : null,
       body: FutureBuilder<List<WasteDeliveryRecord>>(
         future: _historyFuture,
         builder: (context, snapshot) {
@@ -205,7 +207,14 @@ class _ResidentRecyclingHistoryScreenState extends State<ResidentRecyclingHistor
   }
 
   Widget _buildHistoryCard(WasteDeliveryRecord record) {
-    final isConfirmed = true; 
+    Color getStatusColor(String status) {
+      switch (status.toUpperCase()) {
+        case 'PROCESSED': return primaryGreen;
+        case 'SORTED': return Colors.blue;
+        case 'RECEIVED': default: return Colors.orange.shade800;
+      }
+    }
+    final statusColor = getStatusColor(record.processingStatus);
     final d = record.dateTime;
     final dateStr = "${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')} • ${d.hour > 12 ? d.hour - 12 : (d.hour == 0 ? 12 : d.hour)}:${d.minute.toString().padLeft(2, '0')} ${d.hour >= 12 ? 'PM' : 'AM'}";
 
@@ -281,15 +290,13 @@ class _ResidentRecyclingHistoryScreenState extends State<ResidentRecyclingHistor
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isConfirmed
-                      ? primaryGreen.withValues(alpha: 0.1)
-                      : Colors.orange.withValues(alpha: 0.1),
+                  color: statusColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  isConfirmed ? 'CONFIRMED' : 'PENDING',
+                  record.processingStatus.toUpperCase(),
                   style: TextStyle(
-                    color: isConfirmed ? primaryGreen : Colors.orange.shade800,
+                    color: statusColor,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
