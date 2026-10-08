@@ -1,10 +1,10 @@
 package com.ecomate.backend.dto;
 
-import com.ecomate.backend.entity.RecyclingCentre;
+import com.ecomate.backend.entity.RecyclingCenter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecyclingCentreResponse {
+public class RecyclingCenterResponse {
 
     private Long id;
     private Long officerId;
@@ -14,21 +14,22 @@ public class RecyclingCentreResponse {
     private String city;
     private Double latitude;
     private Double longitude;
-    private Double distanceKm;
+    
     private String contactNumber;
     private String email;
     private String operatingHours;
     private Boolean isOpen;
     private String notes;
+    private Boolean isDeleted;
     private List<String> acceptedMaterials = new ArrayList<>();
     private List<String> unsupportedMaterials = new ArrayList<>();
     private List<MaterialDto> materials = new ArrayList<>();
 
-    public RecyclingCentreResponse() {
+    public RecyclingCenterResponse() {
     }
 
-    public static RecyclingCentreResponse fromEntity(RecyclingCentre entity) {
-        RecyclingCentreResponse response = new RecyclingCentreResponse();
+    public static RecyclingCenterResponse fromEntity(RecyclingCenter entity) {
+        RecyclingCenterResponse response = new RecyclingCenterResponse();
         response.setId(entity.getId());
         if (entity.getOfficer() != null) {
             response.setOfficerId(entity.getOfficer().getId());
@@ -39,15 +40,16 @@ public class RecyclingCentreResponse {
         response.setCity(entity.getCity());
         response.setLatitude(entity.getLatitude());
         response.setLongitude(entity.getLongitude());
-        response.setDistanceKm(entity.getDistanceKm());
+        
         response.setContactNumber(entity.getContactNumber());
         response.setEmail(entity.getEmail());
         response.setOperatingHours(entity.getOperatingHours());
         response.setIsOpen(entity.getIsOpen());
         response.setNotes(entity.getNotes());
+        response.setIsDeleted(entity.getIsDeleted());
 
-        if (entity.getCentreMaterials() != null) {
-            entity.getCentreMaterials().forEach(cm -> {
+        if (entity.getCenterMaterials() != null) {
+            entity.getCenterMaterials().forEach(cm -> {
                 MaterialDto mdto = MaterialDto.fromEntityWithStatus(cm.getMaterial(), cm.getIsActive());
                 response.getMaterials().add(mdto);
                 if (Boolean.TRUE.equals(cm.getIsActive())) {
@@ -124,13 +126,9 @@ public class RecyclingCentreResponse {
         this.longitude = longitude;
     }
 
-    public Double getDistanceKm() {
-        return distanceKm;
-    }
+    
 
-    public void setDistanceKm(Double distanceKm) {
-        this.distanceKm = distanceKm;
-    }
+    
 
     public String getContactNumber() {
         return contactNumber;
@@ -195,4 +193,13 @@ public class RecyclingCentreResponse {
     public void setMaterials(List<MaterialDto> materials) {
         this.materials = materials;
     }
+
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }
+

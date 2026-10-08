@@ -41,6 +41,7 @@ dependencies:
   flutter_map: ^8.2.2
   latlong2: ^0.9.1
 
+  intl: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

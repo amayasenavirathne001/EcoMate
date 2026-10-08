@@ -9,7 +9,15 @@ import java.util.List;
 public class RecyclingCenter {
 
     @Id
-    private String id; // rc_01, rc_02, etc.
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "officer_id")
+    private User officer;
+
+    @Column(name = "officer_email", nullable = false)
+    private String officerEmail;
 
     @Column(nullable = false)
     private String name;
@@ -20,47 +28,74 @@ public class RecyclingCenter {
     @Column(nullable = false)
     private String city;
 
-    private Double distanceKm;
+    @Column(name = "latitude")
+    private Double latitude = 6.9271;
 
+    @Column(name = "longitude")
+    private Double longitude = 79.8612;
+
+    
+
+    @Column(name = "contact_number", nullable = false)
     private String contactNumber;
 
+    @Column(nullable = false)
     private String email;
 
-    private String operatingHours;
+    @Column(name = "operating_hours", nullable = false)
+    private String operatingHours = "Mon - Sat: 8:00 AM - 5:30 PM";
 
-    private boolean isOpen = true;
+    @Column(name = "is_open", nullable = false)
+    private Boolean isOpen = true;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "recycling_center_materials", joinColumns = @JoinColumn(name = "recycling_center_id"))
-    @Column(name = "material")
-    private List<String> acceptedMaterials = new ArrayList<>();
+    @Column(length = 1000)
+    private String notes = "";
 
-    @Column(columnDefinition = "TEXT")
-    private String notes;
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
+
+    @OneToMany(mappedBy = "recyclingCenter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecyclingCenterMaterial> centerMaterials = new ArrayList<>();
 
     public RecyclingCenter() {
     }
 
-    public RecyclingCenter(String id, String name, String address, String city, Double distanceKm, String contactNumber, String email, String operatingHours, boolean isOpen, List<String> acceptedMaterials, String notes) {
-        this.id = id;
+    public RecyclingCenter(User officer, String officerEmail, String name, String address, String city,
+                           String contactNumber, String email, String operatingHours, Boolean isOpen, String notes) {
+        this.officer = officer;
+        this.officerEmail = officerEmail;
         this.name = name;
         this.address = address;
         this.city = city;
-        this.distanceKm = distanceKm;
         this.contactNumber = contactNumber;
         this.email = email;
         this.operatingHours = operatingHours;
         this.isOpen = isOpen;
-        this.acceptedMaterials = acceptedMaterials;
         this.notes = notes;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public User getOfficer() {
+        return officer;
+    }
+
+    public void setOfficer(User officer) {
+        this.officer = officer;
+    }
+
+    public String getOfficerEmail() {
+        return officerEmail;
+    }
+
+    public void setOfficerEmail(String officerEmail) {
+        this.officerEmail = officerEmail;
     }
 
     public String getName() {
@@ -87,13 +122,25 @@ public class RecyclingCenter {
         this.city = city;
     }
 
-    public Double getDistanceKm() {
-        return distanceKm;
+    public Double getLatitude() {
+        return latitude;
     }
 
-    public void setDistanceKm(Double distanceKm) {
-        this.distanceKm = distanceKm;
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    
+
+    
 
     public String getContactNumber() {
         return contactNumber;
@@ -119,20 +166,12 @@ public class RecyclingCenter {
         this.operatingHours = operatingHours;
     }
 
-    public boolean isOpen() {
+    public Boolean getIsOpen() {
         return isOpen;
     }
 
-    public void setOpen(boolean open) {
-        isOpen = open;
-    }
-
-    public List<String> getAcceptedMaterials() {
-        return acceptedMaterials;
-    }
-
-    public void setAcceptedMaterials(List<String> acceptedMaterials) {
-        this.acceptedMaterials = acceptedMaterials;
+    public void setIsOpen(Boolean isOpen) {
+        this.isOpen = isOpen;
     }
 
     public String getNotes() {
@@ -142,4 +181,24 @@ public class RecyclingCenter {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
+    public List<RecyclingCenterMaterial> getCenterMaterials() {
+        return centerMaterials;
+    }
+
+    public void setCenterMaterials(List<RecyclingCenterMaterial> centerMaterials) {
+        this.centerMaterials = centerMaterials;
+    }
+
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }
+
+
+
+

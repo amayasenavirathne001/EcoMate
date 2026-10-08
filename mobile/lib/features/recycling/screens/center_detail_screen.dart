@@ -1,13 +1,13 @@
-﻿import '../theme/recycling_colors.dart';
+import '../theme/recycling_colors.dart';
 import 'package:flutter/material.dart';
-import '../models/recycling_centre.dart';
+import '../models/recycling_center.dart';
 
-class CentreDetailScreen extends StatelessWidget {
-  final RecyclingCentre centre;
+class CenterDetailScreen extends StatelessWidget {
+  final RecyclingCenter center;
 
-  const CentreDetailScreen({
+  const CenterDetailScreen({
     super.key,
-    required this.centre,
+    required this.center,
   });
 
   @override
@@ -22,7 +22,7 @@ class CentreDetailScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          centre.name,
+          center.name,
           style: const TextStyle(
             color: RecyclingColors.deepForestGreen,
             fontWeight: FontWeight.bold,
@@ -38,7 +38,7 @@ class CentreDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Centre Overview Header Card
+                // Center Overview Header Card
                 Container(
                   padding: const EdgeInsets.all(22),
                   decoration: BoxDecoration(
@@ -77,7 +77,7 @@ class CentreDetailScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  centre.name,
+                                  center.name,
                                   style: const TextStyle(
                                     color: RecyclingColors.deepForestGreen,
                                     fontSize: 20,
@@ -85,7 +85,9 @@ class CentreDetailScreen extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 6),
-                                Row(
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 4,
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.symmetric(
@@ -93,15 +95,15 @@ class CentreDetailScreen extends StatelessWidget {
                                         vertical: 3,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: centre.isOpen
+                                        color: center.isOpen
                                             ? const Color(0xFFE5E9DD)
                                             : const Color(0xFFFFEBEE),
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Text(
-                                        centre.isOpen ? 'OPEN FOR DROP-OFFS' : 'CLOSED',
+                                        center.isOpen ? 'OPEN FOR DROP-OFFS' : 'CLOSED',
                                         style: TextStyle(
-                                          color: centre.isOpen
+                                          color: center.isOpen
                                               ? RecyclingColors.forestGreen
                                               : const Color(0xFFC62828),
                                           fontSize: 11,
@@ -109,8 +111,8 @@ class CentreDetailScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
                                     Row(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         const Icon(
                                           Icons.directions_walk_rounded,
@@ -119,7 +121,7 @@ class CentreDetailScreen extends StatelessWidget {
                                         ),
                                         const SizedBox(width: 2),
                                         Text(
-                                          '${centre.distanceKm} km away',
+                                          'View Location on Map',
                                           style: const TextStyle(
                                             color: Color(0xFF1976D2),
                                             fontSize: 12,
@@ -140,24 +142,24 @@ class CentreDetailScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       _buildContactRow(
                         Icons.location_on_outlined,
-                        '${centre.address}, ${centre.city}',
+                        '${center.address}, ${center.city}',
                       ),
                       const SizedBox(height: 8),
                       _buildContactRow(
                         Icons.access_time_outlined,
-                        centre.operatingHours,
+                        center.operatingHours,
                       ),
                       const SizedBox(height: 8),
                       _buildContactRow(
                         Icons.phone_outlined,
-                        centre.contactNumber,
+                        center.contactNumber,
                       ),
                       const SizedBox(height: 8),
                       _buildContactRow(
                         Icons.email_outlined,
-                        centre.email,
+                        center.email,
                       ),
-                      if (centre.notes.isNotEmpty) ...[
+                      if (center.notes.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Container(
                           padding: const EdgeInsets.all(12),
@@ -177,7 +179,7 @@ class CentreDetailScreen extends StatelessWidget {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  centre.notes,
+                                  center.notes,
                                   style: const TextStyle(
                                     color: RecyclingColors.earthyBrown,
                                     fontSize: 12,
@@ -234,7 +236,7 @@ class CentreDetailScreen extends StatelessWidget {
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: centre.acceptedMaterials.map((mat) {
+                        children: center.acceptedMaterials.map((mat) {
                           return Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
@@ -303,7 +305,7 @@ class CentreDetailScreen extends StatelessWidget {
                         ],
                       ),
                       const Divider(height: 24, color: Color(0xFFFFCDD2)),
-                      ...centre.unsupportedMaterials.map((mat) {
+                      ...center.unsupportedMaterials.map((mat) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
@@ -356,3 +358,9 @@ class CentreDetailScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+

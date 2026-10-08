@@ -153,7 +153,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
                 ),
                 sliver: SliverList.separated(
                   itemCount: _filteredPickups.length,
-                  separatorBuilder: (_, __) =>
+                  separatorBuilder: (_, _) =>
                       const SizedBox(height: 14),
                   itemBuilder: (context, index) {
                     return _buildPickupCard(
@@ -370,7 +370,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
         ),
         scrollDirection: Axis.horizontal,
         itemCount: _filters.length,
-        separatorBuilder: (_, __) =>
+        separatorBuilder: (_, _) =>
             const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final filter = _filters[index];

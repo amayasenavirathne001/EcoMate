@@ -3,12 +3,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../login_screen.dart';
+import '../../features/recycling/screens/waste_segregation_guide_screen.dart';
+import '../../features/recycling/screens/recycling_centers_screen.dart';
+import '../../features/recycling/screens/resident_recycling_history_screen.dart';
 import '../collection_schedule_screen.dart';
 import '../report_issue_screen.dart';
 import '../my_reports_screen.dart';
 import '../resident_profile_screen.dart';
 import '../../features/recycling/screens/waste_segregation_guide_screen.dart';
-import '../../features/recycling/screens/recycling_centres_screen.dart';
+import '../../features/recycling/screens/recycling_centers_screen.dart';
 import '../../features/special_pickup/screens/pickup_requests_screen.dart';
 import '../../features/special_pickup/screens/pickup_request_details_screen.dart';
 import '../../features/special_pickup/data/pickup_mock_data.dart';
@@ -242,7 +245,10 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Next Pickup + badge
-                Row(
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     const Text(
                       'Next Pickup',
@@ -252,7 +258,6 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const Spacer(),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -284,36 +289,45 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
                 ),
                 const SizedBox(height: 9),
                 // Time + Waste
-                const Row(
+                const Wrap(
+                  spacing: 12,
+                  runSpacing: 4,
                   children: [
-                    Icon(
-                      Icons.schedule_rounded,
-                      size: 18,
-                      color: darkText,
-                    ),
-                    SizedBox(width: 7),
-                    Text(
-                      '6:00 AM - 9:00 AM',
-                      style: TextStyle(
-                        color: Color(0xFF566270),
-                        fontSize: 11,
-                      ),
-                    ),
-                    SizedBox(width: 18),
-                    Icon(
-                      Icons.eco_outlined,
-                      size: 18,
-                      color: primaryGreen,
-                    ),
-                    SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        'General Waste',
-                        style: TextStyle(
-                          color: Color(0xFF566270),
-                          fontSize: 11,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.schedule_rounded,
+                          size: 18,
+                          color: darkText,
                         ),
-                      ),
+                        SizedBox(width: 7),
+                        Text(
+                          '6:00 AM - 9:00 AM',
+                          style: TextStyle(
+                            color: Color(0xFF566270),
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.eco_outlined,
+                          size: 18,
+                          color: primaryGreen,
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          'General Waste',
+                          style: TextStyle(
+                            color: Color(0xFF566270),
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -367,19 +381,22 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
                 icon: const Icon(Icons.menu_rounded, size: 32, color: darkText),
               ),
               const Spacer(),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.eco_rounded,
-                        color: primaryGreen,
-                        size: 36,
-                      ),
-                      const SizedBox(width: 5),
-                      RichText(
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.eco_rounded,
+                            color: primaryGreen,
+                            size: 36,
+                          ),
+                          const SizedBox(width: 5),
+                          RichText(
                         text: const TextSpan(
                           style: TextStyle(
                             fontSize: 30,
@@ -405,8 +422,10 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
                   ),
                 ],
               ),
-              const Spacer(),
-              Stack(
+            ),
+          ), // Added comma here
+          const Spacer(),
+          Stack(
                 clipBehavior: Clip.none,
                 children: [
                   IconButton(
@@ -502,7 +521,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Hello, $_userName! 👋',
+                  'Hello, $_userName! Ã°Å¸â€˜â€¹',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -799,8 +818,10 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
         const SizedBox(height: 5),
         _buildHouseholdCapacity(pickup),
         const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        Wrap(
+          alignment: WrapAlignment.end,
+          spacing: 8,
+          runSpacing: 8,
           children: [
             OutlinedButton(
               onPressed: () => _showPickupSummary(pickup),
@@ -813,6 +834,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(color: const Color(0xFFE8F5E9), borderRadius: BorderRadius.circular(11)),
                 child: const Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.check_circle_rounded, color: primaryGreen, size: 17),
                     SizedBox(width: 5),
@@ -947,7 +969,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
                 const SizedBox(height: 6),
                 Text('Remaining weight: ${pickup.remainingWeightKg.toStringAsFixed(1)} kg'),
                 const SizedBox(height: 6),
-                Text('Remaining volume: ${pickup.remainingVolumeM3.toStringAsFixed(1)} m³'),
+                Text('Remaining volume: ${pickup.remainingVolumeM3.toStringAsFixed(1)} mÃ‚Â³'),
                 if (pickup.isApproved) ...[
                   const SizedBox(height: 18),
                   Container(
@@ -1114,7 +1136,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
   Widget _buildWasteCategoryCard() {
     return Container(
       width: double.infinity,
-      height: 170,
+      constraints: const BoxConstraints(minHeight: 160),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -1129,6 +1151,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(18, 16, 4, 15),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
@@ -1162,7 +1185,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
                     'Only organic waste today in your area.',
                     style: TextStyle(color: Colors.white70, fontSize: 10),
                   ),
-                  const Spacer(),
+                  const SizedBox(height: 12),
                   SizedBox(
                     height: 32,
                     child: OutlinedButton(
@@ -1220,28 +1243,34 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
             value: '45',
             title: 'Items Recycled',
             subtitle: 'This Month',
-            footer: '↑ 12% vs last month',
+            footer: '? 12% vs last month',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ResidentRecyclingHistoryScreen()),
+              );
+            },
           ),
           _statCard(
             icon: Icons.local_shipping_rounded,
             value: '3',
             title: 'Pickup Requests',
             subtitle: 'This Month',
-            footer: '✓ 2 Completed',
+            footer: '? 2 Completed',
           ),
           _statCard(
             icon: Icons.groups_rounded,
             value: '12',
             title: 'Active Neighbors',
             subtitle: 'In Your Area',
-            footer: '→ 2 joined this week',
+            footer: '? 2 joined this week',
           ),
           _statCard(
             icon: Icons.eco_rounded,
             value: '1,250',
             title: 'Community Score',
             subtitle: 'Great job!',
-            footer: '↑ Top 20% in your area',
+            footer: '? Top 20% in your area',
           ),
         ];
         return Wrap(
@@ -1260,13 +1289,17 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
     required String title,
     required String subtitle,
     required String footer,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 150),
-      padding: const EdgeInsets.all(12),
-      decoration: _whiteCardDecoration(17),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(17),
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 150),
+        padding: const EdgeInsets.all(12),
+        decoration: _whiteCardDecoration(17),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -1319,6 +1352,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
           ),
         ],
       ),
+    ),
     );
   }
   // ============================================================
@@ -1362,7 +1396,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
             icon: Icons.local_shipping_rounded,
             title: 'Pickup Completed',
             category: 'Organic Waste',
-            date: '16 May 2025 • 7:15 AM',
+            date: '16 May 2025 Ã¢â‚¬Â¢ 7:15 AM',
             completed: true,
             onTap: _openPickupDetails,
           ),
@@ -1371,7 +1405,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
             icon: Icons.description_rounded,
             title: 'Request Submitted',
             category: 'Recyclables',
-            date: '14 May 2025 • 4:30 PM',
+            date: '14 May 2025 Ã¢â‚¬Â¢ 4:30 PM',
             completed: false,
             onTap: _openPickupRequests,
           ),
@@ -1487,12 +1521,12 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
               Navigator.pop(context);
               _openRecyclingGuide();
             }),
-            _drawerItem(Icons.storefront_outlined, 'Recycling Centres', () {
+            _drawerItem(Icons.storefront_outlined, 'Recycling Centers', () {
               Navigator.pop(context);
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const RecyclingCentresScreen(),
+                  builder: (_) => const RecyclingCentersScreen(),
                 ),
               );
             }),
@@ -1632,3 +1666,9 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
     );
   }
 }
+
+
+
+
+
+

@@ -79,7 +79,7 @@ class QuickActionsWidget extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            const WasteSegregationGuideScreen(),
+                            const WasteSegregationGuideScreen(showNearbyCenters: false),
                       ),
                     );
                   },

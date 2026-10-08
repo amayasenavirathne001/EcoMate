@@ -31,7 +31,7 @@ public class SecurityConfig {
             )
 
             .authorizeHttpRequests(auth -> auth
-
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers(
                             "/api/auth/login",
                             "/api/auth/register",
@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/collector/**")
                     .hasRole("COLLECTOR")
 
-                .requestMatchers("/api/recycling/my-centre/**")
+                .requestMatchers("/api/recycling/my-center/**")
                     .hasRole("RECYCLING_OFFICER")
 
                 .requestMatchers("/api/recycling/**")
@@ -117,7 +117,7 @@ public class SecurityConfig {
     );
 
     configuration.setAllowedMethods(
-        List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
     );
 
     configuration.setAllowedHeaders(

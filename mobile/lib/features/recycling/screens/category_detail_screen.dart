@@ -1,8 +1,11 @@
-﻿import '../theme/recycling_colors.dart';
+import '../theme/recycling_colors.dart';
 import 'package:flutter/material.dart';
 import '../../../models/waste_category.dart';
+import 'edit_category_screen.dart';
+import '../../../services/auth_service.dart';
+import '../services/recycling_service.dart';
 
-class CategoryDetailScreen extends StatelessWidget {
+class CategoryDetailScreen extends StatefulWidget {
   final WasteCategory category;
 
   const CategoryDetailScreen({
@@ -11,7 +14,33 @@ class CategoryDetailScreen extends StatelessWidget {
   });
 
   @override
+  State<CategoryDetailScreen> createState() => _CategoryDetailScreenState();
+}
+
+class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
+  late WasteCategory _category;
+  bool _isAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _category = widget.category;
+    _checkRole();
+  }
+
+  Future<void> _checkRole() async {
+    final role = await AuthService().getRole();
+    if (mounted) {
+      setState(() {
+        _isAdmin = role == 'COUNCIL_ADMIN';
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final category = _category;
+
     return Scaffold(
       backgroundColor: RecyclingColors.offWhite,
       appBar: AppBar(
@@ -29,6 +58,55 @@ class CategoryDetailScreen extends StatelessWidget {
             fontSize: 20,
           ),
         ),
+        actions: [
+                    if (_isAdmin)
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+              onPressed: () async {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Delete Category'),
+                    content: Text('Are you sure you want to delete ${category.name}?'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, true), 
+                        child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirm == true) {
+                  try {
+                    await RecyclingService().deleteWasteCategory(category.id);
+                    if (!mounted) return;
+                    Navigator.pop(context); // Go back to the guide screen
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Category deleted successfully')));
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete: $e')));
+                  }
+                }
+              },
+            ),
+          if (_isAdmin)
+            IconButton(
+              icon: const Icon(Icons.edit, color: RecyclingColors.deepForestGreen),
+              onPressed: () async {
+                final updatedCategory = await Navigator.push<WasteCategory>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EditCategoryScreen(category: _category),
+                  ),
+                );
+                if (updatedCategory != null) {
+                  setState(() {
+                    _category = updatedCategory;
+                  });
+                }
+              },
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -376,3 +454,6 @@ class CategoryDetailScreen extends StatelessWidget {
     );
   }
 }
+
+
+

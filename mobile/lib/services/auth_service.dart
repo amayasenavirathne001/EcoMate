@@ -176,6 +176,7 @@ class AuthService {
     required String email,
     required String password,
     required String role,
+    String? phoneNumber,
   }) async {
   final response = await http.post(
     Uri.parse('$baseUrl/api/auth/register'),
@@ -183,11 +184,12 @@ class AuthService {
       'Content-Type': 'application/json',
     },
     body: jsonEncode({
-      'name': name,
-      'email': email,
-      'password': password,
-      'role': role,
-    }),
+        'name': name,
+        'email': email,
+        'password': password,
+        'phoneNumber': phoneNumber,
+        'role': role,
+      }),
   );
 
   if (response.statusCode == 201) {

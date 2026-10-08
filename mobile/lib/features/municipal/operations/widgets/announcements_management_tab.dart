@@ -11,7 +11,7 @@ class AnnouncementsManagementTab extends StatefulWidget {
 
 class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab> {
   final AnnouncementsService _service = AnnouncementsService();
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   void initState() {
@@ -145,7 +145,7 @@ class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab>
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        value: selectedType,
+                        initialValue: selectedType,
                         decoration: InputDecoration(
                           labelText: 'Announcement Type',
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -161,7 +161,7 @@ class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab>
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        value: selectedPriority,
+                        initialValue: selectedPriority,
                         decoration: InputDecoration(
                           labelText: 'Priority',
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -175,7 +175,7 @@ class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab>
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        value: selectedAudience,
+                        initialValue: selectedAudience,
                         decoration: InputDecoration(
                           labelText: 'Target Audience',
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -184,7 +184,7 @@ class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab>
                           DropdownMenuItem(value: 'All Residents', child: Text('All Residents')),
                           DropdownMenuItem(value: 'Residents in Selected Area', child: Text('Residents in Selected Area')),
                           DropdownMenuItem(value: 'Waste Collectors', child: Text('Waste Collectors')),
-                          DropdownMenuItem(value: 'Recycling Centre Officers', child: Text('Recycling Centre Officers')),
+                          DropdownMenuItem(value: 'Recycling Center Officers', child: Text('Recycling Center Officers')),
                           DropdownMenuItem(value: 'Municipal Staff', child: Text('Municipal Staff')),
                         ],
                         onChanged: (val) {
@@ -199,7 +199,7 @@ class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab>
                       if (needsArea) ...[
                         const SizedBox(height: 16),
                         DropdownButtonFormField<String>(
-                          value: selectedArea,
+                          initialValue: selectedArea,
                           decoration: InputDecoration(
                             labelText: 'Target Area / Zone *',
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -839,3 +839,4 @@ class _AnnouncementsManagementTabState extends State<AnnouncementsManagementTab>
     );
   }
 }
+

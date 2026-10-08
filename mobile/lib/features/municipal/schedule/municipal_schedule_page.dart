@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../models/schedule_models.dart';
-import '../../recycling/models/recycling_centre.dart';
+import '../../recycling/models/recycling_center.dart';
 import '../../../models/waste_category.dart';
 import '../../../services/schedule_service.dart';
 import '../../recycling/services/recycling_service.dart';
@@ -143,29 +143,29 @@ class _MunicipalSchedulePageState extends State<MunicipalSchedulePage> {
     }).toList();
   }
 
-  void _showRecyclingCentreDetails(RecyclingCentre centre) {
+  void _showRecyclingCenterDetails(RecyclingCenter center) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           backgroundColor: MunicipalColors.pageBg,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Text(centre.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(center.name, style: const TextStyle(fontWeight: FontWeight.bold)),
           content: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                _infoRow(Icons.location_on, 'Address', centre.address),
-                _infoRow(Icons.location_city, 'City', centre.city),
-                _infoRow(Icons.phone, 'Contact', centre.contactNumber),
-                _infoRow(Icons.access_time, 'Hours', centre.operatingHours),
-                _infoRow(Icons.check_circle_outline, 'Status', centre.isOpen ? 'Open' : 'Closed'),
+                _infoRow(Icons.location_on, 'Address', center.address),
+                _infoRow(Icons.location_city, 'City', center.city),
+                _infoRow(Icons.phone, 'Contact', center.contactNumber),
+                _infoRow(Icons.access_time, 'Hours', center.operatingHours),
+                _infoRow(Icons.check_circle_outline, 'Status', center.isOpen ? 'Open' : 'Closed'),
                 const SizedBox(height: 12),
                 const Text('Accepted Materials:', style: TextStyle(fontWeight: FontWeight.bold)),
                 Wrap(
                   spacing: 6,
-                  children: centre.acceptedMaterials.map((m) => Chip(label: Text(m, style: const TextStyle(fontSize: 11)))).toList(),
+                  children: center.acceptedMaterials.map((m) => Chip(label: Text(m, style: const TextStyle(fontSize: 11)))).toList(),
                 )
               ],
             ),
@@ -513,12 +513,12 @@ class _MunicipalSchedulePageState extends State<MunicipalSchedulePage> {
                                         _cardInfoRow(
                                           Icons.navigation,
                                           'Destination',
-                                          schedule.destinationType == 'Recycling Centre' && schedule.recyclingCenter != null
+                                          schedule.destinationType == 'Recycling Center' && schedule.recyclingCenter != null
                                               ? schedule.recyclingCenter!.name
                                               : 'Municipal Disposal Site',
-                                          trailing: schedule.destinationType == 'Recycling Centre' && schedule.recyclingCenter != null
+                                          trailing: schedule.destinationType == 'Recycling Center' && schedule.recyclingCenter != null
                                               ? GestureDetector(
-                                                  onTap: () => _showRecyclingCentreDetails(schedule.recyclingCenter!),
+                                                  onTap: () => _showRecyclingCenterDetails(schedule.recyclingCenter!),
                                                   child: const Icon(Icons.info_outline, size: 16, color: MunicipalColors.secondaryGreen),
                                                 )
                                               : null,
@@ -718,3 +718,10 @@ class _MunicipalSchedulePageState extends State<MunicipalSchedulePage> {
     );
   }
 }
+
+
+
+
+
+
+
