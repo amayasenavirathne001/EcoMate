@@ -14,23 +14,22 @@ import '../operations/screens/smart_alerts_screen.dart';
 class MunicipalDashboardPage extends StatefulWidget {
   final Function(int) onTabChange;
 
-  const MunicipalDashboardPage({
-    super.key,
-    required this.onTabChange,
-  });
+  const MunicipalDashboardPage({super.key, required this.onTabChange});
 
   @override
   State<MunicipalDashboardPage> createState() => _MunicipalDashboardPageState();
 }
 
 class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
-  final MunicipalDashboardService _dashboardService = MunicipalDashboardService();
+  final MunicipalDashboardService _dashboardService =
+      MunicipalDashboardService();
   final AuthService _authService = AuthService();
   MunicipalDashboardSummary? _summaryData;
   bool _isLoading = true;
   String? _errorMessage;
   String _userName = 'Officer';
-  String _profilePicUrl = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&q=60';
+  String _profilePicUrl =
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&q=60';
 
   @override
   void initState() {
@@ -96,8 +95,18 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
   String _getFormattedDate() {
     final now = DateTime.now();
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final monthStr = months[now.month - 1];
     return "Today, ${now.day} $monthStr ${now.year}";
@@ -129,9 +138,13 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
   String _getProfilePic() {
     try {
       final pic = _profilePicUrl as dynamic;
-      if (pic == null) return 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&q=60';
+      if (pic == null) {
+        return 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&q=60';
+      }
       final str = pic.toString();
-      if (str.isEmpty) return 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&q=60';
+      if (str.isEmpty) {
+        return 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&q=60';
+      }
       return str;
     } catch (e) {
       return 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&q=60';
@@ -150,89 +163,91 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
                 ),
               )
             : _errorMessage != null
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline_rounded,
+                        color: MunicipalColors.error,
+                        size: 48,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        _errorMessage!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: MunicipalColors.primaryText,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _loadDashboardData,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: MunicipalColors.secondaryGreen,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text("Retry"),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : RefreshIndicator(
+                onRefresh: _loadDashboardData,
+                color: MunicipalColors.secondaryGreen,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 20,
+                  ),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 800),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const Icon(
-                            Icons.error_outline_rounded,
-                            color: MunicipalColors.error,
-                            size: 48,
+                          _buildHeader(),
+                          const SizedBox(height: 24),
+                          _buildWelcomeTitle(),
+                          const SizedBox(height: 20),
+                          _buildHeroBanner(),
+                          const SizedBox(height: 24),
+
+                          QuickActionsWidget(
+                            onManageSchedules: () => widget.onTabChange(2),
+                            onAssignCollectors: () => widget.onTabChange(1),
+                            onViewReports: () => widget.onTabChange(3),
+                            onSendAlerts: () {},
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            _errorMessage!,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: MunicipalColors.primaryText,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: _loadDashboardData,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: MunicipalColors.secondaryGreen,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text("Retry"),
+                          const SizedBox(height: 24),
+                          _buildKeyStatisticsHeader(),
+                          const SizedBox(height: 14),
+                          _buildSummaryGrid(),
+                          const SizedBox(height: 24),
+
+                          const LiveMapPreviewCard(),
+                          const SizedBox(height: 24),
+
+                          ScheduleCard(
+                            schedules: _summaryData!.todaySchedules,
+                            onViewAll: () => widget.onTabChange(2),
+                            onViewFullSchedule: () => widget.onTabChange(2),
                           ),
                         ],
                       ),
                     ),
-                  )
-                : RefreshIndicator(
-                    onRefresh: _loadDashboardData,
-                    color: MunicipalColors.secondaryGreen,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 800),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _buildHeader(),
-                              const SizedBox(height: 24),
-                              _buildWelcomeTitle(),
-                              const SizedBox(height: 20),
-                              _buildHeroBanner(),
-                              const SizedBox(height: 24),
-                              
-                              QuickActionsWidget(
-                                onManageSchedules: () => widget.onTabChange(2),
-                                onAssignCollectors: () => widget.onTabChange(1),
-                                onViewReports: () => widget.onTabChange(3),
-                                onSendAlerts: () {},
-                              ),
-                              const SizedBox(height: 24),
-                              
-                              _buildKeyStatisticsHeader(),
-                              const SizedBox(height: 14),
-                              _buildSummaryGrid(),
-                              const SizedBox(height: 24),
-                              
-                              const LiveMapPreviewCard(),
-                              const SizedBox(height: 24),
-                              
-                              ScheduleCard(
-                                schedules: _summaryData!.todaySchedules,
-                                onViewAll: () => widget.onTabChange(2),
-                                onViewFullSchedule: () => widget.onTabChange(2),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
                   ),
+                ),
+              ),
       ),
     );
   }
@@ -280,7 +295,9 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SmartAlertsScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const SmartAlertsScreen(),
+                  ),
                 );
               },
               child: Stack(
@@ -330,9 +347,19 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
                   value: 'logout',
                   child: Row(
                     children: [
-                      Icon(Icons.logout_rounded, color: MunicipalColors.error, size: 20),
+                      Icon(
+                        Icons.logout_rounded,
+                        color: MunicipalColors.error,
+                        size: 20,
+                      ),
                       SizedBox(width: 12),
-                      Text("Logout", style: TextStyle(color: MunicipalColors.error, fontWeight: FontWeight.bold)),
+                      Text(
+                        "Logout",
+                        style: TextStyle(
+                          color: MunicipalColors.error,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -342,26 +369,28 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
                 backgroundColor: MunicipalColors.surface,
                 child: ClipOval(
                   child: _getProfilePic().startsWith('data:image')
-                    ? Image.memory(
-                        base64Decode(_getProfilePic().split(',').last),
-                        fit: BoxFit.cover,
-                        width: 40,
-                        height: 40,
-                        errorBuilder: (context, error, stackTrace) => const Icon(
-                          Icons.person_rounded,
-                          color: MunicipalColors.secondaryText,
+                      ? Image.memory(
+                          base64Decode(_getProfilePic().split(',').last),
+                          fit: BoxFit.cover,
+                          width: 40,
+                          height: 40,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(
+                                Icons.person_rounded,
+                                color: MunicipalColors.secondaryText,
+                              ),
+                        )
+                      : Image.network(
+                          _getProfilePic(),
+                          fit: BoxFit.cover,
+                          width: 40,
+                          height: 40,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(
+                                Icons.person_rounded,
+                                color: MunicipalColors.secondaryText,
+                              ),
                         ),
-                      )
-                    : Image.network(
-                        _getProfilePic(),
-                        fit: BoxFit.cover,
-                        width: 40,
-                        height: 40,
-                        errorBuilder: (context, error, stackTrace) => const Icon(
-                          Icons.person_rounded,
-                          color: MunicipalColors.secondaryText,
-                        ),
-                      ),
                 ),
               ),
             ),
@@ -440,10 +469,7 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
                             ),
                           ),
                           const SizedBox(width: 6),
-                          const Text(
-                            "🖐️",
-                            style: TextStyle(fontSize: 18),
-                          ),
+                          const Text("🖐️", style: TextStyle(fontSize: 18)),
                         ],
                       ),
                       const SizedBox(height: 6),
@@ -494,15 +520,12 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
               shape: BoxShape.circle,
             ),
           ),
-          const Icon(
-            Icons.eco_rounded,
-            color: Colors.white,
-            size: 34,
-          ),
+          const Icon(Icons.eco_rounded, color: Colors.white, size: 34),
         ],
       ),
     );
   }
+
   Widget _buildKeyStatisticsHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -550,7 +573,7 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 2.7,
+      childAspectRatio: 2.3,
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
       children: [
@@ -665,3 +688,4 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
     );
   }
 }
+

@@ -4,18 +4,18 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "recycling_centre_materials", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"recycling_centre_id", "material_id"})
+@Table(name = "recycling_center_materials", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"recycling_center_id", "material_id"})
 })
-public class RecyclingCentreMaterial {
+public class RecyclingCenterMaterial {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recycling_centre_id", nullable = false)
-    private RecyclingCentre recyclingCentre;
+    @JoinColumn(name = "recycling_center_id", nullable = false)
+    private RecyclingCenter recyclingCenter;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "material_id", nullable = false)
@@ -27,11 +27,11 @@ public class RecyclingCentreMaterial {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public RecyclingCentreMaterial() {
+    public RecyclingCenterMaterial() {
     }
 
-    public RecyclingCentreMaterial(RecyclingCentre recyclingCentre, Material material, Boolean isActive) {
-        this.recyclingCentre = recyclingCentre;
+    public RecyclingCenterMaterial(RecyclingCenter recyclingCenter, Material material, Boolean isActive) {
+        this.recyclingCenter = recyclingCenter;
         this.material = material;
         this.isActive = isActive;
         this.updatedAt = LocalDateTime.now();
@@ -45,12 +45,12 @@ public class RecyclingCentreMaterial {
         this.id = id;
     }
 
-    public RecyclingCentre getRecyclingCentre() {
-        return recyclingCentre;
+    public RecyclingCenter getRecyclingCenter() {
+        return recyclingCenter;
     }
 
-    public void setRecyclingCentre(RecyclingCentre recyclingCentre) {
-        this.recyclingCentre = recyclingCentre;
+    public void setRecyclingCenter(RecyclingCenter recyclingCenter) {
+        this.recyclingCenter = recyclingCenter;
     }
 
     public Material getMaterial() {
@@ -78,3 +78,4 @@ public class RecyclingCentreMaterial {
         this.updatedAt = updatedAt;
     }
 }
+

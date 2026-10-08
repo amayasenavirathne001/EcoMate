@@ -19,6 +19,15 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "phone_number", length = 32)
+    private String phoneNumber;
+
+    @Column(length = 240)
+    private String address;
+
+    @Column(columnDefinition = "TEXT")
+    private String profilePictureData;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -65,11 +74,34 @@ public class User {
         this.password = password;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public String getProfilePictureData() {
+        return profilePictureData;
+    }
+
+    public void updateProfile(String name, String phoneNumber, String address, String profilePictureData) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.profilePictureData = profilePictureData;
+    }
+
     public Role getRole() {
         return role;
     }
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

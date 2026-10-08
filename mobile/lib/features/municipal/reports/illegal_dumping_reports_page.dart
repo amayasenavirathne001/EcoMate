@@ -18,6 +18,7 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
   final _searchController = TextEditingController();
   late Future<List<Map<String, dynamic>>> _reports;
   String _filter = 'All';
+  String _priorityFilter = 'All';
   bool _isReloading = false;
 
   @override
@@ -219,6 +220,36 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
     );
   }
 
+  Future<void> _setPriority(Map<String, dynamic> report, String priority) async {
+    final currentPriority = (report['priority'] ?? 'MEDIUM').toString().toUpperCase();
+    if (currentPriority == priority) return;
+
+    try {
+      final updated = await _service.updateAdminReport(
+        id: (report['id'] as num).toInt(),
+        status: (report['status'] ?? 'SUBMITTED').toString(),
+        priority: priority,
+        assignedTeam: (report['assignedTeam'] ?? '').toString(),
+      );
+      final currentReports = await _reports;
+      if (!mounted) return;
+      setState(() {
+        _reports = Future.value(currentReports.map((currentReport) {
+          return currentReport['id'] == updated['id'] ? updated : currentReport;
+        }).toList());
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Priority set to $priority')),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not update priority: $error')),
+        );
+      }
+    }
+  }
+
   void _createJobFromReport(Map<String, dynamic> report, [ScaffoldMessengerState? messenger]) {
     final activeMessenger = messenger ?? ScaffoldMessenger.of(context);
     showDialog(
@@ -283,6 +314,7 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
               all,
               query: _searchController.text,
               status: _filter,
+              priority: _priorityFilter,
             ),
           );
           return Column(children: [
@@ -290,6 +322,7 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
               _summary('Open', all.where((item) => item['status'] != 'RESOLVED').length, MunicipalColors.warning),
               _summary('Review', all.where((item) => item['status'] == 'IN_REVIEW').length, MunicipalColors.info),
               _summary('Resolved', all.where((item) => item['status'] == 'RESOLVED').length, MunicipalColors.success),
+              _summary('High', all.where((item) => (item['priority'] ?? 'MEDIUM').toString().toUpperCase() == 'HIGH').length, MunicipalColors.error),
             ])),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -325,7 +358,22 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
                 )).toList(),
               ),
             ),
-            Expanded(child: reports.isEmpty ? const Center(child: Text('No reports match your current filters.')) : ListView.separated(padding: const EdgeInsets.all(16), itemCount: reports.length, separatorBuilder: (_, _) => const SizedBox(height: 10), itemBuilder: (_, index) => _ReportTile(report: reports[index], onEdit: () => _editReport(reports[index]), onViewLocation: () => _viewLocation(reports[index]), onCreateJob: () => _createJobFromReport(reports[index])))),
+            SizedBox(
+              height: 44,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: ['All', 'HIGH', 'MEDIUM', 'LOW'].map((item) => Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(item == 'All' ? 'All priorities' : item),
+                    selected: _priorityFilter == item,
+                    onSelected: (_) => setState(() => _priorityFilter = item),
+                  ),
+                )).toList(),
+              ),
+            ),
+            Expanded(child: reports.isEmpty ? const Center(child: Text('No reports match your current filters.')) : ListView.separated(padding: const EdgeInsets.all(16), itemCount: reports.length, separatorBuilder: (_, _) => const SizedBox(height: 10), itemBuilder: (_, index) => _ReportTile(report: reports[index], onEdit: () => _editReport(reports[index]), onViewLocation: () => _viewLocation(reports[index]), onCreateJob: () => _createJobFromReport(reports[index]), onSetPriority: (priority) => _setPriority(reports[index], priority)))),
           ]);
         },
       ),
@@ -336,16 +384,23 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
 }
 
 class _ReportTile extends StatelessWidget {
-  const _ReportTile({required this.report, required this.onEdit, required this.onViewLocation, required this.onCreateJob});
+  const _ReportTile({required this.report, required this.onEdit, required this.onViewLocation, required this.onCreateJob, required this.onSetPriority});
   final Map<String, dynamic> report;
   final VoidCallback onEdit;
   final VoidCallback onViewLocation;
   final VoidCallback onCreateJob;
+  final ValueChanged<String> onSetPriority;
 
   @override
   Widget build(BuildContext context) {
     final status = report['status']?.toString() ?? 'SUBMITTED';
     final priority = report['priority']?.toString() ?? 'MEDIUM';
+    final normalizedPriority = priority.toUpperCase();
+    final priorityColor = switch (normalizedPriority) {
+      'HIGH' => MunicipalColors.error,
+      'LOW' => MunicipalColors.success,
+      _ => MunicipalColors.warning,
+    };
     final team = report['assignedTeam']?.toString() ?? '';
     return ListTile(
       onTap: onEdit,
@@ -353,7 +408,36 @@ class _ReportTile extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: const BorderSide(color: MunicipalColors.border)),
       leading: CircleAvatar(backgroundColor: MunicipalColors.surface, child: Icon(Icons.report_problem_outlined, color: status == 'RESOLVED' ? MunicipalColors.success : MunicipalColors.secondaryGreen)),
       title: Text(report['issueType']?.toString() ?? 'Waste report', style: const TextStyle(fontWeight: FontWeight.w700, color: MunicipalColors.primaryText)),
-      subtitle: Text('${report['referenceNumber']}\n${report['location']}\nPriority: $priority', maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(color: MunicipalColors.secondaryText, height: 1.4)),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('${report['referenceNumber']}\n${report['location']}', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: MunicipalColors.secondaryText, height: 1.4)),
+          PopupMenuButton<String>(
+            tooltip: 'Set issue priority',
+            onSelected: onSetPriority,
+            itemBuilder: (context) => const ['HIGH', 'MEDIUM', 'LOW'].map((value) => PopupMenuItem(value: value, child: Text(value))).toList(),
+            child: Container(
+              margin: const EdgeInsets.only(top: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+              decoration: BoxDecoration(
+                color: priorityColor.withValues(alpha: 0.12),
+                border: Border.all(color: priorityColor.withValues(alpha: 0.45)),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.flag_outlined, size: 14, color: priorityColor),
+                  const SizedBox(width: 4),
+                  Text('$normalizedPriority PRIORITY', style: TextStyle(color: priorityColor, fontSize: 10, fontWeight: FontWeight.w800)),
+                  const SizedBox(width: 4),
+                  Icon(Icons.arrow_drop_down, size: 16, color: priorityColor),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
       isThreeLine: true,
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,

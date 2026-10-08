@@ -4,6 +4,7 @@ import '../../../recycling/screens/waste_segregation_guide_screen.dart';
 import '../screens/collection_performance_page.dart';
 import '../../reports/complaints_requests_page.dart';
 import '../../operations/screens/municipal_recycling_centers_page.dart';
+import '../../special_pickup/screens/special_pickups_screen.dart';
 
 class QuickActionsWidget extends StatelessWidget {
   final VoidCallback onManageSchedules;
@@ -41,57 +42,102 @@ class QuickActionsWidget extends StatelessWidget {
                 width: 85,
                 child: _buildActionButton(
                   icon: Icons.calendar_today_rounded,
-                  iconColor: const Color(0xFF22C55E), // Green
+                  iconColor: const Color(0xFF22C55E),
                   label: "Schedule",
                   onTap: onManageSchedules,
                 ),
               ),
               const SizedBox(width: 8),
+
               SizedBox(
                 width: 85,
                 child: _buildActionButton(
                   icon: Icons.forum_rounded,
-                  iconColor: const Color(0xFF06B6D4), // Teal
+                  iconColor: const Color(0xFF06B6D4),
                   label: "Complaints",
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ComplaintsRequestsPage(),
+                        builder: (context) =>
+                            const ComplaintsRequestsPage(),
                       ),
                     );
                   },
                 ),
               ),
+              const SizedBox(width: 8),
+
               SizedBox(
                 width: 85,
                 child: _buildActionButton(
                   icon: Icons.menu_book_rounded,
-                  iconColor: const Color(0xFF16A34A), // Forest Green
+                  iconColor: const Color(0xFF16A34A),
                   label: "Guide",
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const WasteSegregationGuideScreen(),
+                        builder: (context) =>
+                            const WasteSegregationGuideScreen(showNearbyCenters: false),
                       ),
                     );
                   },
                 ),
               ),
-
               const SizedBox(width: 8),
+
+              SizedBox(
+                width: 85,
+                child: _buildActionButton(
+                  icon: Icons.recycling_rounded,
+                  iconColor: const Color(0xFF0D9488),
+                  label: "Centers",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const MunicipalRecyclingCentersPage(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+
               SizedBox(
                 width: 85,
                 child: _buildActionButton(
                   icon: Icons.speed_rounded,
-                  iconColor: const Color(0xFF8B5CF6), // Purple
+                  iconColor: const Color(0xFF8B5CF6),
                   label: "Performance",
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const CollectionPerformancePage(),
+                        builder: (context) =>
+                            const CollectionPerformancePage(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+
+              // SPECIAL PICKUP
+              SizedBox(
+                width: 85,
+                child: _buildActionButton(
+                  icon: Icons.local_shipping_rounded,
+                  iconColor: const Color(0xFF028B6B),
+                  label: "Special Pickup",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const SpecialPickupsScreen(),
                       ),
                     );
                   },
@@ -114,7 +160,10 @@ class QuickActionsWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFEEF2F6), width: 1),
+        border: Border.all(
+          color: const Color(0xFFEEF2F6),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -129,7 +178,10 @@ class QuickActionsWidget extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 2),
+            padding: const EdgeInsets.symmetric(
+              vertical: 18,
+              horizontal: 2,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

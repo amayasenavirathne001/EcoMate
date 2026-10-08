@@ -31,7 +31,7 @@ public class SecurityConfig {
             )
 
             .authorizeHttpRequests(auth -> auth
-
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers(
                             "/api/auth/login",
                             "/api/auth/register",
@@ -40,14 +40,21 @@ public class SecurityConfig {
 
                 .requestMatchers("/api/auth/me")
                 .authenticated()
+                .requestMatchers("/api/auth/profile")
+                    .authenticated()
                 // Role-based endpoints
                 .requestMatchers("/api/resident/**")
                     .hasRole("RESIDENT")
+                // Special Pickup - Resident endpoints
+                .requestMatchers(
+                    "/api/special-pickups/**",
+                    "/api/special-pickup-join-requests/**"
+                ).hasRole("RESIDENT")
 
                 .requestMatchers("/api/collector/**")
                     .hasRole("COLLECTOR")
 
-                .requestMatchers("/api/recycling/my-centre/**")
+                .requestMatchers("/api/recycling/my-center/**")
                     .hasRole("RECYCLING_OFFICER")
 
                 .requestMatchers("/api/recycling/**")
@@ -59,6 +66,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/municipal/**")
                     .hasRole("COUNCIL_ADMIN")
 
+                    // Special Pickup - Admin endpoints
+                .requestMatchers("/api/admin/special-pickups/**")
+                .hasRole("COUNCIL_ADMIN")
                 // Everything else requires login
                 .anyRequest().authenticated()
             )
@@ -107,7 +117,7 @@ public class SecurityConfig {
     );
 
     configuration.setAllowedMethods(
-        List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
     );
 
     configuration.setAllowedHeaders(

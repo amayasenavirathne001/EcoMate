@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../models/waste_delivery_record.dart';
 import '../models/material_item.dart';
-import '../models/recycling_centre.dart';
 import '../services/recycling_service.dart';
 
 class ResidentRecyclingHistoryScreen extends StatefulWidget {
@@ -247,7 +246,7 @@ class _ResidentRecyclingHistoryScreenState extends State<ResidentRecyclingHistor
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      record.recyclingCentreName ?? 'Unknown Centre',
+                      record.recyclingCenterName ?? 'Unknown Center',
                       style: const TextStyle(
                         color: Colors.black54,
                         fontSize: 12,
@@ -320,7 +319,7 @@ class _ResidentRecyclingHistoryScreenState extends State<ResidentRecyclingHistor
           ),
           const SizedBox(height: 8),
           const Text(
-            'Your recycling drop-offs will appear here\nafter you visit a centre.',
+            'Your recycling drop-offs will appear here\nafter you visit a center.',
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.black54, height: 1.4),
           ),
@@ -329,3 +328,7 @@ class _ResidentRecyclingHistoryScreenState extends State<ResidentRecyclingHistor
     );
   }
 }
+
+
+
+

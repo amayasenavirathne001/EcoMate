@@ -1,11 +1,12 @@
-class RecyclingCentre {
+class RecyclingCenter {
   final String id;
   final String? officerEmail;
   final int? officerId;
   final String name;
   final String address;
   final String city;
-  final double distanceKm;
+  final double latitude;
+  final double longitude;
   final String contactNumber;
   final String email;
   final String operatingHours;
@@ -13,15 +14,17 @@ class RecyclingCentre {
   final List<String> acceptedMaterials;
   final List<String> unsupportedMaterials;
   final String notes;
+  final bool isDeleted;
 
-  const RecyclingCentre({
+  const RecyclingCenter({
     required this.id,
     this.officerEmail,
     this.officerId,
     required this.name,
     required this.address,
     required this.city,
-    required this.distanceKm,
+    required this.latitude,
+    required this.longitude,
     required this.contactNumber,
     required this.email,
     required this.operatingHours,
@@ -29,16 +32,18 @@ class RecyclingCentre {
     required this.acceptedMaterials,
     required this.unsupportedMaterials,
     required this.notes,
+    this.isDeleted = false,
   });
 
-  RecyclingCentre copyWith({
+  RecyclingCenter copyWith({
     String? id,
     String? officerEmail,
     int? officerId,
     String? name,
     String? address,
     String? city,
-    double? distanceKm,
+    double? latitude,
+    double? longitude,
     String? contactNumber,
     String? email,
     String? operatingHours,
@@ -46,15 +51,17 @@ class RecyclingCentre {
     List<String>? acceptedMaterials,
     List<String>? unsupportedMaterials,
     String? notes,
+    bool? isDeleted,
   }) {
-    return RecyclingCentre(
+    return RecyclingCenter(
       id: id ?? this.id,
       officerEmail: officerEmail ?? this.officerEmail,
       officerId: officerId ?? this.officerId,
       name: name ?? this.name,
       address: address ?? this.address,
       city: city ?? this.city,
-      distanceKm: distanceKm ?? this.distanceKm,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       contactNumber: contactNumber ?? this.contactNumber,
       email: email ?? this.email,
       operatingHours: operatingHours ?? this.operatingHours,
@@ -62,18 +69,20 @@ class RecyclingCentre {
       acceptedMaterials: acceptedMaterials ?? this.acceptedMaterials,
       unsupportedMaterials: unsupportedMaterials ?? this.unsupportedMaterials,
       notes: notes ?? this.notes,
+      isDeleted: isDeleted ?? this.isDeleted,
     );
   }
 
-  factory RecyclingCentre.fromJson(Map<String, dynamic> json) {
-    return RecyclingCentre(
+  factory RecyclingCenter.fromJson(Map<String, dynamic> json) {
+    return RecyclingCenter(
       id: json['id']?.toString() ?? '',
       officerEmail: json['officerEmail'] as String?,
       officerId: json['officerId'] is int ? json['officerId'] as int : null,
       name: json['name'] as String? ?? '',
       address: json['address'] as String? ?? '',
       city: json['city'] as String? ?? '',
-      distanceKm: (json['distanceKm'] is num) ? (json['distanceKm'] as num).toDouble() : 1.2,
+      latitude: (json['latitude'] is num) ? (json['latitude'] as num).toDouble() : 6.9271,
+      longitude: (json['longitude'] is num) ? (json['longitude'] as num).toDouble() : 79.8612,
       contactNumber: json['contactNumber'] as String? ?? '',
       email: json['email'] as String? ?? '',
       operatingHours: json['operatingHours'] as String? ?? 'Mon - Sat: 8:00 AM - 5:30 PM',
@@ -87,6 +96,7 @@ class RecyclingCentre {
               .toList() ??
           [],
       notes: json['notes'] as String? ?? '',
+      isDeleted: json['isDeleted'] as bool? ?? false,
     );
   }
 
@@ -102,7 +112,14 @@ class RecyclingCentre {
       'acceptedMaterials': acceptedMaterials,
       'unsupportedMaterials': unsupportedMaterials,
       'notes': notes,
+      'isDeleted': isDeleted,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 }
+
+
+
+
 

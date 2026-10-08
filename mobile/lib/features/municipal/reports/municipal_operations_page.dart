@@ -37,10 +37,10 @@ class MunicipalOperationsPage extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       childAspectRatio: 1.5,
       children: [
-        _summaryCard('Total Jobs', '2,150', MunicipalColors.primaryText, MunicipalColors.secondaryGreen.withOpacity(0.1)),
-        _summaryCard('Completed', '1,820', MunicipalColors.success, MunicipalColors.success.withOpacity(0.1)),
-        _summaryCard('Delayed Jobs', '140', MunicipalColors.error, MunicipalColors.error.withOpacity(0.1)),
-        _summaryCard('Active Vehicles', '24', MunicipalColors.info, MunicipalColors.info.withOpacity(0.1)),
+        _summaryCard('Total Jobs', '2,150', MunicipalColors.primaryText, MunicipalColors.secondaryGreen.withValues(alpha: 0.1)),
+        _summaryCard('Completed', '1,820', MunicipalColors.success, MunicipalColors.success.withValues(alpha: 0.1)),
+        _summaryCard('Delayed Jobs', '140', MunicipalColors.error, MunicipalColors.error.withValues(alpha: 0.1)),
+        _summaryCard('Active Vehicles', '24', MunicipalColors.info, MunicipalColors.info.withValues(alpha: 0.1)),
       ],
     );
   }
