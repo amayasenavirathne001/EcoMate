@@ -1,9 +1,6 @@
 # VS Code
-.vscode/
 
 # Environment variables / secrets
-.env
-.env.*
 !.env.example
 
 # Spring Boot
@@ -23,3 +20,5 @@ Thumbs.db
 
 # Logs
 *.log
+config.bat
+node_modules
