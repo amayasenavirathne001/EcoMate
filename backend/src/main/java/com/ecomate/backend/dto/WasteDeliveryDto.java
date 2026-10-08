@@ -15,6 +15,7 @@ public class WasteDeliveryDto {
     private String dateTime;
     private String notes;
     private String processingStatus;
+    private Integer awardedPoints;
 
     public WasteDeliveryDto() {
     }
@@ -35,6 +36,7 @@ public class WasteDeliveryDto {
         }
         dto.setNotes(entity.getNotes());
         dto.setProcessingStatus(entity.getProcessingStatus());
+        dto.setAwardedPoints(entity.getAwardedPoints());
         return dto;
     }
 
@@ -112,7 +114,7 @@ public class WasteDeliveryDto {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
+    public Integer getAwardedPoints() { return awardedPoints; }
+    public void setAwardedPoints(Integer awardedPoints) { this.awardedPoints = awardedPoints; }
 }
-
-
-

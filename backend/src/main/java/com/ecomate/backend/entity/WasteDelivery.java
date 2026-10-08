@@ -36,6 +36,9 @@ public class WasteDelivery {
     @Column(name = "processing_status")
     private String processingStatus = "RECEIVED";
 
+    @Column(name = "awarded_points")
+    private Integer awardedPoints = 0;
+
     public WasteDelivery() {
         this.dateTime = LocalDateTime.now();
     }
@@ -117,9 +120,7 @@ public class WasteDelivery {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
+    public Integer getAwardedPoints() { return awardedPoints; }
+    public void setAwardedPoints(Integer awardedPoints) { this.awardedPoints = awardedPoints; }
 }
-
-
-
-
-
