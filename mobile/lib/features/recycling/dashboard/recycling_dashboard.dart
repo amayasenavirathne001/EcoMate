@@ -347,12 +347,14 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
                 children: [
                   Icon(Icons.inventory_2_outlined, color: RecyclingColors.primaryGreen),
                   SizedBox(width: 10),
-                  Text(
-                    'Manage Accepted Materials',
-                    style: TextStyle(
-                      color: RecyclingColors.darkText,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      'Manage Accepted Materials',
+                      style: TextStyle(
+                        color: RecyclingColors.darkText,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -477,15 +479,17 @@ class _RecyclingDashboardState extends State<RecyclingDashboard> {
       );
       return;
     }
-    final materialOptions = [
-      'Plastic Bottles (PET)',
-      'Cardboard & Paper',
-      'Glass Bottles',
-      'Aluminum & Metal Cans',
-      'Electronic Waste (E-Waste)',
-      'Tetra Pak Cartons',
-      'Organic Waste',
-    ];
+    final materialOptions = _myCenter!.acceptedMaterials.isNotEmpty
+        ? _myCenter!.acceptedMaterials
+        : [
+            'Plastic Bottles (PET)',
+            'Cardboard & Paper',
+            'Glass Bottles',
+            'Aluminum & Metal Cans',
+            'Electronic Waste (E-Waste)',
+            'Tetra Pak Cartons',
+            'Organic Waste',
+          ];
 
     String selectedMaterial = materialOptions.first;
     final weightController = TextEditingController();
