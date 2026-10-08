@@ -1,9 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import '../../theme/municipal_colors.dart';
 import '../models/operations_models.dart';
 import '../services/operations_service.dart';
-import '../../../../services/waste_report_service.dart';
-import 'dart:convert';
 
 class AssignmentsTab extends StatefulWidget {
   const AssignmentsTab({super.key});
@@ -185,7 +185,7 @@ class _AssignmentsTabState extends State<AssignmentsTab> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<int>(
-                            value: selectedDriverId,
+                            initialValue: selectedDriverId,
                             decoration: InputDecoration(
                               prefixIcon: const Icon(Icons.person_rounded),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -210,7 +210,7 @@ class _AssignmentsTabState extends State<AssignmentsTab> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<int>(
-                            value: selectedVehicleId,
+                            initialValue: selectedVehicleId,
                             decoration: InputDecoration(
                               prefixIcon: const Icon(Icons.local_shipping_rounded),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -309,27 +309,6 @@ class _AssignmentsTabState extends State<AssignmentsTab> {
                                 } else {
                                   await _apiService.createAssignment(req);
                                   _showSnackBar('Assignment successfully created!', Colors.green);
-                                }
-
-                                // Sync report statuses if it's a Service Job
-                                if (targetJob.routeId.startsWith('JOB-') && targetJob.description != null) {
-                                  try {
-                                    final desc = jsonDecode(targetJob.description!);
-                                    if (desc['linkedReports'] != null) {
-                                      final List<dynamic> reportIds = desc['linkedReports'];
-                                      final reportService = WasteReportService();
-                                      for (var rId in reportIds) {
-                                        await reportService.updateAdminReport(
-                                          id: int.parse(rId.toString()),
-                                          status: 'ASSIGNED',
-                                          priority: 'MEDIUM', // or fetch existing
-                                          assignedTeam: targetJob.routeId,
-                                        );
-                                      }
-                                    }
-                                  } catch (e) {
-                                    // ignore parsing errors
-                                  }
                                 }
 
                                 _loadData();
@@ -438,28 +417,10 @@ class _AssignmentsTabState extends State<AssignmentsTab> {
       try {
         await _apiService.completeAssignment(assignment.id!);
 
-        // Sync report statuses if it's a Service Job
-        if (assignment.job.routeId.startsWith('JOB-') && assignment.job.description != null) {
-          try {
-            final desc = jsonDecode(assignment.job.description!);
-            if (desc['linkedReports'] != null) {
-              final List<dynamic> reportIds = desc['linkedReports'];
-              final reportService = WasteReportService();
-              for (var rId in reportIds) {
-                await reportService.updateAdminReport(
-                  id: int.parse(rId.toString()),
-                  status: 'RESOLVED',
-                  priority: 'MEDIUM',
-                  assignedTeam: assignment.job.routeId,
-                );
-              }
-            }
-          } catch (e) {
-            // ignore parsing errors
-          }
-        }
-
-        _showSnackBar('Assignment marked as completed.', Colors.green);
+        final message = assignment.job.routeId.startsWith('JOB-')
+            ? 'Service job completed; linked waste reports are resolved.'
+            : 'Assignment marked as completed.';
+        _showSnackBar(message, Colors.green);
         _loadData();
       } catch (e) {
         setState(() => _isLoading = false);
@@ -538,7 +499,7 @@ class _AssignmentsTabState extends State<AssignmentsTab> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: (value.toUpperCase() == 'COMPLETED' ? Colors.green : (value.toUpperCase() == 'CANCELLED' ? Colors.grey : MunicipalColors.secondaryGreen)).withOpacity(0.1),
+                color: (value.toUpperCase() == 'COMPLETED' ? Colors.green : (value.toUpperCase() == 'CANCELLED' ? Colors.grey : MunicipalColors.secondaryGreen)).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
@@ -813,7 +774,7 @@ class _AssignmentsTabState extends State<AssignmentsTab> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: activeColors.withOpacity(0.1),
+                                  color: activeColors.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(

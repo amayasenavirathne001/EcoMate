@@ -300,53 +300,44 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 12),
 
                     // =========================
+                                        // =========================
+                                        // =========================
                     // REMEMBER + FORGOT
                     // =========================
-                    Row(
+                    Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: Checkbox(
-                            value: _rememberMe,
-                            activeColor: accent,
-                            side: const BorderSide(
-                              color: border,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Checkbox(
+                                value: _rememberMe,
+                                activeColor: accent,
+                                side: const BorderSide(color: border),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _rememberMe = value ?? false;
+                                  });
+                                },
+                              ),
                             ),
-                            onChanged: (value) {
-                              setState(() {
-                                _rememberMe =
-                                    value ?? false;
-                              });
-                            },
-                          ),
+                            const SizedBox(width: 7),
+                            const Text(
+                              'Remember me',
+                              style: TextStyle(color: darkPrimary, fontSize: 12),
+                            ),
+                          ],
                         ),
-
-                        const SizedBox(width: 7),
-
-                        const Text(
-                          'Remember me',
-                          style: TextStyle(
-                            color: darkPrimary,
-                            fontSize: 12,
-                          ),
-                        ),
-
-                        const Spacer(),
-
                         TextButton(
                           onPressed: () {},
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                          ),
+                          style: TextButton.styleFrom(padding: EdgeInsets.zero),
                           child: const Text(
                             'Forgot Password?',
-                            style: TextStyle(
-                              color: accent,
-                              fontSize: 12,
-                              fontWeight:
-                                  FontWeight.w600,
-                            ),
+                            style: TextStyle(color: accent, fontSize: 12, fontWeight: FontWeight.w600),
                           ),
                         ),
                       ],
@@ -608,3 +599,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+

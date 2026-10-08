@@ -102,6 +102,11 @@ class ReportStatusScreen extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 14),
+          _InfoRow(
+            label: 'Issue priority',
+            value: '${(report['priority'] ?? 'MEDIUM').toString().toUpperCase()} PRIORITY',
+          ),
           if (report['assignedTeam']?.toString().trim().isNotEmpty == true) ...[
             const SizedBox(height: 14),
             _InfoRow(label: 'Assigned team', value: report['assignedTeam'].toString()),

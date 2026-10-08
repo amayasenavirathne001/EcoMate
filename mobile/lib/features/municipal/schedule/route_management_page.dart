@@ -157,7 +157,7 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
                           ChoiceChip(
                             label: const Text('Active'),
                             selected: status == 'ACTIVE',
-                            selectedColor: MunicipalColors.secondaryGreen.withOpacity(0.2),
+                            selectedColor: MunicipalColors.secondaryGreen.withValues(alpha: 0.2),
                             labelStyle: TextStyle(
                               color: status == 'ACTIVE' ? MunicipalColors.secondaryGreen : MunicipalColors.secondaryText,
                               fontWeight: FontWeight.bold,
@@ -170,7 +170,7 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
                           ChoiceChip(
                             label: const Text('Inactive'),
                             selected: status == 'INACTIVE',
-                            selectedColor: MunicipalColors.error.withOpacity(0.2),
+                            selectedColor: MunicipalColors.error.withValues(alpha: 0.2),
                             labelStyle: TextStyle(
                               color: status == 'INACTIVE' ? MunicipalColors.error : MunicipalColors.secondaryText,
                               fontWeight: FontWeight.bold,
@@ -314,7 +314,7 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: MunicipalColors.secondaryGreen.withOpacity(0.1),
+                                        color: MunicipalColors.secondaryGreen.withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(20),
                                       ),
                                       child: Text(
@@ -333,7 +333,7 @@ class _RouteManagementPageState extends State<RouteManagementPage> {
                                         ),
                                         Switch(
                                           value: isActive,
-                                          activeColor: MunicipalColors.secondaryGreen,
+                                          activeThumbColor: MunicipalColors.secondaryGreen,
                                           onChanged: (_) => _toggleRouteStatus(route),
                                         ),
                                       ],

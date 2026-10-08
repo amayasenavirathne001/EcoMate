@@ -40,6 +40,9 @@ public class ResourceAssignmentControllerTest {
     private ResourceAssignmentRepository assignmentRepository;
 
     @Autowired
+    private WasteReportRepository wasteReportRepository;
+
+    @Autowired
     private ResourceAssignmentService assignmentService;
 
     private User testAdmin;
@@ -56,6 +59,7 @@ public class ResourceAssignmentControllerTest {
     @BeforeEach
     public void setUp() {
         assignmentRepository.deleteAll();
+        wasteReportRepository.deleteAll();
         jobRepository.deleteAll();
         vehicleRepository.deleteAll();
         employeeRepository.deleteAll();
@@ -190,5 +194,35 @@ public class ResourceAssignmentControllerTest {
 
         // Verify job status is COMPLETED
         assertEquals("COMPLETED", jobRepository.findById(jobMorning.getId()).orElseThrow().getStatus());
+    }
+
+    @Test
+    public void testCompletingServiceJobResolvesLinkedReportsAndPreservesPriority() {
+        jobMorning.setRouteId("JOB-T-01");
+        jobRepository.save(jobMorning);
+
+        WasteReport linkedReport = new WasteReport(
+                "RPT-T-01", "resident@ecomate.com", "Illegal Dumping", "Zone A",
+                null, null, "General", "Waste pile by the road", null);
+        linkedReport.updateAdminFields("IN_REVIEW", "HIGH", jobMorning.getRouteId());
+        linkedReport = wasteReportRepository.save(linkedReport);
+
+        AssignmentRequest request = new AssignmentRequest(
+                jobMorning.getId(),
+                vehicle1.getId(),
+                driver1.getId(),
+                List.of(collector1.getId())
+        );
+        ResourceAssignmentDto assignment = assignmentService.createAssignment(request, "admin@ecomate.com");
+        WasteReport assignedReport = wasteReportRepository.findById(linkedReport.getId()).orElseThrow();
+        assertEquals("ASSIGNED", assignedReport.getStatus());
+        assertEquals("HIGH", assignedReport.getPriority());
+
+        assignmentService.completeAssignment(assignment.id());
+
+        WasteReport updatedReport = wasteReportRepository.findById(linkedReport.getId()).orElseThrow();
+        assertEquals("RESOLVED", updatedReport.getStatus());
+        assertEquals("HIGH", updatedReport.getPriority());
+        assertEquals("JOB-T-01", updatedReport.getAssignedTeam());
     }
 }

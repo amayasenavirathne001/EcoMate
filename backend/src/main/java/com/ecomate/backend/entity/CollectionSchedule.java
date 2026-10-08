@@ -38,7 +38,7 @@ public class CollectionSchedule {
     private String frequency; // One Time, Daily, Weekly, Custom
 
     @Column(nullable = false)
-    private String destinationType; // Municipal Disposal Site, Recycling Centre
+    private String destinationType; // Municipal Disposal Site, Recycling Center
 
     @ManyToOne
     @JoinColumn(name = "recycling_center_id", nullable = true)
@@ -187,3 +187,6 @@ public class CollectionSchedule {
         this.updatedAt = updatedAt;
     }
 }
+
+
+

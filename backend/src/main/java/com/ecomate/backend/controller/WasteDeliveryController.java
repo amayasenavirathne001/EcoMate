@@ -32,17 +32,22 @@ public class WasteDeliveryController {
     @GetMapping
     public ResponseEntity<List<WasteDeliveryDto>> getDeliveries(
             Authentication authentication,
-            @RequestParam(required = false) Long centreId) {
-        if (centreId != null) {
-            return ResponseEntity.ok(wasteDeliveryService.getDeliveriesForCentre(centreId));
+            @RequestParam(required = false) Long centerId) {
+        if (centerId != null) {
+            return ResponseEntity.ok(wasteDeliveryService.getDeliveriesForCenter(centerId));
         }
         String email = authentication != null ? authentication.getName() : "";
         return ResponseEntity.ok(wasteDeliveryService.getDeliveriesForUser(email));
     }
 
-    @GetMapping("/centre/{centreId}")
-    public ResponseEntity<List<WasteDeliveryDto>> getDeliveriesByCentre(@PathVariable Long centreId) {
-        return ResponseEntity.ok(wasteDeliveryService.getDeliveriesForCentre(centreId));
+    @GetMapping("/all")
+    public ResponseEntity<List<WasteDeliveryDto>> getAllDeliveries() {
+        return ResponseEntity.ok(wasteDeliveryService.getAllDeliveries());
+    }
+
+    @GetMapping("/center/{centerId}")
+    public ResponseEntity<List<WasteDeliveryDto>> getDeliveriesByCenter(@PathVariable Long centerId) {
+        return ResponseEntity.ok(wasteDeliveryService.getDeliveriesForCenter(centerId));
     }
     @PatchMapping("/{id}/status")
     public ResponseEntity<Void> updateProcessingStatus(
@@ -55,3 +60,6 @@ public class WasteDeliveryController {
         return ResponseEntity.ok().build();
     }
 }
+
+
+

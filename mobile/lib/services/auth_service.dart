@@ -101,23 +101,7 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
-        
-        // Mocking local overrides for prototype
-        final overriddenName = await _storage.read(key: 'name_override');
-        if (overriddenName != null && overriddenName.isNotEmpty) {
-          data['name'] = overriddenName;
-        }
-        
-        final profilePic = await _storage.read(key: 'profile_pic');
-        if (profilePic != null && profilePic.isNotEmpty) {
-          data['profilePic'] = profilePic;
-        }
-
-        final email = await _storage.read(key: 'email');
-        if (email != null && email.isNotEmpty) {
-          data['email'] = email;
-        }
-
+        data['profilePic'] = data['profilePictureData'];
         return data;
       }
 
@@ -133,13 +117,47 @@ class AuthService {
     }
   }
 
-  Future<void> updateProfile({String? name, String? profilePicUrl}) async {
-    if (name != null) {
-      await _storage.write(key: 'name_override', value: name);
+  Future<void> updateProfile({
+    String? name,
+    String? phoneNumber,
+    String? address,
+    String? profilePicUrl,
+  }) async {
+    final token = await getToken();
+    if (token == null || token.isEmpty) {
+      throw Exception('Please log in before updating your profile.');
     }
-    if (profilePicUrl != null) {
-      await _storage.write(key: 'profile_pic', value: profilePicUrl);
+    final currentUser = await getCurrentUser();
+    if (currentUser == null) {
+      throw Exception('Could not load your current profile. Please try again.');
     }
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/api/auth/profile'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'name': name ?? currentUser['name'] ?? '',
+        'phoneNumber': phoneNumber ?? currentUser['phoneNumber'] ?? '',
+        'address': address ?? currentUser['address'] ?? '',
+        'profilePictureData':
+            profilePicUrl ?? currentUser['profilePictureData'] ?? '',
+      }),
+    );
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Could not update your profile (${response.statusCode}).',
+      );
+    }
+
+    final updated = jsonDecode(response.body) as Map<String, dynamic>;
+    await _storage.write(key: 'name', value: updated['name']?.toString() ?? '');
+    await _storage.write(
+      key: 'email',
+      value: updated['email']?.toString() ?? '',
+    );
     profileUpdateNotifier.value++;
   }
 
@@ -158,6 +176,7 @@ class AuthService {
     required String email,
     required String password,
     required String role,
+    String? phoneNumber,
   }) async {
   final response = await http.post(
     Uri.parse('$baseUrl/api/auth/register'),
@@ -165,11 +184,12 @@ class AuthService {
       'Content-Type': 'application/json',
     },
     body: jsonEncode({
-      'name': name,
-      'email': email,
-      'password': password,
-      'role': role,
-    }),
+        'name': name,
+        'email': email,
+        'password': password,
+        'phoneNumber': phoneNumber,
+        'role': role,
+      }),
   );
 
   if (response.statusCode == 201) {

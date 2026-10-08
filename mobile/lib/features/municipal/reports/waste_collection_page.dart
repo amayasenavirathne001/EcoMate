@@ -37,10 +37,10 @@ class WasteCollectionPage extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       childAspectRatio: 1.5,
       children: [
-        _summaryCard('Total Requests', '1,240', MunicipalColors.primaryText, MunicipalColors.secondaryGreen.withOpacity(0.1)),
-        _summaryCard('Completed', '985', MunicipalColors.success, MunicipalColors.success.withOpacity(0.1)),
-        _summaryCard('Pending', '230', MunicipalColors.warning, MunicipalColors.warning.withOpacity(0.1)),
-        _summaryCard('Delayed', '25', MunicipalColors.error, MunicipalColors.error.withOpacity(0.1)),
+        _summaryCard('Total Requests', '1,240', MunicipalColors.primaryText, MunicipalColors.secondaryGreen.withValues(alpha: 0.1)),
+        _summaryCard('Completed', '985', MunicipalColors.success, MunicipalColors.success.withValues(alpha: 0.1)),
+        _summaryCard('Pending', '230', MunicipalColors.warning, MunicipalColors.warning.withValues(alpha: 0.1)),
+        _summaryCard('Delayed', '25', MunicipalColors.error, MunicipalColors.error.withValues(alpha: 0.1)),
       ],
     );
   }

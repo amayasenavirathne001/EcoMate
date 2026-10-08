@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../features/recycling/screens/resident_recycling_history_screen.dart';
 
 import '../services/report_filters.dart';
 import '../services/waste_report_service.dart';
@@ -83,91 +84,112 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: background,
-      appBar: AppBar(
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
         backgroundColor: background,
-        foregroundColor: darkGreen,
-        elevation: 0,
-        title: const Text('My Reports', style: TextStyle(color: darkGreen, fontWeight: FontWeight.w800)),
-        centerTitle: true,
-        actions: [IconButton(onPressed: () { _reload(); }, icon: const Icon(Icons.refresh_rounded))],
+        appBar: AppBar(
+          backgroundColor: darkGreen,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          title: const Text('My Activities', style: TextStyle(fontWeight: FontWeight.w800)),
+          centerTitle: true,
+          actions: [IconButton(onPressed: () { _reload(); }, icon: const Icon(Icons.refresh_rounded, color: Colors.white))],
+          bottom: const TabBar(
+            indicatorColor: Colors.white,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white70,
+            tabs: [
+              Tab(text: 'Waste Reports', icon: Icon(Icons.report_problem_rounded)),
+              Tab(text: 'Recycling History', icon: Icon(Icons.recycling_rounded)),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            _buildReportsTab(),
+            const ResidentRecyclingHistoryScreen(showAppBar: false),
+          ],
+        ),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _reports,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: darkGreen));
-          }
-          if (snapshot.hasError) {
-            return _MessageState(message: 'Could not load your reports.', onRetry: _reload);
-          }
-          final reports = filterReports(snapshot.data ?? [], query: _searchController.text, status: _filter);
-          if ((snapshot.data ?? []).isEmpty) {
-            return const _MessageState(message: 'You have not submitted any reports yet.');
-          }
-          return RefreshIndicator(
-            color: darkGreen,
-            onRefresh: _reload,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (_) => setState(() {}),
-                    decoration: InputDecoration(
-                      hintText: 'Search your reports',
-                      prefixIcon: const Icon(Icons.search_rounded),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: border)),
-                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: border)),
-                    ),
+    );
+  }
+
+  Widget _buildReportsTab() {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _reports,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator(color: darkGreen));
+        }
+        if (snapshot.hasError) {
+          return _MessageState(message: 'Could not load your reports.', onRetry: _reload);
+        }
+        final reports = filterReports(snapshot.data ?? [], query: _searchController.text, status: _filter);
+        if ((snapshot.data ?? []).isEmpty) {
+          return const _MessageState(message: 'You have not submitted any reports yet.');
+        }
+        return RefreshIndicator(
+          color: darkGreen,
+          onRefresh: _reload,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (_) => setState(() {}),
+                  decoration: InputDecoration(
+                    hintText: 'Search your reports',
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: border)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: border)),
                   ),
                 ),
-                SizedBox(
-                  height: 46,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    children: ['All', 'SUBMITTED', 'IN_REVIEW', 'ASSIGNED', 'RESOLVED', 'REJECTED']
-                        .map((item) => Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: ChoiceChip(
-                                label: Text(item.replaceAll('_', ' ')),
-                                selected: _filter == item,
-                                onSelected: (_) => setState(() => _filter = item),
-                              ),
-                            ))
-                        .toList(),
-                  ),
+              ),
+              SizedBox(
+                height: 46,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: ['All', 'SUBMITTED', 'IN_REVIEW', 'ASSIGNED', 'RESOLVED', 'REJECTED']
+                      .map((item) => Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: ChoiceChip(
+                              label: Text(item.replaceAll('_', ' ')),
+                              selected: _filter == item,
+                              onSelected: (_) => setState(() => _filter = item),
+                            ),
+                          ))
+                      .toList(),
                 ),
-                Expanded(
-                  child: reports.isEmpty
-                      ? const Center(child: Text('No reports match your current filters.'))
-                      : ListView.separated(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: reports.length,
-                          separatorBuilder: (_, _) => const SizedBox(height: 10),
-                          itemBuilder: (_, index) => _ReportCard(
-                            report: reports[index],
-                            onEdit: () => _editReport(reports[index]),
-                            onDelete: () => _deleteReport(reports[index]),
-                            onViewStatus: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => ReportStatusScreen(report: reports[index]),
-                              ),
+              ),
+              Expanded(
+                child: reports.isEmpty
+                    ? const Center(child: Text('No reports match your current filters.'))
+                    : ListView.separated(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: reports.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 10),
+                        itemBuilder: (_, index) => _ReportCard(
+                          report: reports[index],
+                          onEdit: () => _editReport(reports[index]),
+                          onDelete: () => _deleteReport(reports[index]),
+                          onViewStatus: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => ReportStatusScreen(report: reports[index]),
                             ),
                           ),
                         ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -184,6 +206,12 @@ class _ReportCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final status = (report['status'] ?? 'SUBMITTED').toString();
     final statusColor = status == 'RESOLVED' ? const Color(0xFF028B6B) : const Color(0xFFFFC857);
+    final priority = (report['priority'] ?? 'MEDIUM').toString().toUpperCase();
+    final priorityColor = switch (priority) {
+      'HIGH' => const Color(0xFFD64545),
+      'LOW' => const Color(0xFF028B6B),
+      _ => const Color(0xFFB7791F),
+    };
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(color: Colors.white, border: Border.all(color: _MyReportsScreenState.border), borderRadius: BorderRadius.circular(12)),
@@ -204,6 +232,12 @@ class _ReportCard extends StatelessWidget {
           Text((report['referenceNumber'] ?? '').toString(), style: const TextStyle(color: _MyReportsScreenState.secondaryText, fontSize: 12)),
           const SizedBox(height: 5),
           Row(children: [const Icon(Icons.location_on_outlined, size: 16, color: _MyReportsScreenState.secondaryText), const SizedBox(width: 4), Expanded(child: Text((report['location'] ?? '').toString(), style: const TextStyle(color: _MyReportsScreenState.secondaryText, fontSize: 12)))]),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+            decoration: BoxDecoration(color: priorityColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20)),
+            child: Text('$priority PRIORITY', style: TextStyle(color: priorityColor, fontSize: 10, fontWeight: FontWeight.w800)),
+          ),
           const SizedBox(height: 5),
           Text((report['createdAt'] ?? '').toString().replaceFirst('T', ' '), style: const TextStyle(color: _MyReportsScreenState.secondaryText, fontSize: 11)),
           const SizedBox(height: 10),

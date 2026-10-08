@@ -135,7 +135,7 @@ class _LiveMapPreviewCardState extends State<LiveMapPreviewCard> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _selectedTab == 0 ? MunicipalColors.surface : MunicipalColors.warning.withOpacity(0.1),
+                    color: _selectedTab == 0 ? MunicipalColors.surface : MunicipalColors.warning.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -284,7 +284,7 @@ class _LiveMapPreviewCardState extends State<LiveMapPreviewCard> {
                                     height: 24,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: color.withOpacity(0.3),
+                                      color: color.withValues(alpha: 0.3),
                                     ),
                                   ),
                                   Container(

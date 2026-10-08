@@ -6,8 +6,8 @@ import java.time.format.DateTimeFormatter;
 public class WasteDeliveryDto {
 
     private Long id;
-    private Long recyclingCentreId;
-    private String recyclingCentreName;
+    private Long recyclingcenterId;
+    private String RecyclingCenterName;
     private String materialType;
     private Double weightKg;
     private String deliveredBy;
@@ -15,6 +15,7 @@ public class WasteDeliveryDto {
     private String dateTime;
     private String notes;
     private String processingStatus;
+    private Integer awardedPoints;
 
     public WasteDeliveryDto() {
     }
@@ -22,9 +23,9 @@ public class WasteDeliveryDto {
     public static WasteDeliveryDto fromEntity(WasteDelivery entity) {
         WasteDeliveryDto dto = new WasteDeliveryDto();
         dto.setId(entity.getId());
-        if (entity.getRecyclingCentre() != null) {
-            dto.setRecyclingCentreId(entity.getRecyclingCentre().getId());
-            dto.setRecyclingCentreName(entity.getRecyclingCentre().getName());
+        if (entity.getRecyclingCenter() != null) {
+            dto.setRecyclingcenterId(entity.getRecyclingCenter().getId());
+            dto.setRecyclingCenterName(entity.getRecyclingCenter().getName());
         }
         dto.setMaterialType(entity.getMaterialType());
         dto.setWeightKg(entity.getWeightKg());
@@ -35,6 +36,7 @@ public class WasteDeliveryDto {
         }
         dto.setNotes(entity.getNotes());
         dto.setProcessingStatus(entity.getProcessingStatus());
+        dto.setAwardedPoints(entity.getAwardedPoints());
         return dto;
     }
 
@@ -46,20 +48,20 @@ public class WasteDeliveryDto {
         this.id = id;
     }
 
-    public Long getRecyclingCentreId() {
-        return recyclingCentreId;
+    public Long getRecyclingcenterId() {
+        return recyclingcenterId;
     }
 
-    public void setRecyclingCentreId(Long recyclingCentreId) {
-        this.recyclingCentreId = recyclingCentreId;
+    public void setRecyclingcenterId(Long recyclingcenterId) {
+        this.recyclingcenterId = recyclingcenterId;
     }
 
-    public String getRecyclingCentreName() {
-        return recyclingCentreName;
+    public String getRecyclingCenterName() {
+        return RecyclingCenterName;
     }
 
-    public void setRecyclingCentreName(String recyclingCentreName) {
-        this.recyclingCentreName = recyclingCentreName;
+    public void setRecyclingCenterName(String RecyclingCenterName) {
+        this.RecyclingCenterName = RecyclingCenterName;
     }
 
     public String getMaterialType() {
@@ -112,5 +114,7 @@ public class WasteDeliveryDto {
     public void setNotes(String notes) {
         this.notes = notes;
     }
-}
 
+    public Integer getAwardedPoints() { return awardedPoints; }
+    public void setAwardedPoints(Integer awardedPoints) { this.awardedPoints = awardedPoints; }
+}

@@ -32,4 +32,6 @@ public interface WasteReportRepository extends JpaRepository<WasteReport, Long> 
     List<WasteReportSummary> findAllSummariesByOrderByCreatedAtDesc();
 
     Optional<WasteReport> findByIdAndReporterEmail(Long id, String reporterEmail);
+
+    List<WasteReport> findAllByAssignedTeam(String assignedTeam);
 }
