@@ -119,7 +119,7 @@ class _SmartAlertsScreenState extends State<SmartAlertsScreen> {
                   setState(() => _filter = filter);
                 }
               },
-              selectedColor: MunicipalColors.secondaryGreen.withOpacity(0.2),
+              selectedColor: MunicipalColors.secondaryGreen.withValues(alpha: 0.2),
               labelStyle: TextStyle(
                 color: isSelected ? MunicipalColors.secondaryGreen : MunicipalColors.secondaryText,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -193,7 +193,7 @@ class _SmartAlertsScreenState extends State<SmartAlertsScreen> {
                   ),
                 ),
                 Text(
-                  '${_formatTimeAgo(alert.createdTimestamp)}',
+                  _formatTimeAgo(alert.createdTimestamp),
                   style: const TextStyle(color: MunicipalColors.secondaryText, fontSize: 12),
                 ),
               ],

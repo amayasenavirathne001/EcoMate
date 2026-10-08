@@ -58,15 +58,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _recyclingPhoneController =
       TextEditingController();
 
-  final _centreNameController =
-      TextEditingController();
-
-  final _centreAddressController =
-      TextEditingController();
-
-  final _officerIdController =
-      TextEditingController();
-
   final AuthService _authService = AuthService();
 
   String _selectedRole = 'RESIDENT';
@@ -180,18 +171,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (_selectedRole ==
         'RECYCLING_OFFICER') {
-      if (_recyclingPhoneController.text
-              .trim()
-              .isEmpty ||
-          _centreNameController.text
-              .trim()
-              .isEmpty ||
-          _centreAddressController.text
-              .trim()
-              .isEmpty ||
-          _officerIdController.text
-              .trim()
-              .isEmpty) {
+      if (_recyclingPhoneController.text.trim().isEmpty) {
         setState(() {
           _errorMessage =
               'Please complete all recycling officer information';
@@ -261,10 +241,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // Extra Resident / Collector / Recycling fields
       // are NOT sent to the backend.
 
+            String? phoneNumber;
+      if (_selectedRole == 'COMMUNITY_USER') {
+        phoneNumber = _residentPhoneController.text.trim();
+      } else if (_selectedRole == 'WASTE_COLLECTOR') {
+        phoneNumber = _collectorPhoneController.text.trim();
+      } else if (_selectedRole == 'RECYCLING_OFFICER') {
+        phoneNumber = _recyclingPhoneController.text.trim();
+      }
+
       await _authService.register(
         name: name,
         email: email,
         password: password,
+        phoneNumber: phoneNumber,
         role: _selectedRole,
       );
 
@@ -400,9 +390,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _assignedAreaController.dispose();
 
     _recyclingPhoneController.dispose();
-    _centreNameController.dispose();
-    _centreAddressController.dispose();
-    _officerIdController.dispose();
 
     super.dispose();
   }
@@ -1198,43 +1185,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
 
-        const SizedBox(height: 13),
-
-        TextField(
-          controller:
-              _centreNameController,
-          decoration: _fieldDecoration(
-            hint:
-                'Recycling centre name',
-            icon:
-                Icons.factory_outlined,
-          ),
-        ),
-
-        const SizedBox(height: 13),
-
-        TextField(
-          controller:
-              _centreAddressController,
-          decoration: _fieldDecoration(
-            hint:
-                'Recycling centre address',
-            icon: Icons
-                .location_city_outlined,
-          ),
-        ),
-
-        const SizedBox(height: 13),
-
-        TextField(
-          controller:
-              _officerIdController,
-          decoration: _fieldDecoration(
-            hint: 'Officer ID',
-            icon:
-                Icons.badge_outlined,
-          ),
-        ),
+        
 
         const SizedBox(height: 13),
       ],
@@ -1377,3 +1328,5 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
+
+

@@ -12,8 +12,8 @@ public class WasteDelivery {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recycling_centre_id")
-    private RecyclingCentre recyclingCentre;
+    @JoinColumn(name = "recycling_center_id")
+    private RecyclingCenter recyclingCenter;
 
     @Column(name = "material_type", nullable = false)
     private String materialType;
@@ -33,13 +33,19 @@ public class WasteDelivery {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    @Column(name = "processing_status")
+    private String processingStatus = "RECEIVED";
+
+    @Column(name = "awarded_points")
+    private Integer awardedPoints = 0;
+
     public WasteDelivery() {
         this.dateTime = LocalDateTime.now();
     }
 
-    public WasteDelivery(RecyclingCentre recyclingCentre, String materialType, Double weightKg,
+    public WasteDelivery(RecyclingCenter recyclingCenter, String materialType, Double weightKg,
                          String deliveredBy, String contactNumber, LocalDateTime dateTime, String notes) {
-        this.recyclingCentre = recyclingCentre;
+        this.recyclingCenter = recyclingCenter;
         this.materialType = materialType;
         this.weightKg = weightKg;
         this.deliveredBy = deliveredBy;
@@ -56,12 +62,12 @@ public class WasteDelivery {
         this.id = id;
     }
 
-    public RecyclingCentre getRecyclingCentre() {
-        return recyclingCentre;
+    public RecyclingCenter getRecyclingCenter() {
+        return recyclingCenter;
     }
 
-    public void setRecyclingCentre(RecyclingCentre recyclingCentre) {
-        this.recyclingCentre = recyclingCentre;
+    public void setRecyclingCenter(RecyclingCenter recyclingCenter) {
+        this.recyclingCenter = recyclingCenter;
     }
 
     public String getMaterialType() {
@@ -104,6 +110,9 @@ public class WasteDelivery {
         this.dateTime = dateTime;
     }
 
+    public String getProcessingStatus() { return processingStatus; }
+    public void setProcessingStatus(String processingStatus) { this.processingStatus = processingStatus; }
+
     public String getNotes() {
         return notes;
     }
@@ -111,4 +120,7 @@ public class WasteDelivery {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
+    public Integer getAwardedPoints() { return awardedPoints; }
+    public void setAwardedPoints(Integer awardedPoints) { this.awardedPoints = awardedPoints; }
 }

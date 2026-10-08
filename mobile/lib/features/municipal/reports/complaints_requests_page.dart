@@ -37,10 +37,10 @@ class ComplaintsRequestsPage extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       childAspectRatio: 1.5,
       children: [
-        _summaryCard('Total Complaints', '420', MunicipalColors.primaryText, MunicipalColors.secondaryGreen.withOpacity(0.1)),
-        _summaryCard('Resolved', '315', MunicipalColors.success, MunicipalColors.success.withOpacity(0.1)),
-        _summaryCard('In Progress', '80', MunicipalColors.info, MunicipalColors.info.withOpacity(0.1)),
-        _summaryCard('Open/Rejected', '25', MunicipalColors.warning, MunicipalColors.warning.withOpacity(0.1)),
+        _summaryCard('Total Complaints', '420', MunicipalColors.primaryText, MunicipalColors.secondaryGreen.withValues(alpha: 0.1)),
+        _summaryCard('Resolved', '315', MunicipalColors.success, MunicipalColors.success.withValues(alpha: 0.1)),
+        _summaryCard('In Progress', '80', MunicipalColors.info, MunicipalColors.info.withValues(alpha: 0.1)),
+        _summaryCard('Open/Rejected', '25', MunicipalColors.warning, MunicipalColors.warning.withValues(alpha: 0.1)),
       ],
     );
   }

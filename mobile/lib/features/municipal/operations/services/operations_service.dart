@@ -187,6 +187,22 @@ class OperationsService {
     }
   }
 
+  Future<CollectionJob> createJob(CollectionJob job) async {
+    final headers = await _getHeaders();
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/municipal/jobs'),
+      headers: headers,
+      body: jsonEncode(job.toJson()),
+    );
+
+    if (response.statusCode == 201) {
+      return CollectionJob.fromJson(jsonDecode(response.body));
+    } else {
+      final errorMsg = _extractErrorMessage(response.body);
+      throw Exception(errorMsg);
+    }
+  }
+
   // ================= Resource Assignment APIs =================
 
   Future<List<ResourceAssignment>> getAllAssignments() async {

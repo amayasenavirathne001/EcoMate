@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 
 class AuthService {
+  static final ValueNotifier<int> profileUpdateNotifier = ValueNotifier(0);
+
   static const FlutterSecureStorage _storage =
       FlutterSecureStorage();
 
@@ -97,8 +100,9 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body)
-            as Map<String, dynamic>;
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        data['profilePic'] = data['profilePictureData'];
+        return data;
       }
 
       if (response.statusCode == 401 ||
@@ -113,6 +117,56 @@ class AuthService {
     }
   }
 
+  Future<void> updateProfile({
+    String? name,
+    String? phoneNumber,
+    String? address,
+    String? profilePicUrl,
+  }) async {
+    final token = await getToken();
+    if (token == null || token.isEmpty) {
+      throw Exception('Please log in before updating your profile.');
+    }
+    final currentUser = await getCurrentUser();
+    if (currentUser == null) {
+      throw Exception('Could not load your current profile. Please try again.');
+    }
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/api/auth/profile'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'name': name ?? currentUser['name'] ?? '',
+        'phoneNumber': phoneNumber ?? currentUser['phoneNumber'] ?? '',
+        'address': address ?? currentUser['address'] ?? '',
+        'profilePictureData':
+            profilePicUrl ?? currentUser['profilePictureData'] ?? '',
+      }),
+    );
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Could not update your profile (${response.statusCode}).',
+      );
+    }
+
+    final updated = jsonDecode(response.body) as Map<String, dynamic>;
+    await _storage.write(key: 'name', value: updated['name']?.toString() ?? '');
+    await _storage.write(
+      key: 'email',
+      value: updated['email']?.toString() ?? '',
+    );
+    profileUpdateNotifier.value++;
+  }
+
+  Future<void> updateSecurity({required String email, required String currentPassword, required String newPassword}) async {
+    // Dummy implementation for prototype
+    await _storage.write(key: 'email', value: email);
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
+
   Future<void> logout() async {
     await _storage.deleteAll();
   }
@@ -122,6 +176,7 @@ class AuthService {
     required String email,
     required String password,
     required String role,
+    String? phoneNumber,
   }) async {
   final response = await http.post(
     Uri.parse('$baseUrl/api/auth/register'),
@@ -129,11 +184,12 @@ class AuthService {
       'Content-Type': 'application/json',
     },
     body: jsonEncode({
-      'name': name,
-      'email': email,
-      'password': password,
-      'role': role,
-    }),
+        'name': name,
+        'email': email,
+        'password': password,
+        'phoneNumber': phoneNumber,
+        'role': role,
+      }),
   );
 
   if (response.statusCode == 201) {

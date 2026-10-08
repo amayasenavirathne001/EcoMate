@@ -1,24 +1,28 @@
 class WasteDeliveryRecord {
   final String id;
-  final String? recyclingCentreId;
-  final String? recyclingCentreName;
+  final String? recyclingCenterId;
+  final String? recyclingCenterName;
   final String materialType;
   final double weightKg;
   final String deliveredBy;
   final String contactNumber;
   final DateTime dateTime;
   final String notes;
+  final String processingStatus;
+  final int? awardedPoints;
 
   const WasteDeliveryRecord({
     required this.id,
-    this.recyclingCentreId,
-    this.recyclingCentreName,
+    this.recyclingCenterId,
+    this.recyclingCenterName,
     required this.materialType,
     required this.weightKg,
     required this.deliveredBy,
     required this.contactNumber,
     required this.dateTime,
     required this.notes,
+    this.processingStatus = 'RECEIVED',
+    this.awardedPoints,
   });
 
   factory WasteDeliveryRecord.fromJson(Map<String, dynamic> json) {
@@ -33,25 +37,28 @@ class WasteDeliveryRecord {
 
     return WasteDeliveryRecord(
       id: json['id'] != null ? 'DEL-${json['id']}' : 'DEL-0',
-      recyclingCentreId: json['recyclingCentreId']?.toString(),
-      recyclingCentreName: json['recyclingCentreName']?.toString(),
+      recyclingCenterId: json['recyclingCenterId']?.toString(),
+      recyclingCenterName: (json['recyclingCenterName'] ?? json['RecyclingCenterName'])?.toString(),
       materialType: json['materialType']?.toString() ?? '',
       weightKg: (json['weightKg'] is num) ? (json['weightKg'] as num).toDouble() : 0.0,
       deliveredBy: json['deliveredBy']?.toString() ?? '',
       contactNumber: json['contactNumber']?.toString() ?? '',
       dateTime: parsedDate,
       notes: json['notes']?.toString() ?? '',
+      processingStatus: json['processingStatus']?.toString() ?? 'RECEIVED',
+      awardedPoints: json['awardedPoints'] as int?,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'recyclingCentreId': recyclingCentreId != null ? int.tryParse(recyclingCentreId!) : null,
+      'recyclingcenterId': recyclingCenterId != null ? int.tryParse(recyclingCenterId!) : null,
       'materialType': materialType,
       'weightKg': weightKg,
       'deliveredBy': deliveredBy,
       'contactNumber': contactNumber,
       'notes': notes,
+      'processingStatus': processingStatus,
     };
   }
 

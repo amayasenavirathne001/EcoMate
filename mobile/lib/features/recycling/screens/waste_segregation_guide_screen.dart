@@ -1,12 +1,14 @@
-﻿import '../theme/recycling_colors.dart';
+import '../theme/recycling_colors.dart';
 import 'package:flutter/material.dart';
 import '../../../models/waste_category.dart';
 import '../services/recycling_service.dart';
 import 'category_detail_screen.dart';
-import 'recycling_centres_screen.dart';
+import 'add_category_screen.dart';
+import 'recycling_centers_screen.dart';
 
 class WasteSegregationGuideScreen extends StatefulWidget {
-  const WasteSegregationGuideScreen({super.key});
+  final bool showNearbyCenters;
+  const WasteSegregationGuideScreen({super.key, this.showNearbyCenters = true});
 
   @override
   State<WasteSegregationGuideScreen> createState() =>
@@ -21,10 +23,34 @@ class _WasteSegregationGuideScreenState
   List<WasteCategory> _displayedCategories = [];
   String _selectedFilter = 'All'; // 'All', 'Recyclable', 'Non-Recyclable'
 
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    _displayedCategories = _recyclingService.getWasteCategories();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final categories = await _recyclingService.fetchWasteCategories();
+      if (!mounted) return;
+      setState(() {
+        _displayedCategories = categories;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load Guide: $e'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
   }
 
   @override
@@ -56,6 +82,15 @@ class _WasteSegregationGuideScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: RecyclingColors.primaryGreen,
+        child: const Icon(Icons.add, color: Colors.white),
+        onPressed: () async {
+          final newCat = WasteCategory(id: '', name: '', binColorName: 'Grey', binColor: Colors.grey, icon: Icons.category, description: '', isRecyclable: false, commonItems: [], preparationSteps: [], dos: [], donts: []);
+          await Navigator.push(context, MaterialPageRoute(builder: (_) => AddCategoryScreen(category: newCat)));
+          _loadCategories();
+        },
+      ),
       backgroundColor: RecyclingColors.offWhite,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -73,18 +108,19 @@ class _WasteSegregationGuideScreenState
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.location_on_outlined, color: RecyclingColors.deepForestGreen),
-            tooltip: 'Nearby Recycling Centres',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const RecyclingCentresScreen(),
-                ),
-              );
-            },
-          ),
+          if (widget.showNearbyCenters)
+            IconButton(
+              icon: const Icon(Icons.location_on_outlined, color: RecyclingColors.deepForestGreen),
+              tooltip: 'Nearby Recycling Centers',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const RecyclingCentersScreen(),
+                  ),
+                );
+              },
+            ),
         ],
       ),
       body: SafeArea(
@@ -247,14 +283,7 @@ class _WasteSegregationGuideScreenState
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => CategoryDetailScreen(category: category),
-              ),
-            );
-          },
+          onTap: () async { await Navigator.push(context, MaterialPageRoute(builder: (_) => CategoryDetailScreen(category: category))); _loadCategories(); },
           child: Padding(
             padding: const EdgeInsets.all(18),
             child: Column(
@@ -300,12 +329,16 @@ class _WasteSegregationGuideScreenState
                                 ),
                               ),
                               const SizedBox(width: 6),
-                              Text(
-                                category.binColorName,
-                                style: const TextStyle(
-                                  color: RecyclingColors.earthyBrown,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
+                              Expanded(
+                                child: Text(
+                                  category.binColorName,
+                                  style: const TextStyle(
+                                    color: RecyclingColors.earthyBrown,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
                                 ),
                               ),
                             ],
@@ -408,3 +441,21 @@ class _WasteSegregationGuideScreenState
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

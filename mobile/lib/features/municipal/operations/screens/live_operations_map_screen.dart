@@ -250,7 +250,7 @@ class _LiveOperationsMapScreenState extends State<LiveOperationsMapScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: _getHotspotColor(priority).withOpacity(0.15),
+                  color: _getHotspotColor(priority).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -332,7 +332,7 @@ class _LiveOperationsMapScreenState extends State<LiveOperationsMapScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: _getStatusColor(vehicle.status).withOpacity(0.15),
+                  color: _getStatusColor(vehicle.status).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -596,7 +596,7 @@ class _LiveOperationsMapScreenState extends State<LiveOperationsMapScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: isLive ? MunicipalColors.surface : MunicipalColors.warning.withOpacity(0.1),
+                    color: isLive ? MunicipalColors.surface : MunicipalColors.warning.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -658,7 +658,7 @@ class _LiveOperationsMapScreenState extends State<LiveOperationsMapScreen> {
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.9),
+                                      color: Colors.white.withValues(alpha: 0.9),
                                       borderRadius: BorderRadius.circular(8),
                                       boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4)],
                                     ),
@@ -703,7 +703,7 @@ class _LiveOperationsMapScreenState extends State<LiveOperationsMapScreen> {
                                     height: 40,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: color.withOpacity(0.3),
+                                      color: color.withValues(alpha: 0.3),
                                     ),
                                   ),
                                   Container(
