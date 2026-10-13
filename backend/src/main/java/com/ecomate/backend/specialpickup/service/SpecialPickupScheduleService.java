@@ -65,6 +65,14 @@ public class SpecialPickupScheduleService {
         schedule.setStartTime(request.getStartTime());
         schedule.setEndTime(request.getEndTime());
 
+        // Minimum participation.
+        // Use 4 as the default if the frontend does not send a value yet.
+        schedule.setMinHouseholds(
+                request.getMinHouseholds() != null
+                        ? request.getMinHouseholds()
+                        : 4
+        );
+
         schedule.setMaxHouseholds(
                 request.getMaxHouseholds());
 
@@ -159,6 +167,28 @@ public class SpecialPickupScheduleService {
 
             throw new IllegalArgumentException(
                     "Maximum households must be greater than 0");
+        }
+
+        // If minimum is supplied, validate it.
+        // If not supplied, createSchedule() defaults it to 4.
+        if (request.getMinHouseholds() != null) {
+
+            if (request.getMinHouseholds() <= 0) {
+                throw new IllegalArgumentException(
+                        "Minimum households must be greater than 0");
+            }
+
+            if (request.getMinHouseholds() >
+                    request.getMaxHouseholds()) {
+
+                throw new IllegalArgumentException(
+                        "Minimum households cannot be greater than maximum households");
+            }
+        } else if (request.getMaxHouseholds() < 4) {
+
+            // Default minimum is 4, so maximum cannot be below 4.
+            throw new IllegalArgumentException(
+                    "Maximum households must be at least 4 when minimum households is not provided");
         }
 
         if (request.getMaxWeightKg() == null ||

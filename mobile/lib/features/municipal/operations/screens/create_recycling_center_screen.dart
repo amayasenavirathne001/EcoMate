@@ -116,7 +116,7 @@ class _CreateRecyclingCenterScreenState extends State<CreateRecyclingCenterScree
       if (created != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Recycling center "\" registered successfully!'),
+            content: Text('Recycling center "${newCenter.name}" registered successfully!'),
             backgroundColor: MunicipalColors.secondaryGreen,
           ),
         );
@@ -124,7 +124,35 @@ class _CreateRecyclingCenterScreenState extends State<CreateRecyclingCenterScree
     } catch (e) {
       setState(() => _isSubmitting = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to create center: $e'), backgroundColor: Colors.red));
+        String cleanError = e.toString().replaceAll('Exception: ', '').trim();
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: const Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Colors.red),
+                SizedBox(width: 8),
+                Text('Cannot Assign Officer', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              ],
+            ),
+            content: Text(
+              cleanError.contains('already assigned')
+                  ? 'This email is already assigned to an active recycling center. Please use a different officer email or reassign/delete that active center first.'
+                  : cleanError,
+              style: const TextStyle(fontSize: 14),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  _emailFocus.requestFocus();
+                },
+                child: const Text('Change Email', style: TextStyle(fontWeight: FontWeight.bold, color: MunicipalColors.secondaryGreen)),
+              ),
+            ],
+          ),
+        );
       }
     }
   }

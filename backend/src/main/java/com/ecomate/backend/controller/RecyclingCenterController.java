@@ -96,12 +96,18 @@ public class RecyclingCenterController {
 
     // 9. Register a new recycling Center (e.g. from Municipal Dashboard or Officer)
     @PostMapping("/centers")
-    public ResponseEntity<RecyclingCenterResponse> createCenter(
+    public ResponseEntity<?> createCenter(
             Authentication authentication,
             @Valid @RequestBody RecyclingCenterRequest request) {
-        String email = authentication != null ? authentication.getName() : null;
-        RecyclingCenterResponse created = recyclingCenterService.createCenter(request, email);
-        return ResponseEntity.ok(created);
+        try {
+            String email = authentication != null ? authentication.getName() : null;
+            RecyclingCenterResponse created = recyclingCenterService.createCenter(request, email);
+            return ResponseEntity.ok(created);
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage(), "error", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body(Map.of("message", ex.getMessage() != null ? ex.getMessage() : "Failed to create center"));
+        }
     }
 
     // 10. Delete a recycling Center

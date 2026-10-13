@@ -30,6 +30,12 @@ public class RecyclingCenterService {
 
     @Transactional(readOnly = true)
     public RecyclingCenterResponse getMyCenter(String officerEmail) {
+        // First check if officer has an active center
+        Optional<RecyclingCenter> activeOpt = recyclingCenterRepository.findByOfficerEmailIgnoreCaseAndIsDeletedFalse(officerEmail);
+        if (activeOpt.isPresent()) {
+            return RecyclingCenterResponse.fromEntity(activeOpt.get());
+        }
+        // If no active center, check if officer had a center that was deleted/deactivated by admin
         return recyclingCenterRepository.findByOfficerEmailIgnoreCase(officerEmail)
                 .map(RecyclingCenterResponse::fromEntity)
                 .orElse(null);
@@ -44,7 +50,7 @@ public class RecyclingCenterService {
 
     @Transactional(readOnly = true)
     public List<MaterialDto> getCenterMaterials(String officerEmail) {
-        Optional<RecyclingCenter> centerOpt = recyclingCenterRepository.findByOfficerEmailIgnoreCase(officerEmail);
+        Optional<RecyclingCenter> centerOpt = recyclingCenterRepository.findByOfficerEmailIgnoreCaseAndIsDeletedFalse(officerEmail);
         if (centerOpt.isEmpty()) {
             return java.util.Collections.emptyList();
         }
@@ -131,8 +137,16 @@ public class RecyclingCenterService {
                 ? request.getEmail().trim()
                 : (createdByEmail != null ? createdByEmail : "council@ecomate.lk");
 
-        Optional<RecyclingCenter> existingOpt = recyclingCenterRepository.findByOfficerEmailIgnoreCase(assignedOfficerEmail);
-        RecyclingCenter center = existingOpt.orElseGet(RecyclingCenter::new);
+        // Check if this officer already has an ACTIVE (not deleted) center
+        Optional<RecyclingCenter> activeCenterOpt = recyclingCenterRepository.findByOfficerEmailIgnoreCaseAndIsDeletedFalse(assignedOfficerEmail);
+        if (activeCenterOpt.isPresent()) {
+            throw new IllegalStateException("Officer (" + assignedOfficerEmail + ") is already assigned to active center: '" 
+                    + activeCenterOpt.get().getName() + "'. Please delete or reassign that center first.");
+        }
+
+        // If officer had a previously deleted center, or is new, create a clean active center record
+        RecyclingCenter center = new RecyclingCenter();
+        center.setIsDeleted(false);
 
         center.setName(request.getName());
         center.setAddress(request.getAddress());

@@ -67,11 +67,10 @@ public class SpecialPickupJoinService {
         // Pickup must be ASSIGNED
         // -----------------------------------------------------
 
-        if (pickup.getStatus() != SpecialPickupStatus.ASSIGNED) {
-            throw new IllegalArgumentException(
-                    "This special pickup is not available for joining");
+       if (pickup.getStatus() != SpecialPickupStatus.SCHEDULED) {
+        throw new IllegalArgumentException(
+                "This special pickup is not available for joining");
         }
-
         // -----------------------------------------------------
         // Check join deadline
         // -----------------------------------------------------

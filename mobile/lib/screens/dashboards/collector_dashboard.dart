@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../services/auth_service.dart';
+import '../notifications_screen.dart';
+import '../login_screen.dart';
 
 class CollectorDashboard extends StatefulWidget {
   const CollectorDashboard({super.key});
@@ -14,8 +17,39 @@ class _CollectorDashboardState extends State<CollectorDashboard> {
   static const dark = Color(0xFF102530);
   static const grey = Color(0xFF697586);
 
+  final AuthService _authService = AuthService();
+  String _userName = 'Collector';
+  String _userEmail = 'collector@ecomate.lk';
+
   int selectedFilter = 0;
   int selectedNavigation = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await _authService.getCurrentUser();
+    if (mounted && user != null) {
+      setState(() {
+        _userName = user['name']?.toString() ?? 'Collector';
+        _userEmail = user['email']?.toString() ?? 'collector@ecomate.lk';
+      });
+    }
+  }
+
+  Future<void> _logout() async {
+    await _authService.logout();
+    if (mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (route) => false,
+      );
+    }
+  }
 
   // Sample data. Replace with backend data later.
   final List<Map<String, String>> jobs = [
@@ -156,11 +190,17 @@ class _CollectorDashboardState extends State<CollectorDashboard> {
         surfaceTintColor: Colors.transparent,
         automaticallyImplyLeading: false,
         toolbarHeight: 78,
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.eco_rounded, color: green, size: 34),
-            SizedBox(width: 8),
-            Column(
+            Image.asset(
+              'assets/images/ecomate_logo.png',
+              width: 34,
+              height: 34,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const Icon(Icons.eco_rounded, color: green, size: 34),
+            ),
+            const SizedBox(width: 8),
+            const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -182,17 +222,25 @@ class _CollectorDashboardState extends State<CollectorDashboard> {
         actions: [
           IconButton(
             tooltip: 'Notifications',
-            onPressed: () => showMessage('No new notifications.'),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+              );
+            },
             icon: const Icon(Icons.notifications_none_rounded, color: dark),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: GestureDetector(
               onTap: () => setState(() => selectedNavigation = 2),
-              child: const CircleAvatar(
+              child: CircleAvatar(
                 radius: 20,
-                backgroundColor: Color(0xFF4E927E),
-                child: Text('K', style: TextStyle(color: Colors.white)),
+                backgroundColor: const Color(0xFF4E927E),
+                child: Text(
+                  _userName.isNotEmpty ? _userName[0].toUpperCase() : 'C',
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ),
@@ -292,9 +340,9 @@ class _CollectorDashboardState extends State<CollectorDashboard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Hello, Kasun!',
-                  style: TextStyle(
+                Text(
+                  'Hello, $_userName!',
+                  style: const TextStyle(
                     fontSize: 23,
                     fontWeight: FontWeight.w800,
                     color: dark,
@@ -603,27 +651,42 @@ class _CollectorDashboardState extends State<CollectorDashboard> {
           child: Icon(Icons.person, size: 52, color: green),
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Kasun',
+        Text(
+          _userName,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: dark),
+          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: dark),
         ),
-        const Text(
-          'Waste collector • Demo profile',
+        Text(
+          _userEmail,
           textAlign: TextAlign.center,
-          style: TextStyle(color: grey),
+          style: const TextStyle(color: grey),
         ),
         const SizedBox(height: 30),
         Card(
           color: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                detail(Icons.badge_outlined, 'Employee ID: EMP-001'),
-                detail(Icons.location_on_outlined, 'Colombo collection area'),
-                detail(Icons.local_shipping_outlined, 'Vehicle: WP LC-4521'),
+                detail(Icons.person_outline, 'Role: Waste Collector'),
+                detail(Icons.email_outlined, _userEmail),
+                detail(Icons.badge_outlined, 'Status: Active on Duty'),
               ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: _logout,
+            icon: const Icon(Icons.logout_rounded, color: Colors.red),
+            label: const Text('Log Out', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16)),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: Colors.red),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
           ),
         ),

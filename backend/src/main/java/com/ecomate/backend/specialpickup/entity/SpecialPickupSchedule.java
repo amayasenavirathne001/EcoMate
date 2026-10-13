@@ -44,6 +44,9 @@ public class SpecialPickupSchedule {
     @Column(name = "max_households", nullable = false)
     private Integer maxHouseholds;
 
+    @Column(name = "min_households")
+    private Integer minHouseholds;
+    
     @Column(name = "max_weight_kg", nullable = false)
     private Double maxWeightKg;
 
@@ -104,6 +107,9 @@ public class SpecialPickupSchedule {
 
         if (active == null) {
             active = true;
+        }
+        if (minHouseholds == null) {
+            minHouseholds = 4;
         }
     }
 
@@ -169,6 +175,14 @@ public class SpecialPickupSchedule {
 
     public void setMaxHouseholds(Integer maxHouseholds) {
         this.maxHouseholds = maxHouseholds;
+    }
+
+    public Integer getMinHouseholds() {
+    return minHouseholds;
+    }
+
+    public void setMinHouseholds(Integer minHouseholds) {
+        this.minHouseholds = minHouseholds;
     }
 
     public Double getMaxWeightKg() {

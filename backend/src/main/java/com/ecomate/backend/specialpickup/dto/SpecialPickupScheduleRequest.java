@@ -10,10 +10,15 @@ public class SpecialPickupScheduleRequest {
     private LocalTime startTime;
     private LocalTime endTime;
 
+    // Household participation
+    private Integer minHouseholds;
     private Integer maxHouseholds;
+
+    // Capacity
     private Double maxWeightKg;
     private Double maxVolumeM3;
 
+    // Join rules
     private Integer joinDeadlineHours;
     private String acceptedWasteTypes;
 
@@ -50,6 +55,14 @@ public class SpecialPickupScheduleRequest {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
+    }
+
+    public Integer getMinHouseholds() {
+        return minHouseholds;
+    }
+
+    public void setMinHouseholds(Integer minHouseholds) {
+        this.minHouseholds = minHouseholds;
     }
 
     public Integer getMaxHouseholds() {

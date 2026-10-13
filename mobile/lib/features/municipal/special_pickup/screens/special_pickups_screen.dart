@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 
 import '../../../special_pickup/models/special_pickup.dart';
 import '../services/municipal_special_pickup_service.dart';
+import 'special_pickup_schedules_screen.dart';
 
 class SpecialPickupsScreen extends StatefulWidget {
   const SpecialPickupsScreen({super.key});
 
   @override
-  State<SpecialPickupsScreen> createState() =>
-      _SpecialPickupsScreenState();
+  State<SpecialPickupsScreen> createState() => _SpecialPickupsScreenState();
 }
 
 class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
   final MunicipalSpecialPickupService _service =
       MunicipalSpecialPickupService();
+
+  static const Color primary = Color(0xFF008F73);
+  static const Color darkText = Color(0xFF152033);
 
   List<SpecialPickup> _pickups = [];
   bool _isLoading = true;
@@ -27,6 +30,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
     'FULL',
     'IN_PROGRESS',
     'COMPLETED',
+    'CANCELLED',
   ];
 
   @override
@@ -35,11 +39,17 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
     _loadPickups();
   }
 
+  // ===========================================================
+  // LOAD PICKUPS
+  // ===========================================================
+
   Future<void> _loadPickups() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
 
     try {
       final pickups = await _service.getPickups();
@@ -74,6 +84,10 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
         .toList();
   }
 
+  // ===========================================================
+  // MAIN UI
+  // ===========================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,13 +100,13 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
           onPressed: () => Navigator.pop(context),
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF152033),
+            color: darkText,
           ),
         ),
         title: const Text(
           'Special Pickup Management',
           style: TextStyle(
-            color: Color(0xFF152033),
+            color: darkText,
             fontSize: 19,
             fontWeight: FontWeight.w700,
           ),
@@ -103,7 +117,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
             onPressed: _loadPickups,
             icon: const Icon(
               Icons.refresh_rounded,
-              color: Color(0xFF008F73),
+              color: primary,
             ),
           ),
           const SizedBox(width: 8),
@@ -111,7 +125,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _loadPickups,
-        color: const Color(0xFF008F73),
+        color: primary,
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
@@ -129,7 +143,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
                 hasScrollBody: false,
                 child: Center(
                   child: CircularProgressIndicator(
-                    color: Color(0xFF008F73),
+                    color: primary,
                   ),
                 ),
               )
@@ -168,6 +182,10 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
     );
   }
 
+  // ===========================================================
+  // HEADER
+  // ===========================================================
+
   Widget _buildHeader() {
     return Container(
       color: Colors.white,
@@ -180,13 +198,13 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
             style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF152033),
+              color: darkText,
             ),
           ),
           const SizedBox(height: 5),
           const Text(
-            'Create, monitor and assign municipal special '
-            'waste collections.',
+            'Open pickups from reusable schedules, monitor '
+            'resident participation and assign vehicles.',
             style: TextStyle(
               fontSize: 14,
               height: 1.4,
@@ -194,82 +212,59 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
             ),
           ),
           const SizedBox(height: 18),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    _showComingSoon('Manage Schedules');
-                  },
-                  icon: const Icon(
-                    Icons.calendar_month_rounded,
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () async {
+                final changed = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const SpecialPickupSchedulesScreen(),
                   ),
-                  label: const Text('Schedules'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor:
-                        const Color(0xFF008F73),
-                    side: const BorderSide(
-                      color: Color(0xFFB7E2D8),
-                    ),
-                    padding:
-                        const EdgeInsets.symmetric(
-                      vertical: 14,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(12),
-                    ),
-                  ),
+                );
+
+                if (changed == true) {
+                  await _loadPickups();
+                }
+              },
+              icon: const Icon(
+                Icons.calendar_month_rounded,
+              ),
+              label: const Text('Manage Schedules'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: primary,
+                side: const BorderSide(
+                  color: Color(0xFFB7E2D8),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    _showComingSoon(
-                      'Create Special Pickup',
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.add_rounded,
-                  ),
-                  label: const Text('Create Pickup'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        const Color(0xFF008F73),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding:
-                        const EdgeInsets.symmetric(
-                      vertical: 14,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSummary() {
-    final scheduled = _pickups
-        .where((p) => p.status == 'SCHEDULED')
-        .length;
+  // ===========================================================
+  // SUMMARY
+  // ===========================================================
 
-    final assigned = _pickups
-        .where((p) => p.status == 'ASSIGNED')
-        .length;
+  Widget _buildSummary() {
+    final scheduled =
+        _pickups.where((p) => p.status == 'SCHEDULED').length;
+
+    final assigned =
+        _pickups.where((p) => p.status == 'ASSIGNED').length;
 
     final totalJoined = _pickups.fold<int>(
       0,
-      (total, pickup) =>
-          total + pickup.joinedHouseholds,
+      (total, pickup) => total + pickup.joinedHouseholds,
     );
 
     return Padding(
@@ -342,7 +337,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF152033),
+              color: darkText,
             ),
           ),
           const SizedBox(height: 2),
@@ -360,6 +355,10 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
     );
   }
 
+  // ===========================================================
+  // FILTERS
+  // ===========================================================
+
   Widget _buildFilters() {
     return SizedBox(
       height: 62,
@@ -370,8 +369,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
         ),
         scrollDirection: Axis.horizontal,
         itemCount: _filters.length,
-        separatorBuilder: (_, _) =>
-            const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final filter = _filters[index];
           final selected = filter == _selectedFilter;
@@ -384,11 +382,11 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
                 _selectedFilter = filter;
               });
             },
-            selectedColor: const Color(0xFF008F73),
+            selectedColor: primary,
             backgroundColor: Colors.white,
             side: BorderSide(
               color: selected
-                  ? const Color(0xFF008F73)
+                  ? primary
                   : const Color(0xFFE0E8E5),
             ),
             labelStyle: TextStyle(
@@ -408,7 +406,15 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
     );
   }
 
+  // ===========================================================
+  // PICKUP CARD
+  // ===========================================================
+
   Widget _buildPickupCard(SpecialPickup pickup) {
+    final isScheduled = pickup.status == 'SCHEDULED';
+    final canAssign = pickup.canAssignVehicle;
+    final needed = pickup.householdsNeededForMinimum;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -440,15 +446,14 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
                 ),
                 child: const Icon(
                   Icons.local_shipping_rounded,
-                  color: Color(0xFF008F73),
+                  color: primary,
                   size: 25,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       pickup.title.isEmpty
@@ -457,7 +462,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF152033),
+                        color: darkText,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -465,8 +470,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
                       '${_formatDate(pickup.pickupDate)}'
                       '  •  '
                       '${_formatTime(pickup.startTime)}'
-                      ' - '
-                      '${_formatTime(pickup.endTime)}',
+                      ' - ${_formatTime(pickup.endTime)}',
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFF718096),
@@ -504,8 +508,14 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
                   icon: Icons.people_alt_outlined,
                   title: 'Households',
                   value:
-                      '${pickup.joinedHouseholds}'
-                      '/${pickup.maxHouseholds}',
+                      '${pickup.joinedHouseholds}/${pickup.maxHouseholds}',
+                ),
+              ),
+              Expanded(
+                child: _capacityItem(
+                  icon: Icons.flag_outlined,
+                  title: 'Minimum',
+                  value: '${pickup.minHouseholds}',
                 ),
               ),
               Expanded(
@@ -529,36 +539,81 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          _capacityProgress(pickup),
+          _participationProgress(pickup),
+          if (isScheduled) ...[
+            const SizedBox(height: 12),
+            _minimumParticipationMessage(pickup),
+          ],
+          if (pickup.status == 'CANCELLED' &&
+              pickup.cancellationReason != null &&
+              pickup.cancellationReason!.trim().isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _cancellationMessage(pickup.cancellationReason!),
+          ],
           const SizedBox(height: 15),
-          Row(
+          _truckInformation(pickup),
+          const SizedBox(height: 14),
+          Wrap(
+            alignment: WrapAlignment.end,
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              Expanded(
-                child: _truckInformation(pickup),
-              ),
-              const SizedBox(width: 10),
               TextButton(
                 onPressed: () {
                   _showPickupDetails(pickup);
                 },
                 child: const Text('View Details'),
               ),
-              if (pickup.status == 'SCHEDULED')
-                ElevatedButton(
+              if (isScheduled)
+                OutlinedButton.icon(
                   onPressed: () {
-                    _showComingSoon('Assign Truck');
+                    _showCancelDialog(pickup);
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        const Color(0xFF008F73),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
+                  icon: const Icon(
+                    Icons.close_rounded,
+                    size: 17,
+                  ),
+                  label: const Text('Cancel'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFD94C4C),
+                    side: const BorderSide(
+                      color: Color(0xFFF0B8B8),
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text('Assign'),
+                ),
+              if (isScheduled)
+                ElevatedButton.icon(
+                  onPressed: canAssign
+                      ? () {
+                          _showAssignVehicleDialog(pickup);
+                        }
+                      : null,
+                  icon: Icon(
+                    canAssign
+                        ? Icons.local_shipping_rounded
+                        : Icons.lock_outline_rounded,
+                    size: 17,
+                  ),
+                  label: Text(
+                    canAssign
+                        ? 'Assign Vehicle'
+                        : 'Need $needed More',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primary,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor:
+                        const Color(0xFFE7ECEB),
+                    disabledForegroundColor:
+                        const Color(0xFF87938F),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -609,16 +664,16 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF152033),
+            color: darkText,
           ),
         ),
         const SizedBox(height: 2),
         Text(
           title,
           style: const TextStyle(
-            fontSize: 10,
+            fontSize: 9,
             color: Color(0xFF8290A3),
           ),
         ),
@@ -626,7 +681,11 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
     );
   }
 
-  Widget _capacityProgress(SpecialPickup pickup) {
+  // ===========================================================
+  // PARTICIPATION
+  // ===========================================================
+
+  Widget _participationProgress(SpecialPickup pickup) {
     final max = pickup.maxHouseholds;
 
     double progress = 0;
@@ -642,7 +701,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
         Row(
           children: [
             const Text(
-              'Household capacity',
+              'Household participation',
               style: TextStyle(
                 fontSize: 11,
                 color: Color(0xFF718096),
@@ -650,11 +709,11 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
             ),
             const Spacer(),
             Text(
-              '${(progress * 100).round()}%',
+              '${pickup.joinedHouseholds}/${pickup.maxHouseholds}',
               style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF008F73),
+                color: primary,
               ),
             ),
           ],
@@ -665,8 +724,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 7,
-            backgroundColor:
-                const Color(0xFFE6EFEC),
+            backgroundColor: const Color(0xFFE6EFEC),
             valueColor:
                 const AlwaysStoppedAnimation<Color>(
               Color(0xFF00A786),
@@ -677,8 +735,106 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
     );
   }
 
+  Widget _minimumParticipationMessage(SpecialPickup pickup) {
+    final reached = pickup.minimumParticipationReached;
+    final needed = pickup.householdsNeededForMinimum;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 10,
+      ),
+      decoration: BoxDecoration(
+        color: reached
+            ? const Color(0xFFE8F7F1)
+            : const Color(0xFFFFF7E8),
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(
+          color: reached
+              ? const Color(0xFFBDE5D6)
+              : const Color(0xFFF1D9A5),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            reached
+                ? Icons.check_circle_rounded
+                : Icons.info_outline_rounded,
+            size: 19,
+            color: reached
+                ? primary
+                : const Color(0xFFB97800),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              reached
+                  ? 'Minimum participation reached '
+                      '(${pickup.joinedHouseholds}/${pickup.minHouseholds}). '
+                      'A vehicle can now be assigned.'
+                  : 'Minimum ${pickup.minHouseholds} households required. '
+                      '$needed more ${needed == 1 ? 'household' : 'households'} '
+                      'needed before assigning a vehicle.',
+              style: TextStyle(
+                fontSize: 11,
+                height: 1.35,
+                fontWeight: FontWeight.w600,
+                color: reached
+                    ? const Color(0xFF14745D)
+                    : const Color(0xFF8B620B),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _cancellationMessage(String reason) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF2F2),
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(
+          color: const Color(0xFFF2CCCC),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.cancel_outlined,
+            size: 19,
+            color: Color(0xFFD94C4C),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Cancellation reason: $reason',
+              style: const TextStyle(
+                fontSize: 11,
+                height: 1.35,
+                color: Color(0xFF9B3E3E),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ===========================================================
+  // VEHICLE INFORMATION
+  // ===========================================================
+
   Widget _truckInformation(SpecialPickup pickup) {
-    final hasTruck = pickup.status == 'ASSIGNED';
+    final hasTruck = pickup.status == 'ASSIGNED' ||
+        pickup.status == 'IN_PROGRESS' ||
+        pickup.status == 'COMPLETED';
 
     return Row(
       children: [
@@ -688,21 +844,21 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
               : Icons.local_shipping_outlined,
           size: 17,
           color: hasTruck
-              ? const Color(0xFF008F73)
+              ? primary
               : const Color(0xFF8A98A8),
         ),
         const SizedBox(width: 6),
         Flexible(
           child: Text(
             hasTruck
-                ? 'Truck assigned'
-                : 'No truck assigned',
+                ? 'Vehicle assigned'
+                : 'No vehicle assigned',
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: hasTruck
-                  ? const Color(0xFF008F73)
+                  ? primary
                   : const Color(0xFF8A98A8),
             ),
           ),
@@ -710,6 +866,223 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
       ],
     );
   }
+
+  // ===========================================================
+  // ASSIGN VEHICLE DIALOG
+  // ===========================================================
+
+  Future<void> _showAssignVehicleDialog(
+    SpecialPickup pickup,
+  ) async {
+    if (!pickup.canAssignVehicle) {
+      _showMessage(
+        'Minimum ${pickup.minHouseholds} households are required '
+        'before assigning a vehicle.',
+        isError: true,
+      );
+      return;
+    }
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return _AssignVehicleDialog(
+          service: _service,
+          pickup: pickup,
+          onAssigned: () async {
+            if (!mounted) return;
+
+            _showMessage('Vehicle assigned successfully.');
+            await _loadPickups();
+          },
+        );
+      },
+    );
+  }
+
+  // ===========================================================
+  // CANCEL PICKUP
+  // ===========================================================
+
+  Future<void> _showCancelDialog(
+    SpecialPickup pickup,
+  ) async {
+    final reasonController = TextEditingController(
+      text: pickup.minimumParticipationReached
+          ? ''
+          : 'Minimum participation was not reached.',
+    );
+
+    var isCancelling = false;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+              title: const Row(
+                children: [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    color: Color(0xFFD94C4C),
+                  ),
+                  SizedBox(width: 9),
+                  Expanded(
+                    child: Text(
+                      'Cancel Special Pickup',
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.w800,
+                        color: darkText,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 430,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      pickup.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: darkText,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${pickup.joinedHouseholds}/${pickup.minHouseholds} '
+                      'minimum households joined',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF718096),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    const Text(
+                      'Cancellation reason',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: darkText,
+                      ),
+                    ),
+                    const SizedBox(height: 7),
+                    TextField(
+                      controller: reasonController,
+                      enabled: !isCancelling,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        hintText:
+                            'Enter the reason for cancellation',
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isCancelling
+                      ? null
+                      : () {
+                          Navigator.pop(dialogContext);
+                        },
+                  child: const Text('Back'),
+                ),
+                ElevatedButton(
+                  onPressed: isCancelling
+                      ? null
+                      : () async {
+                          final reason =
+                              reasonController.text.trim();
+
+                          if (reason.isEmpty) {
+                            _showMessage(
+                              'Please enter a cancellation reason.',
+                              isError: true,
+                            );
+                            return;
+                          }
+
+                          setDialogState(() {
+                            isCancelling = true;
+                          });
+
+                          try {
+                            await _service.cancelPickup(
+                              pickupId: pickup.id,
+                              reason: reason,
+                            );
+
+                            if (!mounted ||
+                                !dialogContext.mounted) {
+                              return;
+                            }
+
+                            Navigator.pop(dialogContext);
+
+                            _showMessage(
+                              'Special pickup cancelled.',
+                            );
+
+                            await _loadPickups();
+                          } catch (e) {
+                            if (!dialogContext.mounted) return;
+
+                            setDialogState(() {
+                              isCancelling = false;
+                            });
+
+                            if (!mounted) return;
+
+                            _showMessage(
+                              _cleanError(e),
+                              isError: true,
+                            );
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        const Color(0xFFD94C4C),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: isCancelling
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('Cancel Pickup'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    reasonController.dispose();
+  }
+
+  // ===========================================================
+  // STATUS BADGE
+  // ===========================================================
 
   Widget _statusBadge(String status) {
     Color background;
@@ -771,6 +1144,10 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
     );
   }
 
+  // ===========================================================
+  // ERROR / EMPTY
+  // ===========================================================
+
   Widget _buildError() {
     return Center(
       child: Padding(
@@ -789,7 +1166,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF152033),
+                color: darkText,
               ),
             ),
             const SizedBox(height: 7),
@@ -807,8 +1184,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Try Again'),
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    const Color(0xFF008F73),
+                backgroundColor: primary,
                 foregroundColor: Colors.white,
               ),
             ),
@@ -835,7 +1211,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
               child: const Icon(
                 Icons.local_shipping_outlined,
                 size: 37,
-                color: Color(0xFF008F73),
+                color: primary,
               ),
             ),
             const SizedBox(height: 18),
@@ -844,14 +1220,16 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF152033),
+                color: darkText,
               ),
             ),
             const SizedBox(height: 6),
             Text(
               _selectedFilter == 'ALL'
-                  ? 'Create a special pickup to get started.'
-                  : 'There are no ${_filterLabel(_selectedFilter).toLowerCase()} pickups.',
+                  ? 'Open a pickup from Schedules to get started.'
+                  : 'There are no '
+                      '${_filterLabel(_selectedFilter).toLowerCase()} '
+                      'pickups.',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Color(0xFF718096),
@@ -863,6 +1241,10 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
       ),
     );
   }
+
+  // ===========================================================
+  // DETAILS
+  // ===========================================================
 
   void _showPickupDetails(SpecialPickup pickup) {
     showModalBottomSheet(
@@ -876,7 +1258,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
       ),
       builder: (context) {
         return SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(
               22,
               18,
@@ -908,7 +1290,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF152033),
+                          color: darkText,
                         ),
                       ),
                     ),
@@ -923,7 +1305,7 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
                 _detailRow(
                   'Time',
                   '${_formatTime(pickup.startTime)} - '
-                  '${_formatTime(pickup.endTime)}',
+                      '${_formatTime(pickup.endTime)}',
                 ),
                 _detailRow(
                   'Location',
@@ -936,22 +1318,31 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
                 _detailRow(
                   'Households',
                   '${pickup.joinedHouseholds} / '
-                  '${pickup.maxHouseholds}',
+                      '${pickup.maxHouseholds}',
+                ),
+                _detailRow(
+                  'Minimum',
+                  '${pickup.minHouseholds} households',
                 ),
                 _detailRow(
                   'Weight',
                   '${_number(pickup.currentEstimatedWeightKg)}'
-                  ' / ${_number(pickup.maxWeightKg)} kg',
+                      ' / ${_number(pickup.maxWeightKg)} kg',
                 ),
                 _detailRow(
                   'Volume',
                   '${_number(pickup.currentEstimatedVolumeM3)}'
-                  ' / ${_number(pickup.maxVolumeM3)} m³',
+                      ' / ${_number(pickup.maxVolumeM3)} m³',
                 ),
                 _detailRow(
                   'Waste Types',
                   pickup.acceptedWasteTypes.join(', '),
                 ),
+                if (pickup.status == 'CANCELLED')
+                  _detailRow(
+                    'Cancel Reason',
+                    pickup.cancellationReason ?? '-',
+                  ),
                 const SizedBox(height: 10),
               ],
             ),
@@ -992,13 +1383,22 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
     );
   }
 
-  void _showComingSoon(String feature) {
+  // ===========================================================
+  // HELPERS
+  // ===========================================================
+
+  void _showMessage(
+    String message, {
+    bool isError = false,
+  }) {
+    if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          '$feature will be connected next.',
-        ),
+        content: Text(message),
         behavior: SnackBarBehavior.floating,
+        backgroundColor:
+            isError ? const Color(0xFFD94C4C) : primary,
       ),
     );
   }
@@ -1092,5 +1492,294 @@ class _SpecialPickupsScreenState extends State<SpecialPickupsScreen> {
     return error
         .toString()
         .replaceFirst('Exception: ', '');
+  }
+}
+
+// =============================================================
+// ASSIGN VEHICLE DIALOG
+// =============================================================
+
+class _AssignVehicleDialog extends StatefulWidget {
+  final MunicipalSpecialPickupService service;
+  final SpecialPickup pickup;
+  final Future<void> Function() onAssigned;
+
+  const _AssignVehicleDialog({
+    required this.service,
+    required this.pickup,
+    required this.onAssigned,
+  });
+
+  @override
+  State<_AssignVehicleDialog> createState() =>
+      _AssignVehicleDialogState();
+}
+
+class _AssignVehicleDialogState
+    extends State<_AssignVehicleDialog> {
+  List<Map<String, dynamic>> _vehicles = [];
+  int? _selectedVehicleId;
+
+  bool _loading = true;
+  bool _assigning = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVehicles();
+  }
+
+  Future<void> _loadVehicles() async {
+    try {
+      final vehicles = await widget.service.getVehicles();
+
+      if (!mounted) return;
+
+      setState(() {
+        _vehicles = vehicles;
+        _loading = false;
+        _error = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _loading = false;
+        _error = e
+            .toString()
+            .replaceFirst('Exception: ', '');
+      });
+    }
+  }
+
+  Future<void> _assign() async {
+    final vehicleId = _selectedVehicleId;
+
+    if (vehicleId == null) {
+      setState(() {
+        _error = 'Please select a vehicle.';
+      });
+      return;
+    }
+
+    setState(() {
+      _assigning = true;
+      _error = null;
+    });
+
+    try {
+      await widget.service.assignTruck(
+        pickupId: widget.pickup.id,
+        truckId: vehicleId,
+      );
+
+      if (!mounted) return;
+
+      Navigator.pop(context);
+
+      await widget.onAssigned();
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _assigning = false;
+        _error = e
+            .toString()
+            .replaceFirst('Exception: ', '');
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+      title: const Row(
+        children: [
+          Icon(
+            Icons.local_shipping_rounded,
+            color: Color(0xFF008F73),
+          ),
+          SizedBox(width: 9),
+          Text(
+            'Assign Vehicle',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF152033),
+            ),
+          ),
+        ],
+      ),
+      content: SizedBox(
+        width: 450,
+        child: _loading
+            ? const Padding(
+                padding: EdgeInsets.all(30),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF008F73),
+                  ),
+                ),
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.pickup.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF152033),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    '${widget.pickup.joinedHouseholds}/'
+                    '${widget.pickup.minHouseholds} '
+                    'minimum households joined',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF718096),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  if (_vehicles.isEmpty)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF7E8),
+                        borderRadius:
+                            BorderRadius.circular(12),
+                      ),
+                      child: const Text(
+                        'No available vehicles found. '
+                        'Only active vehicles with AVAILABLE '
+                        'status can be assigned.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          height: 1.4,
+                          color: Color(0xFF8B620B),
+                        ),
+                      ),
+                    )
+                  else
+                    DropdownButtonFormField<int>(
+                      initialValue: _selectedVehicleId,
+                      decoration: InputDecoration(
+                        labelText: 'Available Vehicle',
+                        prefixIcon: const Icon(
+                          Icons.local_shipping_outlined,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(12),
+                        ),
+                      ),
+                      items: _vehicles.map((vehicle) {
+                        final id =
+                            (vehicle['id'] as num).toInt();
+
+                        final registration =
+                            vehicle['registrationNumber']
+                                    ?.toString() ??
+                                'Vehicle $id';
+
+                        final type =
+                            vehicle['vehicleType']
+                                    ?.toString() ??
+                                'Vehicle';
+
+                        final capacity =
+                            vehicle['capacity'];
+
+                        final capacityText =
+                            capacity == null
+                                ? ''
+                                : ' • $capacity';
+
+                        return DropdownMenuItem<int>(
+                          value: id,
+                          child: Text(
+                            '$registration • $type'
+                            '$capacityText',
+                            overflow:
+                                TextOverflow.ellipsis,
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: _assigning
+                          ? null
+                          : (value) {
+                              setState(() {
+                                _selectedVehicleId =
+                                    value;
+                                _error = null;
+                              });
+                            },
+                    ),
+                  if (_error != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      _error!,
+                      style: const TextStyle(
+                        color: Color(0xFFD94C4C),
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _assigning
+              ? null
+              : () {
+                  Navigator.pop(context);
+                },
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton.icon(
+          onPressed: _loading ||
+                  _assigning ||
+                  _vehicles.isEmpty
+              ? null
+              : _assign,
+          icon: _assigning
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Icon(
+                  Icons.check_rounded,
+                  size: 18,
+                ),
+          label: Text(
+            _assigning
+                ? 'Assigning...'
+                : 'Assign Vehicle',
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+                const Color(0xFF008F73),
+            foregroundColor: Colors.white,
+            disabledBackgroundColor:
+                const Color(0xFFE1E7E5),
+            disabledForegroundColor:
+                const Color(0xFF899490),
+          ),
+        ),
+      ],
+    );
   }
 }

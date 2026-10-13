@@ -68,6 +68,7 @@ class _MunicipalRecyclingCentersPageState extends State<MunicipalRecyclingCenter
     final cityController = TextEditingController();
     final phoneController = TextEditingController();
     final emailController = TextEditingController();
+    final emailFocusNode = FocusNode();
     final hoursController = TextEditingController(text: 'Mon - Sat: 8:00 AM - 5:30 PM');
     final notesController = TextEditingController();
 
@@ -198,7 +199,7 @@ _buildFormField(nameController, 'Center Name *', Icons.storefront, isRequired: t
                       const SizedBox(height: 12),
                       _buildFormField(phoneController, 'Contact Phone *', Icons.phone_outlined, keyboardType: TextInputType.phone, isRequired: true),
                       const SizedBox(height: 12),
-                      _buildFormField(emailController, 'Officer Login Email (e.g. officer@gmail.com) *', Icons.badge_outlined, keyboardType: TextInputType.emailAddress, isRequired: true),
+                      _buildFormField(emailController, 'Officer Login Email (e.g. officer@gmail.com) *', Icons.badge_outlined, keyboardType: TextInputType.emailAddress, isRequired: true, focusNode: emailFocusNode),
                       const SizedBox(height: 12),
                       _buildFormField(hoursController, 'Operating Hours', Icons.access_time_rounded),
                       const SizedBox(height: 12),
@@ -307,19 +308,60 @@ _buildFormField(nameController, 'Center Name *', Icons.storefront, isRequired: t
                                   notes: notesController.text.trim(),
                                 );
 
-                                final created = await _recyclingService.createCenter(newCenter);
+                                try {
+                                  final created = await _recyclingService.createCenter(newCenter);
 
-                                if (!context.mounted) return;
-                                Navigator.pop(context);
+                                  if (!context.mounted) return;
+                                  Navigator.pop(context);
 
-                                if (created != null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Recycling center "${created.name}" registered successfully!'),
-                                      backgroundColor: MunicipalColors.secondaryGreen,
-                                    ),
-                                  );
-                                  _loadCenters();
+                                  if (created != null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Recycling center "${created.name}" registered successfully!'),
+                                        backgroundColor: MunicipalColors.secondaryGreen,
+                                      ),
+                                    );
+                                    _loadCenters();
+                                  }
+                                } catch (e) {
+                                  setModalState(() => isSubmitting = false);
+                                  if (context.mounted) {
+                                    String cleanError = e.toString().replaceAll('Exception: ', '').trim();
+                                    showDialog(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                        title: const Row(
+                                          children: [
+                                            Icon(Icons.warning_amber_rounded, color: Colors.red),
+                                            SizedBox(width: 8),
+                                            Text('Cannot Assign Officer', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                          ],
+                                        ),
+                                        content: Text(
+                                          cleanError.contains('already assigned')
+                                              ? 'This email is already assigned to an active recycling center. Please use a different officer email or reassign/delete that active center first.'
+                                              : cleanError,
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(ctx);
+                                              Future.delayed(const Duration(milliseconds: 150), () {
+                                                emailFocusNode.requestFocus();
+                                                emailController.selection = TextSelection(
+                                                  baseOffset: 0,
+                                                  extentOffset: emailController.text.length,
+                                                );
+                                              });
+                                            },
+                                            child: const Text('Change Email', style: TextStyle(fontWeight: FontWeight.bold, color: MunicipalColors.secondaryGreen)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
                                 }
                               },
                         style: ElevatedButton.styleFrom(
@@ -358,9 +400,11 @@ _buildFormField(nameController, 'Center Name *', Icons.storefront, isRequired: t
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
     bool isRequired = false,
+    FocusNode? focusNode,
   }) {
     return TextFormField(
       controller: controller,
+      focusNode: focusNode,
       keyboardType: keyboardType,
       maxLines: maxLines,
       validator: isRequired

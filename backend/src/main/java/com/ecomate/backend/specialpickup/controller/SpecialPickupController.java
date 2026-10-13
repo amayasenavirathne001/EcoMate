@@ -1,14 +1,15 @@
 package com.ecomate.backend.specialpickup.controller;
 
+import com.ecomate.backend.specialpickup.dto.AssignSpecialPickupRequest;
 import com.ecomate.backend.specialpickup.dto.CapacityCheckResponse;
 import com.ecomate.backend.specialpickup.dto.CreateJoinRequest;
+import com.ecomate.backend.specialpickup.dto.CreateSpecialPickupRequest;
 import com.ecomate.backend.specialpickup.dto.JoinRequestResponse;
 import com.ecomate.backend.specialpickup.dto.SpecialPickupResponse;
+import com.ecomate.backend.specialpickup.entity.SpecialPickup;
 import com.ecomate.backend.specialpickup.service.SpecialPickupJoinService;
 import com.ecomate.backend.specialpickup.service.SpecialPickupService;
-import com.ecomate.backend.specialpickup.dto.CreateSpecialPickupRequest;
-import com.ecomate.backend.specialpickup.entity.SpecialPickup;
-import com.ecomate.backend.specialpickup.dto.AssignSpecialPickupRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -30,14 +31,15 @@ public class SpecialPickupController {
         this.specialPickupService = specialPickupService;
         this.joinService = joinService;
     }
-        // =========================================================
-        // ADMIN - CREATE SPECIAL PICKUP FROM SCHEDULE
-        // =========================================================
 
-        @PostMapping("/admin/special-pickups")
-        public ResponseEntity<SpecialPickup> createSpecialPickup(
-                @RequestBody CreateSpecialPickupRequest request,
-                @RequestParam(defaultValue = "1") Long adminId) {
+    // =========================================================
+    // ADMIN - CREATE SPECIAL PICKUP FROM SCHEDULE
+    // =========================================================
+
+    @PostMapping("/admin/special-pickups")
+    public ResponseEntity<SpecialPickup> createSpecialPickup(
+            @RequestBody CreateSpecialPickupRequest request,
+            @RequestParam(defaultValue = "1") Long adminId) {
 
         SpecialPickup pickup =
                 specialPickupService.createPickupFromSchedule(
@@ -45,36 +47,63 @@ public class SpecialPickupController {
                         adminId);
 
         return ResponseEntity.ok(pickup);
-        }
-        // =========================================================
-        // ADMIN - GET ALL SPECIAL PICKUPS
-        // =========================================================
+    }
 
-        @GetMapping("/admin/special-pickups")
-        public ResponseEntity<List<SpecialPickup>>
-        getAllSpecialPickups() {
+    // =========================================================
+    // ADMIN - GET ALL SPECIAL PICKUPS
+    // =========================================================
+
+    @GetMapping("/admin/special-pickups")
+    public ResponseEntity<List<SpecialPickup>>
+    getAllSpecialPickups() {
 
         List<SpecialPickup> pickups =
                 specialPickupService.getAllSpecialPickups();
 
         return ResponseEntity.ok(pickups);
-        }
-        // =========================================================
-        // ADMIN - ASSIGN TRUCK TO SPECIAL PICKUP
-        // =========================================================
+    }
 
-        @PutMapping("/admin/special-pickups/{pickupId}/assign")
-        public ResponseEntity<SpecialPickup> assignSpecialPickup(
-                @PathVariable Long pickupId,
-                @RequestBody AssignSpecialPickupRequest request) {
+    // =========================================================
+    // ADMIN - ASSIGN VEHICLE TO SPECIAL PICKUP
+    // =========================================================
+
+    @PutMapping("/admin/special-pickups/{pickupId}/assign")
+    public ResponseEntity<SpecialPickup> assignSpecialPickup(
+            @PathVariable Long pickupId,
+            @RequestBody AssignSpecialPickupRequest request) {
 
         SpecialPickup pickup =
                 specialPickupService.assignPickup(
                         pickupId,
-                        request.getTruckId());
+                        request.getTruckId(),
+                        request.getDriverId());
+        return ResponseEntity.ok(pickup);
+    }
+
+    // =========================================================
+    // ADMIN - CANCEL SPECIAL PICKUP
+    // =========================================================
+
+    @PutMapping("/admin/special-pickups/{pickupId}/cancel")
+    public ResponseEntity<SpecialPickup> cancelSpecialPickup(
+            @PathVariable Long pickupId,
+            @RequestBody(required = false)
+            Map<String, String> body) {
+
+        String reason = null;
+
+        if (body != null) {
+            reason = body.get("reason");
+        }
+
+        SpecialPickup pickup =
+                specialPickupService.cancelPickup(
+                        pickupId,
+                        reason);
 
         return ResponseEntity.ok(pickup);
-        }
+    }
+
     // =========================================================
     // RESIDENT - GET AVAILABLE SPECIAL PICKUPS
     // =========================================================
@@ -83,7 +112,8 @@ public class SpecialPickupController {
     public ResponseEntity<List<SpecialPickupResponse>>
     getSpecialPickups(Authentication authentication) {
 
-        String residentEmail = authentication.getName();
+        String residentEmail =
+                authentication.getName();
 
         List<SpecialPickupResponse> pickups =
                 specialPickupService.getAvailablePickups(
@@ -102,7 +132,8 @@ public class SpecialPickupController {
             @PathVariable Long pickupId,
             Authentication authentication) {
 
-        String residentEmail = authentication.getName();
+        String residentEmail =
+                authentication.getName();
 
         SpecialPickupResponse pickup =
                 specialPickupService.getPickup(
@@ -123,7 +154,8 @@ public class SpecialPickupController {
             @RequestBody CreateJoinRequest request,
             Authentication authentication) {
 
-        String residentEmail = authentication.getName();
+        String residentEmail =
+                authentication.getName();
 
         JoinRequestResponse response =
                 joinService.createJoinRequest(
@@ -140,9 +172,11 @@ public class SpecialPickupController {
 
     @GetMapping("/special-pickup-join-requests/me")
     public ResponseEntity<List<JoinRequestResponse>>
-    getMyJoinRequests(Authentication authentication) {
+    getMyJoinRequests(
+            Authentication authentication) {
 
-        String residentEmail = authentication.getName();
+        String residentEmail =
+                authentication.getName();
 
         List<JoinRequestResponse> requests =
                 joinService.getResidentJoinRequests(
@@ -167,7 +201,7 @@ public class SpecialPickupController {
     }
 
     // =========================================================
-    // ADMIN - CHECK TRUCK / PICKUP CAPACITY
+    // ADMIN - CHECK PICKUP CAPACITY
     // =========================================================
 
     @GetMapping(

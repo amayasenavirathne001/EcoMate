@@ -161,10 +161,41 @@ class AuthService {
     profileUpdateNotifier.value++;
   }
 
+  Future<void> changePassword({required String currentPassword, required String newPassword}) async {
+    final token = await getToken();
+    if (token == null || token.isEmpty) {
+      throw Exception('Please log in before changing password.');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/change-password'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      try {
+        final body = jsonDecode(response.body);
+        if (body is Map && body.containsKey('message')) {
+          throw Exception(body['message']);
+        }
+      } catch (e) {
+        if (e is Exception && !e.toString().contains('FormatException')) {
+          rethrow;
+        }
+      }
+      throw Exception('Failed to change password (${response.statusCode})');
+    }
+  }
+
   Future<void> updateSecurity({required String email, required String currentPassword, required String newPassword}) async {
-    // Dummy implementation for prototype
-    await _storage.write(key: 'email', value: email);
-    await Future.delayed(const Duration(milliseconds: 500));
+    await changePassword(currentPassword: currentPassword, newPassword: newPassword);
   }
 
   Future<void> logout() async {

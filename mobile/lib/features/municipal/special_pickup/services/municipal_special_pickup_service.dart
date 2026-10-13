@@ -10,6 +10,10 @@ class MunicipalSpecialPickupService {
 
   static const String baseUrl = AuthService.baseUrl;
 
+  // ===========================================================
+  // HEADERS
+  // ===========================================================
+
   Future<Map<String, String>> _headers() async {
     final token = await _authService.getToken();
 
@@ -22,6 +26,10 @@ class MunicipalSpecialPickupService {
       'Content-Type': 'application/json',
     };
   }
+
+  // ===========================================================
+  // GET ALL SPECIAL PICKUPS
+  // ===========================================================
 
   Future<List<SpecialPickup>> getPickups() async {
     final response = await http.get(
@@ -50,6 +58,10 @@ class MunicipalSpecialPickupService {
       '${response.statusCode} - ${response.body}',
     );
   }
+
+  // ===========================================================
+  // OPEN / CREATE PICKUP FROM SCHEDULE
+  // ===========================================================
 
   Future<Map<String, dynamic>> createPickup({
     required int scheduleId,
@@ -82,6 +94,10 @@ class MunicipalSpecialPickupService {
     );
   }
 
+  // ===========================================================
+  // ASSIGN VEHICLE
+  // ===========================================================
+
   Future<Map<String, dynamic>> assignTruck({
     required int pickupId,
     required int truckId,
@@ -103,10 +119,83 @@ class MunicipalSpecialPickupService {
     }
 
     throw Exception(
-      'Failed to assign truck: '
+      'Failed to assign vehicle: '
       '${response.statusCode} - ${response.body}',
     );
   }
+
+  // ===========================================================
+  // CANCEL SPECIAL PICKUP
+  // ===========================================================
+
+  Future<Map<String, dynamic>> cancelPickup({
+    required int pickupId,
+    required String reason,
+  }) async {
+    final response = await http.put(
+      Uri.parse(
+        '$baseUrl/api/admin/special-pickups/'
+        '$pickupId/cancel',
+      ),
+      headers: await _headers(),
+      body: jsonEncode({
+        'reason': reason.trim(),
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)
+          as Map<String, dynamic>;
+    }
+
+    throw Exception(
+      'Failed to cancel special pickup: '
+      '${response.statusCode} - ${response.body}',
+    );
+  }
+
+  // ===========================================================
+  // GET AVAILABLE VEHICLES
+  // ===========================================================
+
+  Future<List<Map<String, dynamic>>> getVehicles() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/municipal/vehicles'),
+      headers: await _headers(),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      if (data is! List) {
+        throw Exception('Invalid vehicle response.');
+      }
+
+      return data
+          .map(
+            (item) =>
+                Map<String, dynamic>.from(item as Map),
+          )
+          .where(
+            (vehicle) =>
+                vehicle['active'] == true &&
+                vehicle['status']
+                        ?.toString()
+                        .toUpperCase() ==
+                    'AVAILABLE',
+          )
+          .toList();
+    }
+
+    throw Exception(
+      'Failed to load vehicles: '
+      '${response.statusCode} - ${response.body}',
+    );
+  }
+
+  // ===========================================================
+  // GET ACTIVE SCHEDULES
+  // ===========================================================
 
   Future<List<Map<String, dynamic>>> getSchedules() async {
     final response = await http.get(
@@ -137,11 +226,16 @@ class MunicipalSpecialPickupService {
     );
   }
 
+  // ===========================================================
+  // CREATE SCHEDULE
+  // ===========================================================
+
   Future<Map<String, dynamic>> createSchedule({
     required int routeId,
     required String dayOfWeek,
     required String startTime,
     required String endTime,
+    required int minHouseholds,
     required int maxHouseholds,
     required double maxWeightKg,
     required double maxVolumeM3,
@@ -160,6 +254,7 @@ class MunicipalSpecialPickupService {
         'dayOfWeek': dayOfWeek,
         'startTime': startTime,
         'endTime': endTime,
+        'minHouseholds': minHouseholds,
         'maxHouseholds': maxHouseholds,
         'maxWeightKg': maxWeightKg,
         'maxVolumeM3': maxVolumeM3,
@@ -180,6 +275,10 @@ class MunicipalSpecialPickupService {
     );
   }
 
+  // ===========================================================
+  // DISABLE SCHEDULE
+  // ===========================================================
+
   Future<void> disableSchedule(int scheduleId) async {
     final response = await http.put(
       Uri.parse(
@@ -198,10 +297,19 @@ class MunicipalSpecialPickupService {
     }
   }
 
+  // ===========================================================
+  // DATE FORMATTER
+  // ===========================================================
+
   String _dateOnly(DateTime date) {
-    final year = date.year.toString().padLeft(4, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    final day = date.day.toString().padLeft(2, '0');
+    final year =
+        date.year.toString().padLeft(4, '0');
+
+    final month =
+        date.month.toString().padLeft(2, '0');
+
+    final day =
+        date.day.toString().padLeft(2, '0');
 
     return '$year-$month-$day';
   }

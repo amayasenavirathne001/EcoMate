@@ -92,5 +92,16 @@ public class AuthService {
                 request.profilePictureData() == null ? "" : request.profilePictureData());
         return userRepository.save(user);
     }
+
+    public void changePassword(String email, com.ecomate.backend.dto.ChangePasswordRequest request) {
+        User user = getUserByEmail(email);
+
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+    }
 }
 

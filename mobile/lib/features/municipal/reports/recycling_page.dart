@@ -228,4 +228,3 @@ class _RecyclingPageState extends State<RecyclingPage> {
     );
   }
 }
-

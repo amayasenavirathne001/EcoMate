@@ -258,10 +258,16 @@ class _MunicipalDashboardPageState extends State<MunicipalDashboardPage> {
       children: [
         Row(
           children: [
-            const Icon(
-              Icons.spa_rounded,
-              color: MunicipalColors.secondaryGreen,
-              size: 32,
+            Image.asset(
+              'assets/images/ecomate_logo.png',
+              width: 32,
+              height: 32,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const Icon(
+                Icons.spa_rounded,
+                color: MunicipalColors.secondaryGreen,
+                size: 32,
+              ),
             ),
             const SizedBox(width: 8),
             const Column(

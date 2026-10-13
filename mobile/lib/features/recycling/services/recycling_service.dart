@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/material_item.dart';
@@ -407,15 +407,27 @@ class RecyclingService {
           _centers.add(created);
           return created;
         } else {
-          print('Failed to create center: \${response.statusCode} - \${response.body}');
-          return null;
+          String errorMsg = 'Failed to create center (${response.statusCode})';
+          try {
+            final errorJson = jsonDecode(response.body);
+            if (errorJson is Map && errorJson['message'] != null) {
+              errorMsg = errorJson['message'].toString();
+            } else if (errorJson is Map && errorJson['error'] != null) {
+              errorMsg = errorJson['error'].toString();
+            }
+          } catch (_) {
+            if (response.body.isNotEmpty) {
+              errorMsg = response.body;
+            }
+          }
+          throw Exception(errorMsg);
         }
       } catch (e) {
-        print('Error creating center: \$e');
-        return null;
+        print('Error creating center: $e');
+        rethrow;
       }
     }
-    return null;
+    throw Exception('Authentication required');
   }
 
   Future<bool> deleteCenter(String id) async {

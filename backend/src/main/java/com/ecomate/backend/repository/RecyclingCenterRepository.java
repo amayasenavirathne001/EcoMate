@@ -14,6 +14,8 @@ public interface RecyclingCenterRepository extends JpaRepository<RecyclingCenter
 
     Optional<RecyclingCenter> findByOfficerEmailIgnoreCase(String officerEmail);
 
+    Optional<RecyclingCenter> findByOfficerEmailIgnoreCaseAndIsDeletedFalse(String officerEmail);
+
     Optional<RecyclingCenter> findByOfficerId(Long officerId);
 
     List<RecyclingCenter> findByCityIgnoreCase(String city);

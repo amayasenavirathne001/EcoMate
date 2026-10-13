@@ -162,38 +162,38 @@ class _LoginScreenState extends State<LoginScreen> {
                             horizontal: 10,
                             vertical: 7,
                           ),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: border,
-                            ),
-                            borderRadius:
-                                BorderRadius.circular(10),
-                          ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.language_rounded,
-                                size: 17,
-                                color: primary,
-                              ),
-                              SizedBox(width: 5),
-                              Text(
-                                'EN',
-                                style: TextStyle(
-                                  color: darkPrimary,
-                                  fontWeight:
-                                      FontWeight.w600,
-                                ),
-                              ),
-                              SizedBox(width: 3),
-                              Icon(
-                                Icons.keyboard_arrow_down,
-                                size: 17,
-                                color: muted,
-                              ),
-                            ],
-                          ),
+                          // decoration: BoxDecoration(
+                          //   border: Border.all(
+                          //     color: border,
+                          //   ),
+                          //   borderRadius:
+                          //       BorderRadius.circular(10),
+                          // ),
+                          // child: const Row(
+                          //   mainAxisSize: MainAxisSize.min,
+                          //   children: [
+                          //     Icon(
+                          //       Icons.language_rounded,
+                          //       size: 17,
+                          //       color: primary,
+                          //     ),
+                          //     // SizedBox(width: 5),
+                          //     // Text(
+                          //     //   'EN',
+                          //     //   style: TextStyle(
+                          //     //     color: darkPrimary,
+                          //     //     fontWeight:
+                          //     //         FontWeight.w600,
+                          //     //   ),
+                          //     // ),
+                          //     // SizedBox(width: 3),
+                          //     // Icon(
+                          //     //   Icons.keyboard_arrow_down,
+                          //     //   size: 17,
+                          //     //   color: muted,
+                          //     // ),
+                          //   ],
+                          // ),
                         ),
                       ],
                     ),
@@ -221,10 +221,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.eco_rounded,
-                          size: 48,
-                          color: accent,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Image.asset(
+                            'assets/images/ecomate_logo.png',
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ),

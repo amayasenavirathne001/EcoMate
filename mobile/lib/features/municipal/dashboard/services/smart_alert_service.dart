@@ -22,7 +22,7 @@ class SmartAlertService {
     } catch (e) {
       print('Error fetching alerts: $e');
     }
-    return getMockAlerts();
+    return [];
   }
   
   Future<List<SmartAlert>> getActiveAlerts() async {
@@ -40,7 +40,7 @@ class SmartAlertService {
     } catch (e) {
       print('Error fetching active alerts: $e');
     }
-    return getMockAlerts().where((a) => a.status != 'RESOLVED').toList();
+    return [];
   }
 
   Future<void> updateAlertStatus(int id, String status) async {

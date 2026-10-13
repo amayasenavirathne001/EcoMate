@@ -55,6 +55,14 @@ public class AuthController {
         return ResponseEntity.ok(toResponse(user));
     }
 
+    @PostMapping("/change-password")
+    public ResponseEntity<java.util.Map<String, String>> changePassword(
+            @AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody com.ecomate.backend.dto.ChangePasswordRequest request) {
+        authService.changePassword(jwt.getSubject(), request);
+        return ResponseEntity.ok(java.util.Map.of("message", "Password changed successfully"));
+    }
+
     private UserResponse toResponse(User user) {
         return new UserResponse(
                 user.getId(),
