@@ -4,8 +4,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../services/waste_report_service.dart';
+import 'report_location_picker_page.dart';
 
 class ReportDetailsScreen extends StatefulWidget {
   const ReportDetailsScreen({super.key, required this.issueType, this.report});
@@ -20,6 +22,8 @@ class ReportDetailsScreen extends StatefulWidget {
 class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
   static const darkGreen = Color(0xFF024B45);
   static const green = Color(0xFF028B6B);
+  static const lightGreen = Color(0xFF02C397);
+  static const surface = Color(0xFFE5F2EE);
   static const background = Color(0xFFF2FAF7);
   static const border = Color(0xFFD8EBE6);
   static const text = Color(0xFF0F172A);
@@ -116,6 +120,34 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
     } finally {
       if (mounted) setState(() => _locating = false);
     }
+  }
+
+  Future<void> _pickMapLocation() async {
+    final selected = await Navigator.of(context).push<LatLng>(
+      MaterialPageRoute(
+        builder: (_) => ReportLocationPickerPage(
+          initialPoint: _position == null ? null : LatLng(_position!.latitude, _position!.longitude),
+        ),
+      ),
+    );
+    if (selected == null || !mounted) return;
+    setState(() {
+      _position = Position(
+        latitude: selected.latitude,
+        longitude: selected.longitude,
+        timestamp: DateTime.now(),
+        accuracy: 0,
+        altitude: 0,
+        heading: 0,
+        speed: 0,
+        speedAccuracy: 0,
+        altitudeAccuracy: 0,
+        headingAccuracy: 0,
+      );
+      if (_locationController.text.trim().isEmpty) {
+        _locationController.text = 'Selected map location';
+      }
+    });
   }
 
   Future<void> _submit() async {
@@ -223,6 +255,12 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             label: Text(_position == null ? 'Use current GPS location' : 'Update GPS location'),
             style: OutlinedButton.styleFrom(foregroundColor: darkGreen),
           ),
+          OutlinedButton.icon(
+            onPressed: _pickMapLocation,
+            icon: const Icon(Icons.map_outlined),
+            label: const Text('Select location on map'),
+            style: OutlinedButton.styleFrom(foregroundColor: darkGreen),
+          ),
           if (_position != null)
             Padding(
               padding: const EdgeInsets.only(top: 6),
@@ -317,27 +355,43 @@ class _ReportProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const labels = ['Type', 'Location', 'Details', 'Review'];
-    return Row(
-      children: List.generate(labels.length, (index) {
-        final complete = index <= activeStep;
-        return Expanded(
-          child: Column(
-            children: [
-              Row(children: [
-                if (index > 0) const Expanded(child: Divider(color: _ReportDetailsScreenState.border)),
-                CircleAvatar(
-                  radius: 14,
-                  backgroundColor: complete ? _ReportDetailsScreenState.darkGreen : const Color(0xFFE2E4E4),
-                  child: Text('${index + 1}', style: TextStyle(color: complete ? Colors.white : _ReportDetailsScreenState.secondaryText, fontSize: 11, fontWeight: FontWeight.w700)),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: _ReportDetailsScreenState.border)),
+      child: Column(
+        children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const Text('Report progress', style: TextStyle(color: _ReportDetailsScreenState.darkGreen, fontSize: 12, fontWeight: FontWeight.w800)),
+            Text('Step ${activeStep + 1} of ${labels.length}', style: const TextStyle(color: _ReportDetailsScreenState.secondaryText, fontSize: 11, fontWeight: FontWeight.w600)),
+          ]),
+          const SizedBox(height: 12),
+          Row(
+            children: List.generate(labels.length * 2 - 1, (position) {
+              if (position.isOdd) {
+                final completed = position ~/ 2 < activeStep;
+                return Expanded(child: Container(height: 2, color: completed ? _ReportDetailsScreenState.lightGreen : _ReportDetailsScreenState.border));
+              }
+              final index = position ~/ 2;
+              final active = index == activeStep;
+              final complete = index < activeStep;
+              return Expanded(child: Column(children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(shape: BoxShape.circle, color: active || complete ? _ReportDetailsScreenState.darkGreen : _ReportDetailsScreenState.surface, border: Border.all(color: active || complete ? _ReportDetailsScreenState.darkGreen : _ReportDetailsScreenState.border)),
+                  child: Icon(complete ? Icons.check_rounded : _stepIcon(index), size: 15, color: active || complete ? Colors.white : _ReportDetailsScreenState.secondaryText),
                 ),
-                if (index < labels.length - 1) const Expanded(child: Divider(color: _ReportDetailsScreenState.border)),
-              ]),
-              const SizedBox(height: 4),
-              Text(labels[index], style: TextStyle(color: complete ? _ReportDetailsScreenState.darkGreen : _ReportDetailsScreenState.secondaryText, fontSize: 10)),
-            ],
+                const SizedBox(height: 5),
+                Text(labels[index], maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: active || complete ? _ReportDetailsScreenState.darkGreen : _ReportDetailsScreenState.secondaryText, fontSize: 10, fontWeight: FontWeight.w700)),
+              ]));
+            }),
           ),
-        );
-      }),
+        ],
+      ),
     );
   }
+
+  IconData _stepIcon(int index) => const [Icons.report_outlined, Icons.location_on_outlined, Icons.notes_outlined, Icons.fact_check_outlined][index];
 }

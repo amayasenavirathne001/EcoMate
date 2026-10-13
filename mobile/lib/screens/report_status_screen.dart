@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../services/waste_report_service.dart';
 
 class ReportStatusScreen extends StatelessWidget {
   const ReportStatusScreen({super.key, required this.report});
@@ -41,6 +43,54 @@ class ReportStatusScreen extends StatelessWidget {
     }
   }
 
+  String _displayStatus(String value) => value.replaceAll('_', ' ');
+
+  String _descriptionFor(String value) {
+    switch (value) {
+      case 'IN_REVIEW':
+        return 'Municipal review in progress';
+      case 'ASSIGNED':
+        return 'Response team assigned';
+      case 'RESOLVED':
+        return 'Issue resolved';
+      default:
+        return 'Report submitted';
+    }
+  }
+  Future<void> _submitFeedback(BuildContext context) async {
+    final controller = TextEditingController();
+    final feedback = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Confirm resolution'),
+        content: TextField(
+          controller: controller,
+          maxLines: 4,
+          maxLength: 1200,
+          decoration: const InputDecoration(hintText: 'Optional feedback about the resolution'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text.trim()), child: const Text('Confirm')),
+        ],
+      ),
+    );
+    if (!context.mounted || feedback == null) return;
+    try {
+      await WasteReportService().submitFeedback(
+        id: (report['id'] as num).toInt(),
+        feedback: feedback.isEmpty ? null : feedback,
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Resolution confirmed')));
+      }
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not confirm resolution: $error')));
+      }
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,24 +161,52 @@ class ReportStatusScreen extends StatelessWidget {
             const SizedBox(height: 14),
             _InfoRow(label: 'Assigned team', value: report['assignedTeam'].toString()),
           ],
+          if (report['resolutionEvidence']?.toString().isNotEmpty == true) ...[
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: border),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Resolution evidence', style: TextStyle(color: darkGreen, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.memory(
+                      base64Decode(report['resolutionEvidence'].toString()),
+                      width: double.infinity,
+                      height: 180,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => const Text('Resolution evidence could not be displayed.'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          if (_status == 'RESOLVED') ...[
+            const SizedBox(height: 16),
+            if (report['reporterConfirmed'] == true)
+              const Text('You confirmed this resolution.', style: TextStyle(color: darkGreen, fontWeight: FontWeight.w700))
+            else
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () => _submitFeedback(context),
+                  icon: const Icon(Icons.check_circle_outline),
+                  label: const Text('Confirm resolution and give feedback'),
+                  style: FilledButton.styleFrom(backgroundColor: green),
+                ),
+              ),
+          ],
         ],
       ),
     );
-  }
-
-  String _displayStatus(String value) => value.replaceAll('_', ' ');
-
-  String _descriptionFor(String value) {
-    switch (value) {
-      case 'IN_REVIEW':
-        return 'Municipal review in progress';
-      case 'ASSIGNED':
-        return 'Response team assigned';
-      case 'RESOLVED':
-        return 'Issue resolved';
-      default:
-        return 'Report submitted';
-    }
   }
 }
 

@@ -343,6 +343,10 @@ public class ResourceAssignmentService {
         linkedReports.forEach(report -> report.updateAdminFields(
                 status, report.getPriority(), report.getAssignedTeam()));
         wasteReportRepository.saveAll(linkedReports);
+        linkedReports.forEach(report -> notificationService.createUserNotification(
+            report.getReporterEmail(),
+            "Report status updated",
+            "Report " + report.getReferenceNumber() + " is now " + status.replace('_', ' ').toLowerCase() + "."));
     }
 
     public boolean isEmployeeAssigned(Long employeeId) {

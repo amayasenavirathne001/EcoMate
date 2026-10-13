@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../notifications_screen.dart';
+import '../../services/notification_service.dart';
 import '../../services/auth_service.dart';
 import '../../features/recycling/services/recycling_service.dart';
 import '../login_screen.dart';
@@ -25,6 +26,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
   final AuthService _authService = AuthService();
   final SpecialPickupService _specialPickupService = SpecialPickupService();
   final RecyclingService _recyclingService = RecyclingService();
+  final NotificationService _notificationService = NotificationService();
   int _totalEcoPoints = 0;
   int _totalItemsRecycled = 0;
   int _selectedIndex = 0;
@@ -32,6 +34,7 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
   String? _profilePictureData;
   SpecialPickup? _specialPickup;
   bool _isLoadingSpecialPickup = true;
+  int _unreadNotificationCount = 0;
   String? _specialPickupError;
   static const Color darkText = Color(0xFF071A26);
   static const Color primaryGreen = Color(0xFF0E8A38);
@@ -44,6 +47,14 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
     _loadUserInfo();
     _loadSpecialPickup();
     _loadDashboardStats();
+    _loadUnreadNotificationCount();
+  }
+
+  Future<void> _loadUnreadNotificationCount() async {
+    try {
+      final count = await _notificationService.getUnreadCount();
+      if (mounted) setState(() => _unreadNotificationCount = count);
+    } catch (_) {}
   }
   Future<void> _loadDashboardStats() async {
     try {
@@ -462,7 +473,8 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
                 children: [
                   IconButton(
                     onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsScreen()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsScreen()))
+                          .then((_) => _loadUnreadNotificationCount());
 
 
                     },
@@ -472,7 +484,8 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
                       color: darkText,
                     ),
                   ),
-                  Positioned(
+                  if (_unreadNotificationCount > 0)
+                    Positioned(
                     top: 2,
                     right: 3,
                     child: Container(
@@ -483,8 +496,8 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
                         color: Colors.red,
                         shape: BoxShape.circle,
                       ),
-                      child: const Text(
-                        '3',
+                      child: Text(
+                        _unreadNotificationCount > 99 ? '99+' : '$_unreadNotificationCount',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 10,

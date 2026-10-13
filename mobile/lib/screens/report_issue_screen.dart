@@ -204,60 +204,45 @@ class _ProgressSteps extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const labels = ['Type', 'Location', 'Details', 'Review'];
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-      child: Row(
-        children: List.generate(labels.length, (index) {
-          final active = index == activeStep;
-          final complete = index < activeStep;
-          return Expanded(
-            child: Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                if (index < labels.length - 1)
-                  Positioned(
-                    top: 14,
-                    left: 26,
-                    right: -26,
-                    child: Container(height: 1, color: ReportIssueScreen._border),
-                  ),
-                Column(
-                  children: [
-                    Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: active || complete ? ReportIssueScreen._darkGreen : const Color(0xFFE2E4E4),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        '${index + 1}',
-                        style: TextStyle(
-                          color: active || complete ? Colors.white : ReportIssueScreen._secondaryText,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      labels[index],
-                      style: TextStyle(
-                        color: active || complete ? ReportIssueScreen._darkGreen : ReportIssueScreen._secondaryText,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+    return Container(
+      margin: const EdgeInsets.fromLTRB(18, 18, 18, 0),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: ReportIssueScreen._border)),
+      child: Column(
+        children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const Text('Report progress', style: TextStyle(color: ReportIssueScreen._darkGreen, fontSize: 12, fontWeight: FontWeight.w800)),
+            Text('Step ${activeStep + 1} of ${labels.length}', style: const TextStyle(color: ReportIssueScreen._secondaryText, fontSize: 11, fontWeight: FontWeight.w600)),
+          ]),
+          const SizedBox(height: 12),
+          Row(
+            children: List.generate(labels.length * 2 - 1, (position) {
+              if (position.isOdd) {
+                final completed = position ~/ 2 < activeStep;
+                return Expanded(child: Container(height: 2, color: completed ? ReportIssueScreen._lightGreen : ReportIssueScreen._border));
+              }
+              final index = position ~/ 2;
+              final active = index == activeStep;
+              final complete = index < activeStep;
+              return Expanded(child: Column(children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(shape: BoxShape.circle, color: active || complete ? ReportIssueScreen._darkGreen : ReportIssueScreen._surface, border: Border.all(color: active || complete ? ReportIssueScreen._darkGreen : ReportIssueScreen._border)),
+                  child: Icon(complete ? Icons.check_rounded : _stepIcon(index), size: 15, color: active || complete ? Colors.white : ReportIssueScreen._secondaryText),
                 ),
-              ],
-            ),
-          );
-        }),
+                const SizedBox(height: 5),
+                Text(labels[index], maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: active || complete ? ReportIssueScreen._darkGreen : ReportIssueScreen._secondaryText, fontSize: 10, fontWeight: FontWeight.w700)),
+              ]));
+            }),
+          ),
+        ],
       ),
     );
   }
+
+  IconData _stepIcon(int index) => const [Icons.report_outlined, Icons.location_on_outlined, Icons.notes_outlined, Icons.fact_check_outlined][index];
 }
 
 class _IssueCard extends StatelessWidget {

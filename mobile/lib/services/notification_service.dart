@@ -34,6 +34,11 @@ class NotificationService {
     return [];
   }
 
+  Future<int> getUnreadCount() async {
+    final notifications = await getMyNotifications();
+    return notifications.where((notification) => notification['read'] != true).length;
+  }
+
   Future<bool> markAsRead(int notificationId) async {
     final headers = await _getHeaders();
     if (!headers.containsKey('Authorization')) return false;
