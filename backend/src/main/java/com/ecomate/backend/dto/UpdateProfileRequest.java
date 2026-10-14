@@ -8,6 +8,10 @@ public record UpdateProfileRequest(
         @NotBlank @Size(max = 80) String name,
         @Size(max = 32) @Pattern(regexp = "^(?:|[+0-9() .-]{7,32})$", message = "Enter a valid phone number") String phoneNumber,
         @Size(max = 240) String address,
-        @Size(max = 1_500_000) String profilePictureData
+        @Size(max = 1_500_000) String profilePictureData,
+        @Size(max = 32) String profileType
 ) {
+        public UpdateProfileRequest(String name, String phoneNumber, String address, String profilePictureData) {
+                this(name, phoneNumber, address, profilePictureData, null);
+        }
 }

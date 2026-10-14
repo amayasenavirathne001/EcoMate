@@ -9,6 +9,7 @@ import '../../features/recycling/screens/waste_segregation_guide_screen.dart';
 import '../../features/recycling/screens/recycling_centers_screen.dart';
 import '../collection_schedule_screen.dart';
 import '../report_issue_screen.dart';
+import '../community_feedback_screen.dart';
 import '../my_reports_screen.dart';
 import '../resident_profile_screen.dart';
 import '../../features/special_pickup/screens/available_special_pickups_screen.dart';
@@ -1564,6 +1565,10 @@ class _ResidentDashboardState extends State<ResidentDashboard> {
             _drawerItem(Icons.warning_amber_rounded, 'Report Issue', () {
               Navigator.pop(context);
               _openReportIssue();
+            }),
+            _drawerItem(Icons.forum_outlined, 'Community Feedback', () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const CommunityFeedbackScreen()));
             }),
             _drawerItem(Icons.recycling_rounded, 'Recycling Guide', () {
               Navigator.pop(context);

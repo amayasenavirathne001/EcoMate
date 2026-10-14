@@ -274,7 +274,19 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
           DropdownButtonFormField<String>(
             initialValue: _category,
             decoration: _decoration('Select category', Icons.category_outlined),
-            items: const ['General Waste', 'Organic Waste', 'Plastic', 'Glass', 'Metal', 'Other']
+            items: const [
+              'General Waste',
+              'Organic Waste',
+              'Plastic',
+              'Paper & Cardboard',
+              'Glass',
+              'Metal',
+              'Electronic Waste',
+              'Hazardous Waste',
+              'Garden Waste',
+              'Bulky Waste',
+              'Other',
+            ]
                 .map((item) => DropdownMenuItem(value: item, child: Text(item)))
                 .toList(),
             onChanged: (value) => setState(() => _category = value ?? _category),

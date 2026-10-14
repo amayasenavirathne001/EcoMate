@@ -47,8 +47,12 @@ public class WasteReportService {
                 .orElseThrow(() -> new IllegalArgumentException("Report not found"));
         validateTransition(report.getStatus(), request.status(), request.assignedTeam());
         String previousStatus = report.getStatus();
+        String reviewNotes = request.reviewNotes();
+        if (reviewNotes == null || reviewNotes.isBlank()) {
+            reviewNotes = automaticReviewNote(request.status(), request.assignedTeam());
+        }
         report.updateAdminFields(request.status(), request.priority(), request.assignedTeam(),
-            request.reviewNotes(), request.resolutionEvidence());
+            reviewNotes, request.resolutionEvidence());
         WasteReportResponse response = WasteReportResponse.from(repository.save(report));
         if (!previousStatus.equals(request.status())) {
             notificationService.createUserNotification(report.getReporterEmail(), "Report status updated",
@@ -101,5 +105,15 @@ public class WasteReportService {
                 && (assignedTeam == null || assignedTeam.isBlank())) {
             throw new IllegalArgumentException("An assigned team is required before moving to " + next);
         }
+    }
+
+    private String automaticReviewNote(String status, String assignedTeam) {
+        return switch (status) {
+            case "IN_REVIEW" -> "Your report is being reviewed by the municipal team.";
+            case "ASSIGNED" -> "Your issue was assigned to " + (assignedTeam == null || assignedTeam.isBlank() ? "a response team" : assignedTeam) + ".";
+            case "RESOLVED" -> "Your issue was resolved by the municipal response team.";
+            case "REJECTED" -> "Your report was reviewed and could not be accepted.";
+            default -> null;
+        };
     }
 }

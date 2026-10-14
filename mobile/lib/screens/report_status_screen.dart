@@ -161,6 +161,35 @@ class ReportStatusScreen extends StatelessWidget {
             const SizedBox(height: 14),
             _InfoRow(label: 'Assigned team', value: report['assignedTeam'].toString()),
           ],
+          if (report['reviewNotes']?.toString().trim().isNotEmpty == true) ...[
+            const SizedBox(height: 14),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE5F2EE),
+                border: Border.all(color: border),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.campaign_outlined, color: darkGreen),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Municipal update', style: TextStyle(color: darkGreen, fontWeight: FontWeight.w800)),
+                        const SizedBox(height: 5),
+                        Text(report['reviewNotes'].toString(), style: const TextStyle(color: darkGreen, height: 1.4)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           if (report['resolutionEvidence']?.toString().isNotEmpty == true) ...[
             const SizedBox(height: 14),
             Container(

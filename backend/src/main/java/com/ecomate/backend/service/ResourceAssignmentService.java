@@ -340,8 +340,13 @@ public class ResourceAssignmentService {
         }
 
         List<WasteReport> linkedReports = wasteReportRepository.findAllByAssignedTeam(job.getRouteId());
+        String reviewNote = "ASSIGNED".equals(status)
+            ? "Your issue was assigned to " + job.getRouteId() + "."
+            : "RESOLVED".equals(status)
+                ? "Your issue was resolved by the municipal response team."
+                : null;
         linkedReports.forEach(report -> report.updateAdminFields(
-                status, report.getPriority(), report.getAssignedTeam()));
+            status, report.getPriority(), report.getAssignedTeam(), reviewNote, null));
         wasteReportRepository.saveAll(linkedReports);
         linkedReports.forEach(report -> notificationService.createUserNotification(
             report.getReporterEmail(),

@@ -95,13 +95,13 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                                 onTap: () => _selectIssueType('Damaged Bin'),
                               ),
                               _IssueCard(
-                                title: 'Missed Cleanup',
-                                description: 'Report missed waste collection/cleanup.',
+                                title: 'Missed Collection',
+                                description: 'Report a missed waste collection.',
                                 icon: Icons.local_shipping_rounded,
                                 iconBackground: Color(0xFFD5F6D2),
                                 iconColor: ReportIssueScreen._green,
-                                selected: _selectedIssueType == 'Missed Cleanup',
-                                onTap: () => _selectIssueType('Missed Cleanup'),
+                                selected: _selectedIssueType == 'Missed Collection',
+                                onTap: () => _selectIssueType('Missed Collection'),
                               ),
                               _IssueCard(
                                 title: 'Other Issue',

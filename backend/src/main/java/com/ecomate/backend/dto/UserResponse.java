@@ -9,6 +9,7 @@ public record UserResponse(
         Role role,
         String phoneNumber,
         String address,
-        String profilePictureData
+        String profilePictureData,
+        String profileType
 ) {
 }

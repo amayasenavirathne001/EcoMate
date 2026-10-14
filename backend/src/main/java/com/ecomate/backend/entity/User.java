@@ -25,6 +25,9 @@ public class User {
     @Column(length = 240)
     private String address;
 
+    @Column(name = "profile_type", length = 32)
+    private String profileType = "Household";
+
     @Column(columnDefinition = "TEXT")
     private String profilePictureData;
 
@@ -82,11 +85,14 @@ public class User {
         return profilePictureData;
     }
 
-    public void updateProfile(String name, String phoneNumber, String address, String profilePictureData) {
+    public String getProfileType() { return profileType; }
+
+    public void updateProfile(String name, String phoneNumber, String address, String profilePictureData, String profileType) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.profilePictureData = profilePictureData;
+        this.profileType = profileType == null || profileType.isBlank() ? "Household" : profileType;
     }
 
     public Role getRole() {
