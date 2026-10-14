@@ -5,6 +5,7 @@ import 'dashboards/resident_dashboard.dart';
 import 'dashboards/collector_dashboard.dart';
 import '../features/recycling/dashboard/recycling_dashboard.dart';
 import 'dashboards/council_dashboard.dart';
+import 'splash_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -86,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => dashboard,
+          builder: (_) => const SplashScreen(),
         ),
       );
     } catch (e) {
