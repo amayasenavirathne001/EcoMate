@@ -3,6 +3,7 @@ package com.ecomate.backend.controller;
 import com.ecomate.backend.dto.CreateWasteReportRequest;
 import com.ecomate.backend.dto.WasteReportResponse;
 import com.ecomate.backend.dto.UpdateResidentWasteReportRequest;
+import com.ecomate.backend.dto.WasteReportFeedbackRequest;
 import com.ecomate.backend.service.WasteReportService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,13 @@ public class WasteReportController {
                                           @PathVariable Long id,
                                           @Valid @RequestBody UpdateResidentWasteReportRequest request) {
         return service.updateMine(jwt.getSubject(), id, request);
+    }
+
+    @PostMapping("/{id}/feedback")
+    public WasteReportResponse addFeedback(@AuthenticationPrincipal Jwt jwt,
+                                           @PathVariable Long id,
+                                           @Valid @RequestBody WasteReportFeedbackRequest request) {
+        return service.addFeedback(jwt.getSubject(), id, request);
     }
 
     @DeleteMapping("/{id}")

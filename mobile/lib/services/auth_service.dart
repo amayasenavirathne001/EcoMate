@@ -122,6 +122,7 @@ class AuthService {
     String? phoneNumber,
     String? address,
     String? profilePicUrl,
+    String? profileType,
   }) async {
     final token = await getToken();
     if (token == null || token.isEmpty) {
@@ -144,6 +145,7 @@ class AuthService {
         'address': address ?? currentUser['address'] ?? '',
         'profilePictureData':
             profilePicUrl ?? currentUser['profilePictureData'] ?? '',
+        'profileType': profileType ?? currentUser['profileType'] ?? 'Household',
       }),
     );
     if (response.statusCode != 200) {

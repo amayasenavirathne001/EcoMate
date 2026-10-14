@@ -3,6 +3,7 @@ import '../models/pickup_request.dart';
 import '../data/pickup_mock_data.dart';
 import '../widgets/pickup_request_card.dart';
 import 'pickup_request_details_screen.dart';
+import 'available_special_pickups_screen.dart';
 
 class PickupRequestsScreen extends StatefulWidget {
   const PickupRequestsScreen({super.key});
@@ -30,13 +31,10 @@ class _PickupRequestsScreenState extends State<PickupRequestsScreen> {
     }).toList();
   }
 
-  void _showNewRequestMessage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Pickup Request submission form coming soon.'),
-        backgroundColor: Color(0xFF0E8A38),
-        behavior: SnackBarBehavior.floating,
-      ),
+  void _openNewRequestFlow() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AvailableSpecialPickupsScreen()),
     );
   }
 
@@ -76,7 +74,7 @@ class _PickupRequestsScreenState extends State<PickupRequestsScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ElevatedButton.icon(
-                onPressed: _showNewRequestMessage,
+                onPressed: _openNewRequestFlow,
                 icon: const Icon(Icons.add_rounded),
                 label: const Text('+ New Pickup Request'),
                 style: ElevatedButton.styleFrom(

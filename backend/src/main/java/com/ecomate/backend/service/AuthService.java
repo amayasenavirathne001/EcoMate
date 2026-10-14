@@ -89,7 +89,8 @@ public class AuthService {
                 request.name().trim(),
                 request.phoneNumber() == null ? "" : request.phoneNumber().trim(),
                 request.address() == null ? "" : request.address().trim(),
-                request.profilePictureData() == null ? "" : request.profilePictureData());
+                request.profilePictureData() == null ? "" : request.profilePictureData(),
+                request.profileType());
         return userRepository.save(user);
     }
 

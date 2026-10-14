@@ -117,15 +117,38 @@ class WasteReportService {
     required String status,
     required String priority,
     required String assignedTeam,
+    String? reviewNotes,
+    String? resolutionEvidence,
   }) async {
     final token = await _storage.read(key: 'token');
     if (token == null || token.isEmpty) throw Exception('Please log in first.');
     final response = await http.put(
       Uri.parse('$baseUrl/api/municipal/reports/$id'),
       headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
-      body: jsonEncode({'status': status, 'priority': priority, 'assignedTeam': assignedTeam}),
+      body: jsonEncode({
+        'status': status,
+        'priority': priority,
+        'assignedTeam': assignedTeam,
+        'reviewNotes': reviewNotes,
+        'resolutionEvidence': resolutionEvidence,
+      }),
     );
     if (response.statusCode != 200) throw Exception('Could not update report.');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> submitFeedback({
+    required int id,
+    String? feedback,
+  }) async {
+    final token = await _storage.read(key: 'token');
+    if (token == null || token.isEmpty) throw Exception('Please log in first.');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/resident/reports/$id/feedback'),
+      headers: {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'},
+      body: jsonEncode({'feedback': feedback}),
+    );
+    if (response.statusCode != 200) throw Exception('Could not submit feedback.');
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 }

@@ -148,6 +148,7 @@ class _ResidentProfileScreenState extends State<ResidentProfileScreen> {
             changes['profilePicUrl'] ??
             current['profilePictureData']?.toString() ??
             '',
+          profileType: changes['profileType'] ?? current['profileType']?.toString() ?? 'Household',
       );
       final refreshed = await _authService.getCurrentUser();
       if (!mounted) return;
@@ -588,6 +589,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
   late final TextEditingController _nameController;
   late final TextEditingController _phoneController;
   late final TextEditingController _addressController;
+  String _profileType = 'Household';
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -602,6 +604,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
     _addressController = TextEditingController(
       text: widget.profile['address']?.toString() ?? '',
     );
+    _profileType = widget.profile['profileType']?.toString() ?? 'Household';
   }
 
   @override
@@ -618,6 +621,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
       'name': _nameController.text.trim(),
       'phoneNumber': _phoneController.text.trim(),
       'address': _addressController.text.trim(),
+      'profileType': _profileType,
     };
     final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
     FocusScope.of(context).unfocus();
@@ -674,6 +678,18 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                 validator: (value) => value == null || value.trim().isEmpty
                     ? 'Enter your name.'
                     : null,
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                initialValue: _profileType,
+                decoration: const InputDecoration(
+                  labelText: 'Profile type',
+                  prefixIcon: Icon(Icons.apartment_outlined),
+                ),
+                items: const ['Household', 'Apartment', 'School', 'Institution', 'Public Place']
+                    .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                    .toList(),
+                onChanged: (value) => setState(() => _profileType = value ?? _profileType),
               ),
               const SizedBox(height: 8),
               TextFormField(

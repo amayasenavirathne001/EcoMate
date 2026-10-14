@@ -310,27 +310,29 @@ class _ResidentRecyclingHistoryScreenState extends State<ResidentRecyclingHistor
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.history_rounded, size: 80, color: primaryGreen.withValues(alpha: 0.2)),
-          const SizedBox(height: 16),
-          const Text(
-            'No History Yet',
-            style: TextStyle(
-              color: darkText,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 150),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.history_rounded, size: 64, color: primaryGreen.withValues(alpha: 0.2)),
+              const SizedBox(height: 12),
+              const Text(
+                'No History Yet',
+                style: TextStyle(color: darkText, fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Your recycling drop-offs will appear here\nafter you visit a center.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.black54, height: 1.4),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          const Text(
-            'Your recycling drop-offs will appear here\nafter you visit a center.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.black54, height: 1.4),
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -12,10 +12,16 @@ public record WasteReportResponse(
         Double longitude,
         String wasteCategory,
         String description,
+        String photoData,
         boolean hasPhoto,
         String status,
         String priority,
         String assignedTeam,
+        String reviewNotes,
+        String resolutionEvidence,
+        boolean hasResolutionEvidence,
+        boolean reporterConfirmed,
+        String reporterFeedback,
         String reporterEmail,
         LocalDateTime createdAt
 ) {
@@ -23,9 +29,12 @@ public record WasteReportResponse(
         return new WasteReportResponse(
                 report.getId(), report.getReferenceNumber(), report.getIssueType(),
                 report.getLocation(), report.getLatitude(), report.getLongitude(),
-                report.getWasteCategory(), report.getDescription(),
+                report.getWasteCategory(), report.getDescription(), report.getPhotoData(),
                 report.getPhotoData() != null && !report.getPhotoData().isBlank(),
                 report.getStatus(), report.getPriority(), report.getAssignedTeam(),
+                report.getReviewNotes(), report.getResolutionEvidence(),
+                report.getResolutionEvidence() != null && !report.getResolutionEvidence().isBlank(),
+                report.isReporterConfirmed(), report.getReporterFeedback(),
                 report.getReporterEmail(), report.getCreatedAt());
     }
 }

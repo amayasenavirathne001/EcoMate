@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../services/report_filters.dart';
 import '../../../services/report_review.dart';
 import '../../../services/waste_report_service.dart';
@@ -20,6 +22,7 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
   String _filter = 'All';
   String _priorityFilter = 'All';
   bool _isReloading = false;
+  bool _isSavingReport = false;
 
   @override
   void initState() {
@@ -48,8 +51,10 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
     var status = report['status']?.toString() ?? 'SUBMITTED';
     var priority = report['priority']?.toString() ?? 'MEDIUM';
     var team = report['assignedTeam']?.toString() ?? '';
-    var reviewNotes = '';
-    final result = await showModalBottomSheet<Map<String, String>>(
+    var reviewNotes = report['reviewNotes']?.toString() ?? '';
+    String? resolutionEvidence;
+    final picker = ImagePicker();
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
       context: context,
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(builder: (context, setSheetState) {
@@ -62,7 +67,8 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
 
         return Padding(
           padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.viewInsetsOf(context).bottom + 20),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child: SingleChildScrollView(
+            child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(report['issueType']?.toString() ?? 'Report', style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
             const SizedBox(height: 8),
             Container(
@@ -90,6 +96,82 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
               child: Text(
                 buildVerificationChecklist(report),
                 style: const TextStyle(color: MunicipalColors.primaryText, fontSize: 11, height: 1.6),
+              ),
+            ),
+            if (report['photoData']?.toString().isNotEmpty == true) ...[
+              const SizedBox(height: 10),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: MunicipalColors.border),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Resident evidence', style: TextStyle(fontWeight: FontWeight.w800, color: MunicipalColors.primaryText)),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.memory(
+                        base64Decode(report['photoData'].toString()),
+                        width: double.infinity,
+                        height: 130,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => const Text('Resident evidence could not be displayed.'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: report['reporterConfirmed'] == true
+                    ? MunicipalColors.success.withValues(alpha: 0.10)
+                    : MunicipalColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: MunicipalColors.border),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    report['reporterConfirmed'] == true
+                        ? Icons.verified_outlined
+                        : Icons.hourglass_empty_rounded,
+                    size: 20,
+                    color: report['reporterConfirmed'] == true
+                        ? MunicipalColors.success
+                        : MunicipalColors.mutedText,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          report['reporterConfirmed'] == true
+                              ? 'Resident confirmed resolution'
+                              : 'Resident confirmation pending',
+                          style: const TextStyle(fontWeight: FontWeight.w800, color: MunicipalColors.primaryText),
+                        ),
+                        if (report['reporterFeedback']?.toString().trim().isNotEmpty == true) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            'Feedback: ${report['reporterFeedback']}',
+                            style: const TextStyle(color: MunicipalColors.secondaryText, height: 1.35),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -161,6 +243,17 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
               decoration: const InputDecoration(labelText: 'Review notes / comments'),
               onChanged: (value) => reviewNotes = value,
             ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: () async {
+                final file = await picker.pickImage(source: ImageSource.gallery, imageQuality: 60, maxWidth: 1280, maxHeight: 1280);
+                if (file == null) return;
+                final bytes = await file.readAsBytes();
+                setSheetState(() => resolutionEvidence = base64Encode(bytes));
+              },
+              icon: Icon(resolutionEvidence == null ? Icons.add_a_photo_outlined : Icons.check_circle_outline),
+              label: Text(resolutionEvidence == null ? 'Upload resolution evidence' : 'Resolution evidence attached'),
+            ),
             if (validationMessage != null) ...[
               const SizedBox(height: 10),
               Text(validationMessage, style: const TextStyle(color: MunicipalColors.error, fontSize: 12)),
@@ -180,22 +273,32 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error))); 
                     return;
                   }
-                  Navigator.pop(context, {'status': status, 'priority': priority, 'assignedTeam': team, 'reviewNotes': reviewNotes});
+                  Navigator.pop(context, {
+                    'status': status,
+                    'priority': priority,
+                    'assignedTeam': team,
+                    'reviewNotes': reviewNotes,
+                    'resolutionEvidence': resolutionEvidence,
+                  });
                 },
                 child: const Text('Save update'),
               ),
             ),
-          ]),
+            ]),
+          ),
         );
       }),
     );
     if (result == null || !mounted) return;
+    setState(() => _isSavingReport = true);
     try {
       final updated = await _service.updateAdminReport(
         id: (report['id'] as num).toInt(),
         status: result['status']!,
         priority: result['priority']!,
         assignedTeam: result['assignedTeam']!,
+        reviewNotes: result['reviewNotes'],
+        resolutionEvidence: result['resolutionEvidence'],
       );
       final currentReports = await _reports;
       final updatedReports = currentReports.map((currentReport) {
@@ -211,6 +314,8 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
       }
     } catch (error) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Update failed: $error')));
+    } finally {
+      if (mounted) setState(() => _isSavingReport = false);
     }
   }
 
@@ -290,7 +395,10 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
         title: const Text('Illegal Dumping', style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [IconButton(onPressed: () { _reload(); }, icon: const Icon(Icons.refresh_rounded))],
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
+      body: Column(
+        children: [
+          if (_isSavingReport) const LinearProgressIndicator(minHeight: 3, color: MunicipalColors.accentGreenLight),
+          Expanded(child: FutureBuilder<List<Map<String, dynamic>>>(
         future: _reports,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -376,6 +484,8 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
             Expanded(child: reports.isEmpty ? const Center(child: Text('No reports match your current filters.')) : ListView.separated(padding: const EdgeInsets.all(16), itemCount: reports.length, separatorBuilder: (_, _) => const SizedBox(height: 10), itemBuilder: (_, index) => _ReportTile(report: reports[index], onEdit: () => _editReport(reports[index]), onViewLocation: () => _viewLocation(reports[index]), onCreateJob: () => _createJobFromReport(reports[index]), onSetPriority: (priority) => _setPriority(reports[index], priority)))),
           ]);
         },
+          )),
+        ],
       ),
     );
   }
@@ -402,76 +512,168 @@ class _ReportTile extends StatelessWidget {
       _ => MunicipalColors.warning,
     };
     final team = report['assignedTeam']?.toString() ?? '';
-    return ListTile(
-      onTap: onEdit,
-      tileColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: const BorderSide(color: MunicipalColors.border)),
-      leading: CircleAvatar(backgroundColor: MunicipalColors.surface, child: Icon(Icons.report_problem_outlined, color: status == 'RESOLVED' ? MunicipalColors.success : MunicipalColors.secondaryGreen)),
-      title: Text(report['issueType']?.toString() ?? 'Waste report', style: const TextStyle(fontWeight: FontWeight.w700, color: MunicipalColors.primaryText)),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('${report['referenceNumber']}\n${report['location']}', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: MunicipalColors.secondaryText, height: 1.4)),
-          PopupMenuButton<String>(
-            tooltip: 'Set issue priority',
-            onSelected: onSetPriority,
-            itemBuilder: (context) => const ['HIGH', 'MEDIUM', 'LOW'].map((value) => PopupMenuItem(value: value, child: Text(value))).toList(),
-            child: Container(
-              margin: const EdgeInsets.only(top: 6),
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-              decoration: BoxDecoration(
-                color: priorityColor.withValues(alpha: 0.12),
-                border: Border.all(color: priorityColor.withValues(alpha: 0.45)),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+    final reporterConfirmed = report['reporterConfirmed'] == true;
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: MunicipalColors.border),
+      ),
+      child: InkWell(
+        onTap: onEdit,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header row: Icon, Title, Status & Confirmed Badge
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.flag_outlined, size: 14, color: priorityColor),
-                  const SizedBox(width: 4),
-                  Text('$normalizedPriority PRIORITY', style: TextStyle(color: priorityColor, fontSize: 10, fontWeight: FontWeight.w800)),
-                  const SizedBox(width: 4),
-                  Icon(Icons.arrow_drop_down, size: 16, color: priorityColor),
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor: MunicipalColors.surface,
+                    child: Icon(
+                      Icons.report_problem_outlined,
+                      size: 20,
+                      color: status == 'RESOLVED' ? MunicipalColors.success : MunicipalColors.secondaryGreen,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          report['issueType']?.toString() ?? 'Waste report',
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: MunicipalColors.primaryText),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${report['referenceNumber']}',
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MunicipalColors.secondaryText),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: (status == 'RESOLVED' ? MunicipalColors.success : MunicipalColors.secondaryGreen).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          status.replaceAll('_', ' '),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: status == 'RESOLVED' ? MunicipalColors.success : MunicipalColors.secondaryGreen,
+                          ),
+                        ),
+                      ),
+                      if (reporterConfirmed)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 4),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.verified_outlined, size: 14, color: MunicipalColors.success),
+                              SizedBox(width: 2),
+                              Text('Verified', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: MunicipalColors.success)),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
-      isThreeLine: true,
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(status.replaceAll('_', ' '), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: MunicipalColors.secondaryGreen)),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                onPressed: onViewLocation,
-                tooltip: 'View location on map',
-                visualDensity: VisualDensity.compact,
-                icon: Icon(
-                  Icons.location_on_outlined,
-                  size: 19,
-                  color: report['latitude'] != null && report['longitude'] != null ? MunicipalColors.secondaryGreen : MunicipalColors.mutedText,
+              const SizedBox(height: 8),
+              // Location description
+              Padding(
+                padding: const EdgeInsets.only(left: 46),
+                child: Text(
+                  report['location']?.toString() ?? 'Current location',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: MunicipalColors.secondaryText, fontSize: 12, height: 1.3),
                 ),
               ),
-              if (!team.startsWith('JOB-'))
-                IconButton(
-                  onPressed: onCreateJob,
-                  tooltip: 'Create Service Job',
-                  visualDensity: VisualDensity.compact,
-                  icon: const Icon(Icons.add_task_rounded, size: 18, color: MunicipalColors.secondaryGreen),
-                ),
-              IconButton(
-                onPressed: onEdit,
-                tooltip: 'Edit report',
-                visualDensity: VisualDensity.compact,
-                icon: const Icon(Icons.edit_outlined, size: 18, color: MunicipalColors.mutedText),
+              const SizedBox(height: 10),
+              const Divider(height: 1, color: MunicipalColors.surface),
+              const SizedBox(height: 6),
+              // Bottom row: Priority selector on left, Actions on right
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  PopupMenuButton<String>(
+                    tooltip: 'Set issue priority',
+                    onSelected: onSetPriority,
+                    itemBuilder: (context) => const ['HIGH', 'MEDIUM', 'LOW'].map((value) => PopupMenuItem(value: value, child: Text(value))).toList(),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: priorityColor.withValues(alpha: 0.12),
+                        border: Border.all(color: priorityColor.withValues(alpha: 0.45)),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.flag_outlined, size: 14, color: priorityColor),
+                          const SizedBox(width: 4),
+                          Text('$normalizedPriority PRIORITY', style: TextStyle(color: priorityColor, fontSize: 10, fontWeight: FontWeight.w800)),
+                          const SizedBox(width: 4),
+                          Icon(Icons.arrow_drop_down, size: 16, color: priorityColor),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: onViewLocation,
+                        tooltip: 'View location on map',
+                        visualDensity: VisualDensity.compact,
+                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                        padding: const EdgeInsets.all(6),
+                        icon: Icon(
+                          Icons.location_on_outlined,
+                          size: 19,
+                          color: report['latitude'] != null && report['longitude'] != null ? MunicipalColors.secondaryGreen : MunicipalColors.mutedText,
+                        ),
+                      ),
+                      if (!team.startsWith('JOB-'))
+                        IconButton(
+                          onPressed: onCreateJob,
+                          tooltip: 'Create Service Job',
+                          visualDensity: VisualDensity.compact,
+                          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                          padding: const EdgeInsets.all(6),
+                          icon: const Icon(Icons.add_task_rounded, size: 18, color: MunicipalColors.secondaryGreen),
+                        ),
+                      IconButton(
+                        onPressed: onEdit,
+                        tooltip: 'Edit report',
+                        visualDensity: VisualDensity.compact,
+                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                        padding: const EdgeInsets.all(6),
+                        icon: const Icon(Icons.edit_outlined, size: 18, color: MunicipalColors.mutedText),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

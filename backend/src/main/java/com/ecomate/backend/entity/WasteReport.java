@@ -43,6 +43,18 @@ public class WasteReport {
     @Column(length = 80)
     private String assignedTeam;
 
+    @Column(name = "review_notes", length = 1200)
+    private String reviewNotes;
+
+    @Column(name = "resolution_evidence", columnDefinition = "TEXT")
+    private String resolutionEvidence;
+
+    @Column(name = "reporter_confirmed", columnDefinition = "boolean default false")
+    private Boolean reporterConfirmed;
+
+    @Column(name = "reporter_feedback", length = 1200)
+    private String reporterFeedback;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
@@ -63,6 +75,7 @@ public class WasteReport {
         this.photoData = photoData;
         this.status = "SUBMITTED";
         this.priority = "MEDIUM";
+        this.reporterConfirmed = false;
         this.createdAt = LocalDateTime.now();
     }
 
@@ -79,12 +92,32 @@ public class WasteReport {
     public String getStatus() { return status; }
     public String getPriority() { return priority; }
     public String getAssignedTeam() { return assignedTeam; }
+    public String getReviewNotes() { return reviewNotes; }
+    public String getResolutionEvidence() { return resolutionEvidence; }
+    public boolean isReporterConfirmed() { return Boolean.TRUE.equals(reporterConfirmed); }
+    public String getReporterFeedback() { return reporterFeedback; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     public void updateAdminFields(String status, String priority, String assignedTeam) {
+        updateAdminFields(status, priority, assignedTeam, null, null);
+    }
+
+    public void updateAdminFields(String status, String priority, String assignedTeam,
+                                  String reviewNotes, String resolutionEvidence) {
         this.status = status;
         this.priority = priority;
         this.assignedTeam = assignedTeam;
+        if (reviewNotes != null) {
+            this.reviewNotes = reviewNotes;
+        }
+        if (resolutionEvidence != null) {
+            this.resolutionEvidence = resolutionEvidence;
+        }
+    }
+
+    public void addReporterFeedback(String feedback) {
+        this.reporterConfirmed = true;
+        this.reporterFeedback = feedback;
     }
 
     public void updateResidentFields(String issueType, String location, String wasteCategory,
