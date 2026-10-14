@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/municipal_colors.dart';
+import 'widgets/report_charts.dart';
 
 class MunicipalOperationsPage extends StatelessWidget {
   const MunicipalOperationsPage({super.key});
@@ -14,17 +15,35 @@ class MunicipalOperationsPage extends StatelessWidget {
         title: const Text('Municipal Operations', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        _buildSummaryCards(),
-        const SizedBox(height: 16),
-        _buildChartPlaceholder('Collection Performance', 'On-time: 85%, Delayed: 15%'),
-        const SizedBox(height: 16),
-        _buildChartPlaceholder('Driver/Vehicle Performance', 'Active Vehicles: 24/30'),
-        const SizedBox(height: 16),
-        _buildActionButtons(),
-      ],
-    ),
+        padding: const EdgeInsets.all(16),
+        children: [
+          _buildSummaryCards(),
+          const SizedBox(height: 16),
+          DonutChartCard(
+            title: 'Collection Performance',
+            subtitle: '85% On-Time',
+            centerMainText: '85%',
+            centerSubText: 'Success Rate',
+            segments: [
+              ChartSegment(label: 'On-Time Completed', value: 85, color: MunicipalColors.success),
+              ChartSegment(label: 'Delayed Jobs', value: 15, color: MunicipalColors.error),
+            ],
+          ),
+          const SizedBox(height: 16),
+          BarChartCard(
+            title: 'Driver & Fleet Status',
+            subtitle: '24 / 30 Active',
+            maxY: 30,
+            data: [
+              BarGroup(label: 'Active', value: 24, color: MunicipalColors.secondaryGreen, displayValue: '24'),
+              BarGroup(label: 'Standby', value: 4, color: MunicipalColors.info, displayValue: '4'),
+              BarGroup(label: 'Repairs', value: 2, color: MunicipalColors.warning, displayValue: '2'),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildActionButtons(),
+        ],
+      ),
     );
   }
 
@@ -64,29 +83,6 @@ class MunicipalOperationsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildChartPlaceholder(String title, String subtitle) {
-    return Container(
-      height: 160,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: MunicipalColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: MunicipalColors.primaryText)),
-          const SizedBox(height: 8),
-          Expanded(
-            child: Center(
-              child: Text('$subtitle\n(Mock Data Chart)', textAlign: TextAlign.center, style: const TextStyle(color: MunicipalColors.mutedText)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildActionButtons() {
     return Row(

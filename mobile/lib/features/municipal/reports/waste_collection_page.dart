@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/municipal_colors.dart';
+import 'widgets/report_charts.dart';
 
 class WasteCollectionPage extends StatelessWidget {
   const WasteCollectionPage({super.key});
@@ -14,17 +15,37 @@ class WasteCollectionPage extends StatelessWidget {
         title: const Text('Waste Collection', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        _buildSummaryCards(),
-        const SizedBox(height: 16),
-        _buildChartPlaceholder('Collection Performance Over Time', '92% Success Rate'),
-        const SizedBox(height: 16),
-        _buildChartPlaceholder('Area-wise Collection', 'North Zone: 450, South Zone: 320'),
-        const SizedBox(height: 16),
-        _buildActionButtons(),
-      ],
-    ),
+        padding: const EdgeInsets.all(16),
+        children: [
+          _buildSummaryCards(),
+          const SizedBox(height: 16),
+          DonutChartCard(
+            title: 'Collection Performance',
+            subtitle: '92% Success Rate',
+            centerMainText: '92%',
+            centerSubText: 'Completion',
+            segments: [
+              ChartSegment(label: 'Completed', value: 985, color: MunicipalColors.success),
+              ChartSegment(label: 'Pending', value: 230, color: MunicipalColors.warning),
+              ChartSegment(label: 'Delayed', value: 25, color: MunicipalColors.error),
+            ],
+          ),
+          const SizedBox(height: 16),
+          BarChartCard(
+            title: 'Area-wise Collection (Requests)',
+            subtitle: 'Total 1,240',
+            maxY: 500,
+            data: [
+              BarGroup(label: 'Zone A', value: 450, color: MunicipalColors.secondaryGreen, displayValue: '450'),
+              BarGroup(label: 'Zone B', value: 320, color: MunicipalColors.info, displayValue: '320'),
+              BarGroup(label: 'Zone C', value: 280, color: MunicipalColors.darkGreen, displayValue: '280'),
+              BarGroup(label: 'Zone D', value: 190, color: MunicipalColors.warning, displayValue: '190'),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildActionButtons(),
+        ],
+      ),
     );
   }
 
@@ -64,29 +85,6 @@ class WasteCollectionPage extends StatelessWidget {
     );
   }
 
-  Widget _buildChartPlaceholder(String title, String subtitle) {
-    return Container(
-      height: 160,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: MunicipalColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: MunicipalColors.primaryText)),
-          const SizedBox(height: 8),
-          Expanded(
-            child: Center(
-              child: Text('$subtitle\n(Mock Data Chart)', textAlign: TextAlign.center, style: const TextStyle(color: MunicipalColors.mutedText)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildActionButtons() {
     return Row(

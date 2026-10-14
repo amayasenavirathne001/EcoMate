@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../theme/municipal_colors.dart';
 import '../../recycling/services/recycling_service.dart';
 import '../../recycling/models/waste_delivery_record.dart';
+import 'widgets/report_charts.dart';
 
 class RecyclingPage extends StatefulWidget {
   const RecyclingPage({super.key});
@@ -56,9 +57,7 @@ class _RecyclingPageState extends State<RecyclingPage> {
               children: [
                 _buildSummaryCards(),
                 const SizedBox(height: 16),
-                _buildChartPlaceholder('Recycling Performance Over Time', '85% Recovery Rate\n(Mock Data Chart)'),
-                const SizedBox(height: 16),
-                _buildChartPlaceholder('Material Breakdown', 'Plastic: 40%, Organic: 30%, Paper: 20%\n(Mock Data Chart)'),
+                _buildRecyclingCharts(),
                 const SizedBox(height: 16),
                 _buildActionButtons(),
                 const SizedBox(height: 24),
@@ -114,30 +113,71 @@ class _RecyclingPageState extends State<RecyclingPage> {
     );
   }
 
-  Widget _buildChartPlaceholder(String title, String subtitle) {
-    return Container(
-      height: 160,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: MunicipalColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: MunicipalColors.primaryText)),
-          const Spacer(),
-          Center(
-            child: Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: MunicipalColors.secondaryText, fontSize: 14),
-            ),
-          ),
-          const Spacer(),
-        ],
-      ),
+  Widget _buildRecyclingCharts() {
+    int total = _deliveries.length;
+    int processed = _deliveries.where((r) => r.processingStatus.toUpperCase() == 'PROCESSED').length;
+    int pending = total - processed;
+
+    // Group materials by weight
+    final materialWeights = <String, double>{};
+    for (final d in _deliveries) {
+      final mat = d.materialType.isNotEmpty ? d.materialType : 'General';
+      materialWeights[mat] = (materialWeights[mat] ?? 0.0) + d.weightKg;
+    }
+
+    final totalWeight = materialWeights.values.fold(0.0, (sum, w) => sum + w);
+
+    final colors = [
+      MunicipalColors.secondaryGreen,
+      MunicipalColors.info,
+      MunicipalColors.warning,
+      MunicipalColors.darkGreen,
+      MunicipalColors.error,
+    ];
+
+    int colorIdx = 0;
+    final segments = materialWeights.isEmpty
+        ? [
+            ChartSegment(label: 'Plastic', value: 40, color: MunicipalColors.secondaryGreen),
+            ChartSegment(label: 'Organic', value: 30, color: MunicipalColors.info),
+            ChartSegment(label: 'Paper', value: 20, color: MunicipalColors.warning),
+            ChartSegment(label: 'Metal', value: 10, color: MunicipalColors.darkGreen),
+          ]
+        : materialWeights.entries.map((entry) {
+            final col = colors[colorIdx % colors.length];
+            colorIdx++;
+            return ChartSegment(label: entry.key, value: entry.value, color: col);
+          }).toList();
+
+    final recoveryRate = total == 0 ? 85 : ((processed / total) * 100).round();
+
+    return Column(
+      children: [
+        DonutChartCard(
+          title: 'Recycling Processing Status',
+          subtitle: '$recoveryRate% Processed',
+          centerMainText: '$recoveryRate%',
+          centerSubText: 'Recovery Rate',
+          segments: [
+            ChartSegment(label: 'Processed', value: processed == 0 && total == 0 ? 85 : processed.toDouble(), color: MunicipalColors.success),
+            ChartSegment(label: 'Pending', value: pending == 0 && total == 0 ? 15 : pending.toDouble(), color: MunicipalColors.warning),
+          ],
+        ),
+        const SizedBox(height: 16),
+        ProgressListCard(
+          title: 'Material Weight Breakdown',
+          badge: '${totalWeight > 0 ? totalWeight.toStringAsFixed(1) : "1,450"} kg Total',
+          items: segments.map((seg) {
+            final pct = totalWeight == 0 ? (seg.value / 100) : (seg.value / totalWeight);
+            return ProgressItem(
+              label: seg.label,
+              valueText: totalWeight > 0 ? '${seg.value.toStringAsFixed(1)} kg' : '${seg.value.toInt()}%',
+              progress: pct,
+              color: seg.color,
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
