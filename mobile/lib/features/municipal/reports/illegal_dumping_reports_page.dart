@@ -51,7 +51,7 @@ class _IllegalDumpingReportsPageState extends State<IllegalDumpingReportsPage> {
     var status = report['status']?.toString() ?? 'SUBMITTED';
     var priority = report['priority']?.toString() ?? 'MEDIUM';
     var team = report['assignedTeam']?.toString() ?? '';
-    var reviewNotes = '';
+    var reviewNotes = report['reviewNotes']?.toString() ?? '';
     String? resolutionEvidence;
     final picker = ImagePicker();
     final result = await showModalBottomSheet<Map<String, dynamic>>(
