@@ -111,8 +111,8 @@ class _SplashScreenState extends State<SplashScreen>
       }
     } catch (_) {}
 
-    // Not logged in: go to LoginScreen or OnboardingScreen
-    return const LoginScreen();
+    // Not logged in: go to OnboardingScreen (Identify Your Waste -> Find Nearby Bins -> Login)
+    return const OnboardingScreen();
   }
 
   @override
