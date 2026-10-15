@@ -8,7 +8,7 @@ import '../../../models/waste_category.dart';
 import '../../../services/auth_service.dart';
 
 class RecyclingService {
-  static const String baseUrl = 'http://localhost:8080';
+  static const String baseUrl = AuthService.baseUrl;
   final AuthService _authService = AuthService();
 
   static final List<MaterialItem> _masterMaterials = [];

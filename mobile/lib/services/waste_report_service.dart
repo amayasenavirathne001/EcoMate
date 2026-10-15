@@ -2,10 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'auth_service.dart';
 
 class WasteReportService {
   static const _storage = FlutterSecureStorage();
-  static const baseUrl = 'http://localhost:8080';
+  static const baseUrl = AuthService.baseUrl;
 
   Future<Map<String, dynamic>> submitReport({
     required String issueType,

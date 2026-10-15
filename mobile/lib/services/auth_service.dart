@@ -10,7 +10,7 @@ class AuthService {
   static const FlutterSecureStorage _storage =
       FlutterSecureStorage();
 
-  static const String baseUrl = 'http://localhost:8080';
+  static const String baseUrl = 'http://192.168.43.126:8080';
 
   Future<Map<String, dynamic>> login({
     required String email,

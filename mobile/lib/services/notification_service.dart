@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'auth_service.dart';
 
 class NotificationService {
-  static const String baseUrl = 'http://localhost:8080';
+  static const String baseUrl = AuthService.baseUrl;
   final AuthService _authService = AuthService();
 
   Future<Map<String, String>> _getHeaders() async {
